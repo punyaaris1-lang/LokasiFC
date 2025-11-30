@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>MAKA FastCharging</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Syne:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050505;
+            --card: #0e0f12;
+            --card-border: rgba(255,255,255,0.03);
+            --accent: #2dd4bf; /* teal accent (diganti dari kuning agar lebih modern) */
+            --accent-2: #9bf6ff;
+            --danger: #FF3B30;
+            --text: #ffffff;
+            --text-mute: #9aa0a6;
+            --glass: rgba(255,255,255,0.04);
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+        html,body { height:100%; margin:0; background: linear-gradient(180deg, var(--bg) 0%, #070708 100%); color:var(--text); font-family: 'Inter', sans-serif; -webkit-user-select:none; }
+        body { display:flex; flex-direction:column; min-height:100vh; padding: env(safe-area-inset-top, 12px) 0 env(safe-area-inset-bottom, 12px); }
+
+        /* LOADER */
+        .loader { position: fixed; inset:0; background: linear-gradient(180deg,#000,#060606); z-index: 9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px; transition:opacity .45s ease; }
+        .loader-logo { width:120px; filter: drop-shadow(0 6px 26px rgba(45,212,191,0.12)); animation: floatLogo 3s infinite; border-radius:12px; }
+        @keyframes floatLogo { 0%{transform:translateY(0)} 50%{transform:translateY(-8px)} 100%{transform:translateY(0)} }
+        #animText1 { font-size:0.9rem; color:var(--accent); font-weight:700; letter-spacing:1px; }
+        #animText2 { font-family:'Syne'; font-size:1.6rem; font-weight:800; color:#fff; text-transform:uppercase; }
+        .loader-actions { width:85%; max-width:320px; display:flex; gap:12px; flex-direction:column; transform:translateY(8px); opacity:0; transition:all .6s cubic-bezier(.2,.9,.3,1); }
+        .loader-actions.show { transform:translateY(0); opacity:1; }
+        .btn-entry { padding:12px; border-radius:12px; font-weight:800; text-transform:uppercase; border:none; width:100%; cursor:pointer; font-size:0.85rem; }
+        .btn-entry.primary { background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#002; box-shadow:0 10px 30px rgba(45,212,191,0.08); }
+        .btn-entry.danger { background:transparent; border:1px solid rgba(255,59,48,0.12); color:var(--danger); }
+
+        /* HEADER */
+        .header { padding:14px 18px 8px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+        .header-text { display:flex; flex-direction:column; gap:6px; }
+        .label-top { font-size:0.7rem; color:var(--text-mute); letter-spacing:1px; font-weight:700; }
+        .header h1 { font-family:'Inter'; font-size:clamp(1.2rem,6vw,2rem); margin:0; line-height:1; font-weight:900; letter-spacing:-0.5px; color:#fff; }
+        .label-bottom { font-size:0.72rem; color:var(--accent); font-weight:700; letter-spacing:0.8px; }
+
+        .top-menu { display:flex; gap:10px; margin-top:6px; }
+        .menu-btn { width:44px; height:44px; border-radius:12px; background:var(--glass); border:1px solid var(--card-border); display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; transition:transform .12s, background .12s; }
+        .menu-btn:active { transform:scale(.96); }
+        .menu-btn.sos { border-color:rgba(255,59,48,0.18); color:var(--danger); }
+
+        /* HERO */
+        .hero-section { padding: 10px 18px; margin-bottom: 12px; }
+        .hero-card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid var(--card-border); border-radius:18px; padding:16px; position:relative; overflow:hidden; box-shadow: 0 8px 30px rgba(2,6,23,0.6); display:flex; flex-direction:column; gap:10px; min-height:120px; }
+        .hero-header { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        .radar-status { display:flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:700; color:var(--accent); letter-spacing:0.6px; text-transform:uppercase; }
+        .gps-dot { width:10px; height:10px; background:var(--accent); border-radius:50%; box-shadow:0 0 10px var(--accent); animation:pulse 1.4s infinite; }
+        @keyframes pulse { 0%{opacity:1; transform:scale(1)} 50%{opacity:.35; transform:scale(.85)} 100%{opacity:1; transform:scale(1)} }
+        .hero-dist { background:rgba(255,255,255,0.02); border:1px solid rgba(45,212,191,0.14); padding:6px 10px; border-radius:10px; font-family:'Syne'; font-size:0.9rem; font-weight:700; color:var(--accent); }
+        .hero-name { font-family:'Inter'; font-size:clamp(1.1rem,5vw,1.45rem); font-weight:800; color:#fff; margin:0; line-height:1.05; }
+        .hero-info { font-size:0.86rem; color:var(--text-mute); margin:0; padding-left:10px; border-left:3px solid rgba(45,212,191,0.08); white-space:pre-line; }
+        .btn-nav-hero { display:inline-block; margin-top:8px; padding:10px 12px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#002; font-weight:800; border-radius:10px; text-decoration:none; font-size:0.9rem; box-shadow:0 8px 24px rgba(45,212,191,0.08); }
+
+        /* LIST */
+        .list-section { flex:1; overflow-y:auto; padding-bottom: calc(env(safe-area-inset-bottom, 18px) + 28px); -webkit-overflow-scrolling: touch; }
+        .city-group { margin-bottom:20px; }
+        .city-header { padding: 0 18px; margin-bottom:12px; display:flex; align-items:center; gap:12px; }
+        .city-title { color:var(--text); font-family:'Syne'; font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; }
+        .city-line { height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent); flex-grow:1; }
+
+        .h-scroll { display:flex; gap:14px; overflow-x:auto; padding: 0 18px 8px; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+        .h-scroll::-webkit-scrollbar { display:none; }
+
+        .mini-card {
+            --delay: 0ms;
+            min-width: 74vw;
+            max-width: 86vw;
+            height: 160px;
+            border-radius:16px;
+            padding:14px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            scroll-snap-align:start;
+            flex-shrink:0;
+            position:relative;
+            overflow:hidden;
+            transition: transform .18s ease, box-shadow .18s ease;
+            transform: translateY(10px) scale(0.995);
+            opacity: 0;
+            animation: cardIn .46s cubic-bezier(.2,.9,.3,1) forwards;
+            animation-delay: var(--delay);
+            border:1px solid var(--card-border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+        }
+        @keyframes cardIn {
+            to { transform: translateY(0) scale(1); opacity:1; }
+        }
+        .mini-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 18px 50px rgba(2,6,23,0.72); }
+
+        /* color styles */
+        .style-1 { background: linear-gradient(160deg,#0f1113,#15171a); color:#fff; }
+        .style-2 { background: linear-gradient(160deg,#022c22,#064e3b); color:#d1fae5; }
+        .style-3 { background: linear-gradient(160deg,#0b1220,#111827); color:#cfe8ff; backdrop-filter: blur(6px); }
+
+        .bg-bolt { position:absolute; right:-12px; bottom:-20px; font-size:4.2rem; opacity:0.08; transform:rotate(-12deg); pointer-events:none; color:#fff; }
+        .mini-top h3 { margin:0 0 8px 0; font-size:1rem; line-height:1.2; font-weight:800; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .mini-info { font-size:0.78rem; opacity:0.9; margin-top:6px; border-top:1px solid rgba(255,255,255,0.03); padding-top:8px; line-height:1.3; z-index:2; }
+        .mini-dist { font-size:0.95rem; font-weight:900; z-index:2; text-align:right; margin-top:6px; color:var(--accent); }
+
+        /* MODALS */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index:2000; transform: translateY(100%); transition: transform .32s ease; display:flex; flex-direction:column; }
+        .modal.show { transform: translateY(0); }
+        .modal-head { padding:18px; border-bottom:1px solid rgba(255,255,255,0.02); display:flex; justify-content:space-between; align-items:center; }
+        .close-btn { background:#111; border:1px solid rgba(255,255,255,0.03); color:var(--accent); font-size:0.85rem; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; }
+        .modal-body { padding:18px; overflow-y:auto; flex:1; }
+        .modal-foot { padding:14px; border-top:1px solid rgba(255,255,255,0.02); background:transparent; }
+        .btn-close-bot { width:100%; padding:12px; border-radius:12px; background:#111; border:1px solid rgba(255,255,255,0.03); color:var(--accent); font-weight:800; cursor:pointer; text-transform:uppercase; }
+
+        /* slideshow */
+        .slide-container { width:100%; aspect-ratio:16/9; background:#111; border-radius:10px; overflow:hidden; margin-bottom:12px; display:flex; scroll-snap-type:x mandatory; overflow-x:scroll; scroll-behavior:smooth; }
+        .slide-box-multi { min-width:100%; height:100%; scroll-snap-align:start; }
+        .slide-box-multi img { width:100%; height:100%; object-fit:cover; display:block; }
+
+        /* responsive tweaks */
+        @media(min-width:720px) {
+            .mini-card { min-width:220px; max-width:260px; height:190px; }
+            .hero-card { min-height:150px; padding:18px; border-radius:20px; }
+            .header h1 { font-size:1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader" class="loader">
+        <img src="mlu-logo.png" alt="Logo" class="loader-logo">
+        <div id="animText1">SELAMAT DATANG</div>
+        <div id="animText2">SAHABAT MLU</div>
+        <div id="animText3" style="color:var(--text-mute); font-size:0.78rem;">• HOME OF MLU •</div>
+        <div class="loader-actions" id="loaderBtns">
+            <button class="btn-entry primary" onclick="enterApp('home')">LOKASI FC ⚡</button>
+            <button class="btn-entry danger" onclick="enterApp('sos')">BANTUAN SOS 🚨</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-text">
+            <div class="label-top">LOKASI</div>
+            <h1>FAST<br>CHARGING</h1>
+            <div class="label-bottom">MAKA LINTAS UTARA</div>
+        </div>
+        <div class="top-menu">
+            <button class="menu-btn" onclick="nav('news')" title="Info">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            </button>
+            <button class="menu-btn sos" onclick="nav('sos')" title="SOS">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="hero-section">
+        <div id="heroContainer">
+            <div id="scanState" class="hero-card" style="align-items:center; text-align:center;">
+                <div class="radar-status" style="justify-content:center; margin-bottom:8px;">
+                    <div class="gps-dot"></div> MENCARI SINYAL GPS...
+                </div>
+                <p style="color:var(--text-mute); font-size:0.86rem; margin:0;">Pastikan Lokasi/GPS HP Aktif — Tunggu sebentar</p>
+            </div>
+
+            <div id="foundState" class="hero-card" style="display:none;">
+                <div class="hero-header">
+                    <div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div>
+                    <div class="hero-dist" id="heroDist">-- KM</div>
+                </div>
+                <h2 class="hero-name" id="heroName">Nama Lokasi</h2>
+                <div class="hero-info" id="heroInfo">Info Loading...</div>
+                <a href="#" id="heroLink" target="_blank" class="btn-nav-hero">NAVIGASI SEKARANG ↗</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="list-section" id="mainListContainer"></div>
+
+    <div id="modal-news" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-head"><h2>INFO & EVENT</h2><button class="close-btn" onclick="closeModal()">TUTUP</button></div>
+        <div class="modal-body" id="newsContainer"></div>
+        <div class="modal-foot"><button class="btn-close-bot" onclick="closeModal()">KEMBALI KE HOME</button></div>
+    </div>
+
+    <div id="modal-sos" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-head"><h2 style="color:var(--danger);">DARURAT (SOS)</h2><button class="close-btn" onclick="closeModal()">TUTUP</button></div>
+        <div class="modal-body">
+            <p style="text-align:center; color:var(--text-mute); margin-bottom:12px;">Klik untuk Chat WhatsApp:</p>
+            <a href="https://wa.me/6287722285445" class="help-row"><div style="font-size:1.5rem;">🚑</div><div><div style="font-weight:700;">Towing / Unit Mogok</div></div></a>
+            <a href="https://wa.me/6283179721893" class="help-row"><div style="font-size:1.5rem;">🚨</div><div><div style="font-weight:700;">URC Kecelakaan</div></div></a>
+            <a href="https://wa.me/6285117468556" class="help-row"><div style="font-size:1.5rem;">💳</div><div><div style="font-weight:700;">Admin Tagihan</div></div></a>
+        </div>
+        <div class="modal-foot"><button class="btn-close-bot" style="color:var(--danger); border-color:var(--danger);" onclick="closeModal()">TUTUP DARURAT</button></div>
+    </div>
+
+    <script>
+        const URL_LOKASI = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv";
+        const URL_BERITA = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv";
+
+        let chargers = [];
+        let userLat = null; let userLng = null;
+
+        function startApp() {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500);
+            loadDataBackground();
+        }
+
+        async function loadDataBackground() {
+            try {
+                const [txtLoc, txtNews] = await Promise.all([
+                    fetch(URL_LOKASI).then(r=>r.text()),
+                    fetch(URL_BERITA).then(r=>r.ok?r.text():"")
+                ]);
+
+                chargers = txtLoc.split('\n').slice(1).map((r, i) => {
+                    const c = r.split(',');
+                    let latStr = c[4] ? c[4].replace(',', '.') : '';
+                    let lngStr = c[5] ? c[5].replace(',', '.') : '';
+                    let latVal = parseFloat(latStr);
+                    let lngVal = parseFloat(lngStr);
+                    if(c.length < 5 || isNaN(latVal) || isNaN(lngVal)) return null;
+                    return {
+                        id: i,
+                        name:c[0], city:c[1], type:c[2], status:c[3],
+                        lat:latVal, lng:lngVal, link:c[6]||'',
+                        nozzle: c[7] || '-', cost: c[8] || '-'
+                    };
+                }).filter(i=>i);
+
+                renderList();
+                if(txtNews) renderNews(txtNews);
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.watchPosition(
+                        (p) => {
+                            userLat=p.coords.latitude;
+                            userLng=p.coords.longitude;
+                            processData();
+                        },
+                        (err) => {},
+                        { enableHighAccuracy: true, maximumAge: 0, timeout: 8000 }
+                    );
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function enterApp(mode) {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600);
+            if(mode === 'sos') nav('sos');
+        }
+
+        function renderNews(csvText) {
+            const rows = csvText.split('\n').slice(1);
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = '';
+            rows.forEach(r => {
+                const cols = r.split(',');
+                if(cols.length < 3) return;
+                let images = [];
+                cols.forEach(val => { if(val.includes('http') && (val.includes('.jpg') || val.includes('.png') || val.includes('ibb'))) images.push(val); });
+
+                let imgHTML = '';
+                if(images.length > 0) {
+                    imgHTML = `<div class="slide-container">`;
+                    images.forEach(url => { imgHTML += `<div class="slide-box-multi"><img src="${url}"></div>`; });
+                    imgHTML += `</div>`;
+                    if(images.length > 1) imgHTML += `<div style="text-align:center;font-size:0.7rem;color:var(--text-mute);margin-bottom:10px;">Geser untuk lihat foto lain</div>`;
+                }
+                container.innerHTML += `<div class="news-item">${imgHTML}<h3 style="color:var(--accent); margin-bottom:6px;">${cols[0]}</h3><p style="color:var(--text-mute); font-size:0.85rem; margin-top:0;">${cols[1]}</p><p style="line-height:1.5; color:#ddd; font-size:0.95rem;">${cols[2]}</p></div>`;
+            });
+        }
+
+        function getDist(lat1, lon1, lat2, lon2) {
+            const R=6371;
+            const dLat=(lat2-lat1)*Math.PI/180;
+            const dLon=(lon2-lon1)*Math.PI/180;
+            const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+            return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+        }
+        function getMapLink(i) {
+            if(i.link && i.link.length > 10) return i.link;
+            if(userLat) return `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${i.lat},${i.lng}&travelmode=motorcycle`;
+            return `https://www.google.com/maps/search/?api=1&query=${i.lat},${i.lng}`;
+        }
+
+        function processData() {
+            if(userLat) {
+                chargers.forEach(c => {
+                    const d = getDist(userLat,userLng,c.lat,c.lng);
+                    c.dist = isNaN(d) ? NaN : parseFloat(d.toFixed(2));
+                });
+                chargers.sort((a,b)=> {
+                    if(isNaN(a.dist)) return 1;
+                    if(isNaN(b.dist)) return -1;
+                    return a.dist - b.dist;
+                });
+            }
+
+            if(chargers.length > 0) {
+                const n = chargers[0];
+                document.getElementById('scanState').style.display = 'none';
+                document.getElementById('foundState').style.display = 'flex';
+
+                document.getElementById('heroName').innerText = n.name;
+                document.getElementById('heroDist').innerText = (n.dist? n.dist.toFixed(1): '--') + ' KM';
+                document.getElementById('heroInfo').innerText = `${n.city} • ${n.type}\n${n.nozzle} Nozzle • ${n.cost}`;
+                document.getElementById('heroLink').href = getMapLink(n);
+
+                renderList();
+            }
+        }
+
+        function renderList() {
+            const listCont = document.getElementById('mainListContainer');
+            // simpan scroll position tiap kota
+            let scrollState = {};
+            document.querySelectorAll('.city-group').forEach(group => {
+                const title = group.querySelector('.city-title')?.innerText;
+                if(title) scrollState[title] = group.querySelector('.h-scroll').scrollLeft;
+            });
+
+            listCont.innerHTML = '';
+            let grouped = {};
+            for(let i=0;i<chargers.length;i++){
+                let item = chargers[i];
+                let city = (item.city && item.city.trim()) || 'Lainnya';
+                if(!grouped[city]) grouped[city] = [];
+                grouped[city].push(item);
+            }
+
+            let colorIdx = 0;
+            Object.keys(grouped).forEach(city => {
+                let groupHTML = `
+                <div class="city-group">
+                    <div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div>
+                    <div class="h-scroll">`;
+
+                let cardIdx = 0;
+                grouped[city].forEach(item => {
+                    let styleClass = `style-${(colorIdx % 3) + 1}`;
+                    colorIdx++;
+                    const distLabel = item.dist ? (item.dist.toFixed(1) + ' KM') : '';
+                    // stagger delay based on cardIdx for smooth entrance
+                    const delayMs = (cardIdx % 6) * 80;
+                    groupHTML += `
+                    <a href="${getMapLink(item)}" target="_blank" class="mini-card ${styleClass}" style="--delay:${delayMs}ms">
+                        <div class="bg-bolt">⚡</div>
+                        <div class="mini-top"><h3>${item.name}</h3><div class="mini-info">${item.type}<br>${item.nozzle} Nozzle • ${item.cost}</div></div>
+                        <div class="mini-bot"><div class="mini-dist">${distLabel}</div></div>
+                    </a>`;
+                    cardIdx++;
+                });
+
+                groupHTML += `</div></div>`;
+                listCont.innerHTML += groupHTML;
+            });
+
+            // restore scroll
+            document.querySelectorAll('.city-group').forEach(group => {
+                const title = group.querySelector('.city-title')?.innerText;
+                if(title && scrollState[title]) group.querySelector('.h-scroll').scrollLeft = scrollState[title];
+            });
+        }
+
+        function nav(p) {
+            document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
+            if(p==='news') document.getElementById('modal-news').classList.add('show');
+            if(p==='sos') document.getElementById('modal-sos').classList.add('show');
+        }
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
+        }
+
+        function animateText(id, txt, delay) {
+            const el = document.getElementById(id);
+            el.innerHTML = txt.split('').map(l => `<span class="letter">${l===' '?' ':l}</span>`).join('');
+            const letters = el.querySelectorAll('.letter');
+            let i=0; return new Promise(r=>{ const t=setInterval(()=>{ if(i<letters.length){letters[i].classList.add('active');i++}else{clearInterval(t);r()} }, delay) });
+        }
+
+        async function runIntro() {
+            await animateText('animText1', "SELAMAT DATANG", 40);
+            await animateText('animText2', "SAHABAT MLU", 30);
+            document.getElementById('animText3').style.opacity = '1';
+            setTimeout(() => { document.querySelector('.loader-actions').classList.add('show'); }, 500);
+            loadDataBackground();
+        }
+        runIntro();
+    </script>
+</body>
+</html>
