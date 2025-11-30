@@ -1,97 +1,231 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FC Locator Premium</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fast Charger — Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f12;
+    --surface:#0f1417;
+    --card:#13171b;
+    --muted:#9aa3a9;
+    --accent:#33d6b8;   /* teal pastel */
+    --accent-dim: rgba(51,214,184,0.14);
+    --glass: rgba(255,255,255,0.02);
+    --radius:20px;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071014);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e8f6f1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  .wrap{max-width:920px;margin:0 auto;padding:18px 16px 28px;box-sizing:border-box}
+  /* Header */
+  header {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 2px 16px;}
+  .brand {display:flex;align-items:center;gap:12px}
+  .logo {width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#8ef3e0);display:flex;align-items:center;justify-content:center;color:#002;font-weight:800;box-shadow:0 8px 24px rgba(2,6,23,0.55)}
+  .title {line-height:1}
+  .title .main{font-size:1.25rem;font-weight:800;color:#ffffff}
+  .title .sub{font-size:0.82rem;color:var(--muted);margin-top:2px}
+  /* User location card */
+  .user {background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007)); border-radius:var(--radius); padding:12px; display:flex;gap:12px;align-items:center;border:1px solid rgba(255,255,255,0.02); box-shadow:0 10px 30px rgba(2,6,23,0.5)}
+  .user .meta {display:flex;flex-direction:column;gap:4px}
+  .u-label{font-size:0.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.9px}
+  .u-place{font-size:1rem;font-weight:700;color:#fff}
+  .u-acc{font-size:0.85rem;color:var(--muted)}
+  /* List */
+  .list {margin-top:14px;display:flex;flex-direction:column;gap:14px;overflow:auto;padding-bottom:30px}
+  .card {
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007));
+    border-radius:20px;
+    padding:14px;
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    border:1px solid rgba(255,255,255,0.02);
+    box-shadow: 0 8px 26px rgba(2,6,23,0.45);
+    transition: transform .14s ease, box-shadow .14s ease;
+  }
+  .card:active{transform:translateY(2px)}
+  .card-left {width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);color:var(--accent);font-weight:800;font-size:1.1rem;flex-shrink:0}
+  .card-body{flex:1;min-width:0}
+  .card-row {display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .name {font-size:1.02rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta {font-size:0.86rem;color:var(--muted);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
+  .meta .dot{height:6px;width:6px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}
+  .distance {color:var(--accent);font-weight:700;font-size:0.95rem;margin-left:6px;white-space:nowrap}
+  /* status chip */
+  .status-chip {display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.84rem;background:var(--glass);border:1px solid rgba(255,255,255,0.02)}
+  .status-dot {height:10px;width:10px;border-radius:50%}
+  .online {background:linear-gradient(90deg, rgba(51,214,184,0.12), rgba(51,214,184,0.06)); color:#0e3; }
+  .offline {background:linear-gradient(90deg, rgba(255,90,90,0.07), rgba(255,90,90,0.03)); color:#ff6b6b; }
+  /* CTA */
+  .cta {display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .btn {padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent);font-weight:800;text-decoration:none;font-size:0.92rem;display:inline-flex;align-items:center;gap:8px}
+  .btn:active{transform:scale(.995)}
+  .btn-ghost{background:transparent}
+  /* small text */
+  .small {font-size:0.82rem;color:var(--muted)}
+  /* responsiveness */
+  @media(min-width:720px){
+    .wrap{padding:28px}
+    .card {padding:18px}
+    .name{font-size:1.1rem}
+  }
+</style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">⚡</div>
+        <div class="title">
+          <div class="main">Fast Charger Locator</div>
+          <div class="sub">Menampilkan stasiun terdekat otomatis</div>
+        </div>
+      </div>
+      <div><button id="refresh" class="btn" style="font-size:0.82rem">Refresh</button></div>
+    </header>
 
-  <header class="p-4 bg-white shadow-md sticky top-0 z-50">
-    <h1 class="text-xl font-bold text-gray-800">Fast Charger Locator</h1>
-    <p class="text-sm text-gray-500">Menampilkan stasiun terdekat otomatis</p>
-  </header>
+    <div id="userCard" class="user" aria-live="polite">
+      <div class="card-left">📍</div>
+      <div class="meta">
+        <div class="u-label">Lokasi Anda</div>
+        <div class="u-place" id="userPlace">Mencari lokasi…</div>
+        <div class="u-acc small" id="userAcc">Akurasi: —</div>
+      </div>
+    </div>
 
-  <main class="p-4" id="content">
-    <p class="text-center text-gray-500">Mengambil lokasi kamu...</p>
-  </main>
+    <main class="list" id="list">
+      <!-- cards injected here -->
+    </main>
+  </div>
 
 <script>
-// Data Lokasi (Contoh)
-const chargers = [
-  { name: "FC Cibubur", lat: -6.3675, lng: 106.8868, open: "00:00", close: "23:59" },
-  { name: "FC Bekasi", lat: -6.241, lng: 107.000, open: "08:00", close: "22:00" },
-  { name: "FC Kelapa Gading", lat: -6.1596, lng: 106.9066, open: "07:00", close: "23:00" }
+/* ----------------------------
+  SAMPLE DATA (ganti dari CSV/Sheets)
+   structure: name, lat, lng, open, close, nozzle, power, notes, link
+   open/close in 24h HH:MM
+-----------------------------*/
+const sample = [
+  { name:"FC Kelapa Gading", lat:-6.159635, lng:106.906682, open:"07:00", close:"23:00", nozzle:3, power:"60 kW", notes:"Gratis", link:"https://www.google.com/maps?q=-6.159635,106.906682" },
+  { name:"FC Cibubur", lat:-6.3675, lng:106.8868, open:"00:00", close:"23:59", nozzle:2, power:"50 kW", notes:"Berbayar", link:"https://www.google.com/maps?q=-6.3675,106.8868" },
+  { name:"FC Bekasi", lat:-6.241, lng:107.000, open:"08:00", close:"22:00", nozzle:2, power:"50 kW", notes:"Berbayar", link:"https://www.google.com/maps?q=-6.241,107.000" }
 ];
 
-function isOpen(open, close) {
-  const now = new Date();
-  const current = now.getHours() * 60 + now.getMinutes();
-  const o = parseInt(open.split(":" )[0]) * 60 + parseInt(open.split(":" )[1]);
-  const c = parseInt(close.split(":" )[0]) * 60 + parseInt(close.split(":" )[1]);
-  return current >= o && current <= c;
+/* utils */
+function toMinutes(hhmm){ const [hh,mm] = hhmm.split(':').map(Number); return hh*60+mm; }
+function nowMinutes(){ const d=new Date(); return d.getHours()*60 + d.getMinutes(); }
+function isOpen(open, close){
+  const o = toMinutes(open), c = toMinutes(close), n = nowMinutes();
+  if(o<=c) return n>=o && n<=c;
+  // overnight e.g. open 20:00 close 04:00
+  return n>=o || n<=c;
+}
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371; const toRad=v=>v*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  const c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  return R*c;
 }
 
-function distance(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI/180;
-  const dLon = (lon2 - lon1) * Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+/* render single card */
+function renderCard(item){
+  const open = item.open||"00:00", close=item.close||"23:59";
+  const online = isOpen(open,close);
+  const statusClass = online ? 'online' : 'offline';
+  const statusDotColor = online ? '#2ecc71' : '#ff6b6b';
+  const distLabel = item.dist!==undefined ? (item.dist < 1 ? (item.dist*1000|0)+' m' : item.dist.toFixed(1)+' km') : '—';
+
+  return `
+    <article class="card" role="article">
+      <div class="card-left">⚡</div>
+      <div class="card-body">
+        <div class="card-row">
+          <div style="min-width:0;">
+            <div class="name">${escapeHtml(item.name)}</div>
+            <div class="small" style="margin-top:6px">${distLabel} dari lokasi kamu</div>
+          </div>
+          <div class="cta">
+            <div class="status-chip ${statusClass}">
+              <span class="status-dot" style="background:${statusDotColor}"></span>
+              ${online ? 'Online' : 'Offline'}
+            </div>
+          </div>
+        </div>
+        <div class="meta" aria-hidden="true">
+          <span>${escapeHtml(item.power || '—')}</span>
+          <span>•</span>
+          <span>${escapeHtml(String(item.nozzle||'-'))} nozzle</span>
+          <span>•</span>
+          <span>${escapeHtml(open)} — ${escapeHtml(close)}</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:12px">
+          <div class="small" style="color:var(--muted)">${escapeHtml(item.notes||'')}</div>
+          <a class="btn" href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="track('maps', '${escapeHtml(item.name)}')">
+            <svg style="height:18px;width:18px;display:inline-block" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+            <span>Buka di Maps</span>
+          </a>
+        </div>
+      </div>
+    </article>
+  `;
 }
 
-navigator.geolocation.getCurrentPosition(pos => {
-  const userLat = pos.coords.latitude;
-  const userLng = pos.coords.longitude;
+/* escape */
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
-  chargers.forEach(c => {
-    c.dist = distance(userLat, userLng, c.lat, c.lng);
-    c.openStatus = isOpen(c.open, c.close);
+/* main render list */
+function renderList(items){
+  const wrap = document.getElementById('list');
+  if(!items || items.length===0){
+    wrap.innerHTML = `<div class="small" style="padding:12px;color:var(--muted)">Tidak ada data charger.</div>`;
+    return;
+  }
+  wrap.innerHTML = items.map(i=>renderCard(i)).join('');
+}
+
+/* LOAD data (replace this with fetch CSV if needed) */
+async function loadData(){
+  // here we use sample; you can replace with fetch(URL) parsing CSV
+  // return sample;
+  return sample;
+}
+
+/* GEO */
+function init(){
+  loadData().then(data=>{
+    // get geolocation
+    if(!navigator.geolocation){
+      document.getElementById('userPlace').innerText = 'Perangkat tidak mendukung lokasi';
+      renderList(data);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      document.getElementById('userPlace').innerText = `Lat ${lat.toFixed(6)}, Lng ${lng.toFixed(6)}`;
+      document.getElementById('userAcc').innerText = `Akurasi: ${Math.round(pos.coords.accuracy)} m`;
+
+      // compute distance
+      data.forEach(d => d.dist = haversine(lat,lng,d.lat,d.lng));
+      data.sort((a,b)=>a.dist - b.dist);
+      renderList(data);
+    }, err=>{
+      document.getElementById('userPlace').innerText = 'Izin lokasi ditolak / gagal';
+      document.getElementById('userAcc').innerText = '';
+      renderList(data); // show list unsorted
+    }, {enableHighAccuracy:true, maximumAge:5000, timeout:10000});
   });
+}
 
-  chargers.sort((a, b) => a.dist - b.dist);
+/* small tracker (noop) */
+function track(evt, name){ /* analytics placeholder */ }
 
-  const content = chargers.map(c => `
-    <div class='card bg-white rounded-2xl p-4 shadow mb-4'>
-      <div class='flex justify-between items-start'>
-        <div>
-          <h2 class='text-lg font-semibold text-gray-900'>${c.name}</h2>
-          <p class='text-gray-500 text-sm'>${c.dist.toFixed(1)} km dari lokasi kamu</p>
-        </div>
-        <div>
-          ${c.openStatus
-            ? `<span class='px-3 py-1 bg-green-100 text-green-600 text-xs rounded-full flex items-center gap-1'>
-                 <span>🟢</span> Online
-               </span>`
-            : `<span class='px-3 py-1 bg-red-100 text-red-600 text-xs rounded-full flex items-center gap-1'>
-                 <span>🔴</span> Offline
-               </span>`}
-        </div>
-      </div>
+/* refresh */
+document.getElementById('refresh').addEventListener('click', ()=>{ init(); });
 
-      <div class='mt-4 flex justify-between text-sm text-gray-600'>
-        <span>Jam buka: ${c.open}</span>
-        <span>Tutup: ${c.close}</span>
-      </div>
-
-      <a href="https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}" target="_blank" class="mt-4 block text-center bg-blue-600 text-white py-2 rounded-xl font-medium">
-        Buka di Google Maps
-      </a>
-    </div>
-  `).join("");
-
-  document.getElementById("content").innerHTML = content;
-
-}, err => {
-  document.getElementById("content").innerHTML = `<p class='text-center text-red-500'>Gagal mengambil lokasi. Izinkan GPS.</p>`;
-});
+/* start */
+init();
 </script>
 </body>
 </html>
