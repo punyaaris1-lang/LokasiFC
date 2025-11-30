@@ -1,150 +1,522 @@
-<!-- PREMIUM HYBRID LUXURY UI (TESLA x iOS) -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FC Locator Premium</title>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Fast Charger — Full Premium 3D Globe</title>
 
+<!-- Three.js + OrbitControls (CDN) -->
+<script src="https://unpkg.com/three@0.154.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
+<!-- GSAP for smooth anims -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<!-- Simple reset + fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-    body {
-        background: radial-gradient(circle at 20% 20%, #111418, #050607 70%);
-        font-family: 'Inter', sans-serif;
-        color: #e5e5e5;
-    }
+  :root{
+    --bg-1:#04060a;
+    --bg-2:#021014;
+    --glass: rgba(255,255,255,0.03);
+    --accent:#00f0c2;
+    --accent-2:#00b39f;
+    --muted:#95a6aa;
+    --card-radius:20px;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#e8fbf6;-webkit-font-smoothing:antialiased}
+  #app{height:100vh;position:relative;overflow:hidden}
 
-    /* Floating glass panel (bukan card persegi biasa) */
-    .panel-float {
-        backdrop-filter: blur(18px) saturate(160%);
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 32px;
-        padding: 26px;
-        box-shadow: 0 20px 45px rgba(0,0,0,0.45);
-    }
+/* Canvas fills viewport */
+  canvas{display:block;width:100%;height:100%}
 
-    /* Chip status glow premium */
-    .chip-online {
-        background: rgba(0,255,150,0.15);
-        color: #46ffbd;
-        padding: 6px 14px;
-        border-radius: 50px;
-        backdrop-filter: blur(4px);
-        box-shadow: 0 0 14px rgba(0,255,150,0.25);
-        font-size: 12px;
-    }
+/* HUD top-left */
+  .hud{position:absolute;left:18px;top:18px;z-index:50;display:flex;flex-direction:column;gap:6px}
+  .app-title{font-weight:800;font-size:1.05rem;letter-spacing:-0.2px}
+  .app-sub{font-size:0.82rem;color:var(--muted)}
 
-    .chip-offline {
-        background: rgba(255,60,60,0.15);
-        color: #ff8f8f;
-        padding: 6px 14px;
-        border-radius: 50px;
-        backdrop-filter: blur(4px);
-        box-shadow: 0 0 14px rgba(255,60,60,0.25);
-        font-size: 12px;
-    }
+/* Floating panel (VisionOS-like) */
+  .panel {
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:22px;
+    width:92%;
+    max-width:520px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.018));
+    border-radius: var(--card-radius);
+    padding:14px;
+    border:1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(10px) saturate(150%);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    z-index:45;
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .panel .icon {
+    width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#001;font-weight:800;font-size:20px;box-shadow:0 10px 40px rgba(0,240,190,0.08)
+  }
+  .panel .body { flex:1; min-width:0 }
+  .panel .title { font-weight:800; font-size:1.05rem; color:#fff; line-height:1 }
+  .panel .meta { font-size:0.88rem; color:var(--muted); margin-top:6px; display:flex; gap:8px; flex-wrap:wrap }
+  .panel .chip { padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.85rem; border:1px solid rgba(255,255,255,0.03) }
+  .chip.online { background: linear-gradient(90deg, rgba(0,240,190,0.08), rgba(0,180,160,0.03)); color:var(--accent); box-shadow:0 8px 30px rgba(0,240,190,0.04) }
+  .chip.almost { background: linear-gradient(90deg, rgba(255,200,50,0.06), rgba(255,200,50,0.03)); color:#ffd98b; box-shadow:0 8px 30px rgba(255,200,50,0.03) }
+  .chip.off { background: linear-gradient(90deg, rgba(255,90,90,0.06), rgba(255,90,90,0.03)); color:#ff9b9b; box-shadow:0 8px 30px rgba(255,90,90,0.03) }
 
-    /* Floating station module — BUKAN PERSEGI PANJANG */
-    .station-module {
-        border-radius: 40px;
-        padding: 24px;
-        backdrop-filter: blur(22px) saturate(180%);
-        background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 25px 55px rgba(0,0,0,0.55);
-    }
+  .panel .actions { display:flex; gap:8px; align-items:center }
+  .btn { padding:10px 14px; border-radius:12px; font-weight:800; border:1px solid rgba(255,255,255,0.03); background:transparent; color:var(--accent); cursor:pointer; text-decoration:none; display:inline-flex; gap:8px; align-items:center }
+  .btn.primary { background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#001; box-shadow:0 12px 40px rgba(0,240,190,0.08) }
+  .btn:active { transform:translateY(1px) }
 
-    /* Button Premium Oval */
-    .btn-oval {
-        background: linear-gradient(135deg, #4dffd0, #00ffa5);
-        color: #000;
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: 600;
-        box-shadow: 0 0 25px rgba(0,255,170,0.45);
-    }
+/* small top-right mini info */
+  .mini { position:absolute; right:18px; top:18px; z-index:50; padding:10px 12px; border-radius:999px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); color:var(--muted); font-weight:700 }
+
+/* marker label (floating HTML) */
+  .marker-label { position: absolute; pointer-events:none; transform:translate(-50%, -160%); padding:6px 8px; border-radius:8px; background:rgba(0,0,0,0.6); color:#fff; border:1px solid rgba(255,255,255,0.04); font-weight:700; font-size:13px; z-index:60; display:none }
+
+/* small responsive tweaks */
+  @media(min-width:900px){ .panel{bottom:38px; left:auto; right:36px; transform:none; width:340px} .panel .body{min-width:0} }
 </style>
 </head>
-<body class="p-5 pb-32">
+<body>
+<div id="app">
+  <div id="globeContainer"></div>
 
-<!-- HEADER PREMIUM -->
-<div class="mb-8 mt-3">
-    <h1 class="text-4xl font-bold tracking-tight text-white">⚡ Fast Charger</h1>
-    <p class="text-gray-400 text-sm mt-1">Nearest High-Speed Charging</p>
+  <div class="hud">
+    <div class="app-title">⚡ Fast Charger — Premium Globe</div>
+    <div class="app-sub">Drag to rotate • pinch to zoom • tap markers</div>
+  </div>
+
+  <div class="mini" id="mini">Nearest: —</div>
+
+  <!-- Floating info panel (VisionOS-like) -->
+  <div class="panel" id="infoPanel" aria-live="polite" style="display:none">
+    <div class="icon" id="panelIcon">⚡</div>
+    <div class="body">
+      <div class="title" id="panelTitle">Station name</div>
+      <div class="meta" id="panelMeta">—</div>
+    </div>
+    <div class="actions">
+      <a id="panelNav" class="btn" target="_blank" rel="noopener">Navigate ↗</a>
+      <button id="panelFav" class="btn">★ Fav</button>
+    </div>
+  </div>
+
+  <div class="marker-label" id="markerLabel"></div>
 </div>
-
-<!-- FLOATING LOCATION PANEL (Bukan persegi) -->
-<div class="panel-float mb-10">
-    <p class="text-gray-400 text-xs mb-2">LOKASI ANDA</p>
-    <p id="locText" class="text-xl font-semibold">Mengambil lokasi...</p>
-    <p id="locAcc" class="text-gray-400 text-sm">Akurasi: -</p>
-</div>
-
-<!-- LIST STATION (Floating modules) -->
-<div id="stationList" class="space-y-6"></div>
 
 <script>
+/* ====== Configuration ======
+   - CSV_URL: public Google Sheets export CSV (if available)
+   - sample fallback is used when fetch fails
+   - tweak visuals (marker size / glow) below
+*/
+const CSV_URL = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv";
+// change marker size / glow if you want
+const MARKER_SIZE = 0.045;
+const MARKER_HALO = 0.5;
 
-const stations = [
-    { name: "FC Kelapa Gading", lat: -6.15963, lng: 106.90668, power: "60 kW", nozzle: 3, price: "Gratis", open: "07:00", close: "23:00" },
-    { name: "FC Cibubur", lat: -6.402484, lng: 106.936786, power: "50 kW", nozzle: 2, price: "Berbayar", open: "00:00", close: "23:59" },
-    { name: "FC Bekasi", lat: -6.241586, lng: 107.000732, power: "50 kW", nozzle: 2, price: "Berbayar", open: "08:00", close: "22:00" }
+/* ====== Sample fallback data ====== */
+const SAMPLE_STATIONS = [
+  { name:"MAKA Kelapa Gading", lat:-6.159635, lng:106.906682, open:"07:00", close:"23:00", power:"60 kW", nozzle:3, notes:"Gratis", link:"https://www.google.com/maps?q=-6.159635,106.906682" },
+  { name:"FC Cibubur", lat:-6.402484, lng:106.936786, open:"00:00", close:"23:59", power:"50 kW", nozzle:2, notes:"Berbayar", link:"https://www.google.com/maps?q=-6.402484,106.936786" },
+  { name:"FC Bekasi", lat:-6.241586, lng:107.000732, open:"08:00", close:"22:00", power:"50 kW", nozzle:2, notes:"Berbayar", link:"https://www.google.com/maps?q=-6.241586,107.000732" }
 ];
 
+/* ====== Utilities ====== */
+function toMinutes(hhmm){ const [h,m]=hhmm.split(':').map(x=>parseInt(x,10)||0); return h*60+m; }
+function nowMinutes(){ const d=new Date(); return d.getHours()*60 + d.getMinutes(); }
 function isOpen(open, close){
-    const now = new Date();
-    const cur = now.getHours()*60 + now.getMinutes();
-    const o = parseInt(open.split(":" )[0]) * 60 + parseInt(open.split(":" )[1]);
-    const c = parseInt(close.split(":" )[0]) * 60 + parseInt(close.split(":" )[1]);
-    if(o <= c) return cur >= o && cur <= c;
-    return cur >= o || cur <= c;
+  const o = toMinutes(open), c = toMinutes(close), n = nowMinutes();
+  if(o <= c) return n >= o && n <= c;
+  return n >= o || n <= c;
+}
+function haversine(lat1, lon1, lat2, lon2){
+  const R=6371; const toRad=v=>v*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  const c=2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R*c;
 }
 
-navigator.geolocation.getCurrentPosition(pos=>{
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    document.getElementById("locText").innerText = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-    document.getElementById("locAcc").innerText = `Akurasi: ${pos.coords.accuracy.toFixed(0)} m`;
-
-    renderStations(lat, lng);
-});
-
-function renderStations(ulat, ulng){
-    const box = document.getElementById("stationList");
-    box.innerHTML = "";
-
-    stations.forEach(st=>{
-        const dist = calcDistance(ulat, ulng, st.lat, st.lng);
-        const open = isOpen(st.open, st.close);
-
-        box.innerHTML += `
-        <div class='station-module'>
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="text-2xl font-semibold text-white">${st.name}</h2>
-                <span class="${open?'chip-online':'chip-offline'}">${open?'● ONLINE':'● OFFLINE'}</span>
-            </div>
-
-            <p class="text-gray-300 mb-1 text-sm">${dist.toFixed(1)} km dari lokasi anda</p>
-            <p class="text-gray-400 text-sm mb-1">${st.power} • ${st.nozzle} nozzle</p>
-            <p class="text-gray-500 text-sm">${st.open} — ${st.close}</p>
-
-            <div class="flex justify-end mt-4">
-                <a href="https://maps.google.com/?q=${st.lat},${st.lng}" class="btn-oval">Navigate</a>
-            </div>
-        </div>`;
-    });
+/* ====== CSV parsing (very simple) ====== */
+async function fetchStations(){
+  try{
+    const resp = await fetch(CSV_URL);
+    if(!resp.ok) throw new Error('CSV fetch failed');
+    const txt = await resp.text();
+    // naive CSV parse: split lines, take first row as header
+    const rows = txt.trim().split(/\r?\n/).map(r=>r.split(','));
+    const header = rows.shift().map(h=>h.trim().toLowerCase());
+    const data = rows.map(cols => {
+      const obj = {};
+      header.forEach((k,i)=> obj[k] = (cols[i]||'').trim());
+      // normalize fields that we expect
+      return {
+        name: obj.name || obj.nama || obj['station'] || obj.location || 'Station',
+        lat: parseFloat(obj.lat || obj.latitude || obj.latit) || 0,
+        lng: parseFloat(obj.lng || obj.lon || obj.longitude) || 0,
+        open: obj.open || obj['jam buka'] || '00:00',
+        close: obj.close || obj['jam tutup'] || '23:59',
+        power: obj.power || obj.kw || obj.kw || '-',
+        nozzle: obj.nozzle || obj.nozzles || '-',
+        notes: obj.notes || obj.note || '',
+        link: obj.link || obj.url || ''
+      };
+    }).filter(s => s.lat && s.lng);
+    if(data.length) return data;
+    throw new Error('no data');
+  }catch(e){
+    console.warn('CSV fetch failed, using fallback sample', e);
+    return SAMPLE_STATIONS;
+  }
 }
 
-function calcDistance(a,b,c,d){
-    const R=6371;
-    const dLat=(c-a)*Math.PI/180;
-    const dLon=(d-b)*Math.PI/180;
-    const A=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;
-    return R*2*Math.atan2(Math.sqrt(A),Math.sqrt(1-A));
+/* ====== THREE.JS Globe Setup ====== */
+let scene, camera, renderer, controls, globeMesh, markerGroup, userMarker;
+let raycaster, mouse = new THREE.Vector2();
+let markers = []; // {core, sprite, data}
+const container = document.getElementById('globeContainer');
+
+function initThree(){
+  scene = new THREE.Scene();
+  // lights
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  const dir = new THREE.DirectionalLight(0x00ffd1, 0.9);
+  dir.position.set(5,3,5);
+  scene.add(dir);
+
+  camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 2000);
+  camera.position.set(0, 0, 6.6);
+
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  // Earth geometry (textured if possible)
+  const R = 2.6;
+  const sphere = new THREE.SphereGeometry(R, 72, 72);
+
+  // Try texture; if blocked, fallback to dark material
+  const loader = new THREE.TextureLoader();
+  const earthMat = new THREE.MeshStandardMaterial({
+    roughness: 0.8,
+    metalness: 0.05,
+    color: 0x071116
+  });
+
+  // attempt to load an earth texture (CDN). If fails, keep plain material.
+  loader.load(
+    'https://raw.githubusercontent.com/creotiv/threejs-globe-demo/master/images/earth-night.jpg',
+    tex => { earthMat.map = tex; earthMat.needsUpdate = true; },
+    undefined,
+    () => { /* texture fail: keep dark material */ }
+  );
+
+  globeMesh = new THREE.Mesh(sphere, earthMat);
+  scene.add(globeMesh);
+
+  // subtle wire overlay for tech feel
+  const wire = new THREE.LineSegments(new THREE.WireframeGeometry(sphere), new THREE.LineBasicMaterial({ color:0x003338, transparent:true, opacity:0.08 }));
+  scene.add(wire);
+
+  // marker group
+  markerGroup = new THREE.Group();
+  scene.add(markerGroup);
+
+  // minor lat/lon lines
+  makeGridLines(R);
+
+  // controls
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enablePan = false;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.rotateSpeed = 0.6;
+  controls.zoomSpeed = 0.9;
+  controls.minDistance = 3.6;
+  controls.maxDistance = 12;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.16;
+
+  // raycaster for clicks
+  raycaster = new THREE.Raycaster();
+
+  // interactions
+  renderer.domElement.addEventListener('pointerdown', onPointerDown, {passive:true});
+  renderer.domElement.addEventListener('pointermove', onPointerMove, {passive:true});
+
+  window.addEventListener('resize', onResize);
 }
+
+/* grid lines (latitude & longitude) */
+function makeGridLines(R){
+  const mat = new THREE.LineBasicMaterial({ color:0x00333a, transparent:true, opacity:0.06 });
+  const group = new THREE.Group();
+  for(let lon=0; lon<360; lon+=20){
+    const g = new THREE.CircleGeometry(R, 128);
+    g.rotateZ(THREE.MathUtils.degToRad(lon));
+    group.add(new THREE.Line(g, mat));
+  }
+  for(let lat=-60; lat<=60; lat+=15){
+    const rad = R * Math.cos(THREE.MathUtils.degToRad(lat));
+    const g = new THREE.CircleGeometry(rad, 128);
+    g.rotateX(THREE.MathUtils.degToRad(90 - lat));
+    group.add(new THREE.Line(g, mat));
+  }
+  scene.add(group);
+}
+
+/* convert lat/lng to 3D vector */
+function latLngToVec(lat, lon, radius){
+  const phi = (90 - lat) * Math.PI/180;
+  const theta = (lon + 180) * Math.PI/180;
+  const x = -radius * Math.sin(phi) * Math.cos(theta);
+  const z = radius * Math.sin(phi) * Math.sin(theta);
+  const y = radius * Math.cos(phi);
+  return new THREE.Vector3(x,y,z);
+}
+
+/* create a gradient sprite for halo */
+function makeGradientSprite(hexA, hexB){
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const g = ctx.createRadialGradient(size/2, size/2, 6, size/2, size/2, size/1.3);
+  g.addColorStop(0, hexToRgba(hexA,1));
+  g.addColorStop(0.5, hexToRgba(hexA,0.45));
+  g.addColorStop(1, hexToRgba(hexB,0));
+  ctx.fillStyle = g; ctx.fillRect(0,0,size,size);
+  return new THREE.CanvasTexture(canvas);
+}
+function hexToRgba(hex, a){
+  const c = hex.toString(16).padStart(6,'0');
+  const r = parseInt(c.substring(0,2),16);
+  const g = parseInt(c.substring(2,4),16);
+  const b = parseInt(c.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* add station markers: core sphere + halo sprite */
+function addMarkers(data){
+  const R = 2.6;
+  const coreGeo = new THREE.SphereGeometry(MARKER_SIZE, 12, 12);
+  data.forEach((s,i)=>{
+    const v = latLngToVec(s.lat, s.lng, R + 0.03);
+    // core
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0c2 });
+    const core = new THREE.Mesh(coreGeo, coreMat);
+    core.position.copy(v);
+    core.userData = { station: s, index: i };
+
+    // halo sprite
+    const spriteMat = new THREE.SpriteMaterial({ map: makeGradientSprite(0x00f0c2, 0x004f40), blending: THREE.AdditiveBlending, transparent:true, opacity:0.95});
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.scale.set(MARKER_HALO, MARKER_HALO, 1);
+    sprite.position.copy(v.clone().multiplyScalar(1.01));
+
+    markerGroup.add(core); markerGroup.add(sprite);
+    markers.push({ core, sprite, data: s });
+  });
+  // subtle breathing animation
+  gsap.to(markers.map(m=>m.sprite.scale), { duration:1.6, x:MARKER_HALO*1.12, y:MARKER_HALO*1.12, repeat:-1, yoyo:true, ease:'sine.inOut', stagger:0.08 });
+}
+
+/* on pointer move - show label if hovering */
+const label = document.getElementById('markerLabel');
+function onPointerMove(evt){
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = ( (evt.clientX - rect.left) / rect.width ) * 2 - 1;
+  const y = - ( (evt.clientY - rect.top) / rect.height ) * 2 + 1;
+  mouse.set(x,y);
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(markerGroup.children, true);
+  if(intersects.length){
+    let mesh = intersects[0].object;
+    while(mesh && !mesh.userData.station) mesh = mesh.parent;
+    if(mesh && mesh.userData && mesh.userData.station){
+      const s = mesh.userData.station;
+      label.style.display = 'block';
+      label.style.left = (evt.clientX) + 'px';
+      label.style.top = (evt.clientY - 12) + 'px';
+      label.innerText = s.name;
+      return;
+    }
+  }
+  label.style.display = 'none';
+}
+
+/* on pointer down - select marker */
+function onPointerDown(evt){
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = ( (evt.touches ? evt.touches[0].clientX : evt.clientX) - rect.left ) / rect.width * 2 - 1;
+  const y = - ( (evt.touches ? evt.touches[0].clientY : evt.clientY) - rect.top ) / rect.height * 2 + 1;
+  mouse.set(x,y);
+  raycaster.setFromCamera(mouse, camera);
+  const intersect = raycaster.intersectObjects(markerGroup.children, true);
+  if(intersect.length){
+    let mesh = intersect[0].object;
+    while(mesh && !mesh.userData.station) mesh = mesh.parent;
+    if(mesh && mesh.userData && mesh.userData.station){
+      const st = mesh.userData.station;
+      // compute distance to user if known
+      if(window.__USER_POS){
+        const d = haversine(window.__USER_POS.lat, window.__USER_POS.lng, st.lat, st.lng);
+        showPanel(st, d);
+        focusOnMarker(mesh.position);
+      } else {
+        showPanel(st);
+        focusOnMarker(mesh.position);
+      }
+    }
+  }
+}
+
+/* focus camera to marker area */
+function focusOnMarker(vec3){
+  const target = vec3.clone().multiplyScalar(0.95);
+  const endPos = vec3.clone().normalize().multiplyScalar(6.8);
+  gsap.to(camera.position, { x:endPos.x, y:endPos.y, z:endPos.z, duration:1.1, ease:'power2.inOut' });
+  gsap.to(controls.target, { x:target.x, y:target.y, z:target.z, duration:1.1, ease:'power2.inOut' });
+}
+
+/* show station info in floating panel */
+function showPanel(station, dist_km){
+  const panel = document.getElementById('infoPanel');
+  const title = document.getElementById('panelTitle');
+  const meta = document.getElementById('panelMeta');
+  const nav = document.getElementById('panelNav');
+  const icon = document.getElementById('panelIcon');
+
+  title.innerText = station.name;
+  let statusText = isOpen(station.open, station.close) ? 'Online' : 'Offline';
+  const dlabel = (dist_km !== undefined) ? (dist_km < 1 ? `${Math.round(dist_km*1000)} m` : `${dist_km.toFixed(1)} km`) : '—';
+  meta.innerHTML = `${dlabel} • ${station.power || '-'} • ${station.nozzle || '-'} nozzle <span style="color:var(--muted)">• ${station.open}–${station.close}</span>`;
+  nav.href = station.link || `https://www.google.com/maps?q=${station.lat},${station.lng}`;
+  document.getElementById('panelStatus')?.remove(); // clear old if any
+
+  // create status chip dynamically
+  const chip = document.createElement('div');
+  chip.className = 'chip ' + (isOpen(station.open, station.close) ? 'online' : 'off');
+  chip.style.marginLeft = '6px';
+  chip.innerText = isOpen(station.open, station.close) ? 'Online' : 'Offline';
+  // attach chip into panel meta (first)
+  meta.parentNode.insertBefore(chip, meta.nextSibling);
+
+  // set icon letter to first char (stylized)
+  icon.innerText = station.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  panel.style.display = 'flex';
+  // mini top-right
+  document.getElementById('mini').innerText = `Nearest: ${station.name} • ${dlabel}`;
+
+  // subtle pop animation
+  gsap.fromTo(panel, { y:20, opacity:0 }, { y:0, opacity:1, duration:0.5, ease:'power3.out' });
+}
+
+/* highlight nearest and auto-focus */
+function highlightNearest(userLat, userLng){
+  if(!markers.length) return;
+  let best = null; let bestDist = 1e9;
+  markers.forEach(m=>{
+    const s = m.data;
+    const d = haversine(userLat, userLng, s.lat, s.lng);
+    if(d < bestDist){ bestDist = d; best = m; }
+  });
+  if(best){
+    // enlarge its sprite & bring attention
+    markers.forEach(m=>{ gsap.to(m.sprite.scale, { x:MARKER_HALO, y:MARKER_HALO, duration:0.36 }); });
+    gsap.to(best.sprite.scale, { x:MARKER_HALO*1.8, y:MARKER_HALO*1.8, duration:0.6, ease:'power1.out', yoyo:true, repeat:1 });
+    // focus a little to it
+    focusOnMarker(best.core.position);
+    showPanel(best.data, bestDist);
+  }
+}
+
+/* add user marker to globe */
+function addUserMarker(lat, lng){
+  const R = 2.6;
+  const v = latLngToVec(lat, lng, R + 0.05);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), mat);
+  sphere.position.copy(v);
+  scene.add(sphere);
+  // pulse sprite
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeGradientSprite(0xffffff, 0xffffff), blending: THREE.AdditiveBlending, transparent:true, opacity:0.9 }));
+  sprite.scale.set(0.9,0.9,1);
+  sprite.position.copy(v.clone().multiplyScalar(1.02));
+  scene.add(sprite);
+  // animate the sprite pulse
+  gsap.to(sprite.scale, { x:1.8, y:1.8, duration:1.2, repeat:-1, yoyo:true, ease:'sine.inOut' });
+}
+
+/* helper makeGradientSprite wrapper for user marker */
+function makeGradientSprite(hexA, hexB){
+  const size=128; const c=document.createElement('canvas'); c.width=size;c.height=size;
+  const ctx=c.getContext('2d'); const g=ctx.createRadialGradient(size/2,size/2,6,size/2,size/2,size/1.3);
+  g.addColorStop(0, hexToRgba(hexA,1)); g.addColorStop(0.5, hexToRgba(hexA,0.45)); g.addColorStop(1, hexToRgba(hexB,0));
+  ctx.fillStyle=g; ctx.fillRect(0,0,size,size); return new THREE.CanvasTexture(c);
+}
+
+/* ======== init + render loop ======== */
+function onResize(){
+  camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+function animate(){
+  requestAnimationFrame(animate);
+  if(controls) controls.update();
+  renderer.render(scene, camera);
+}
+function startEngine(stations){
+  initThree();
+  addMarkers(stations);
+  animate();
+  // after engine is ready, try to fetch geolocation
+  setTimeout(()=>requestUserLocation(stations), 600);
+}
+
+/* ====== Geolocation handling ====== */
+async function requestUserLocation(stations){
+  try{
+    if(!navigator.geolocation) throw new Error('No geolocation');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      window.__USER_POS = { lat, lng };
+      // add user marker & focus
+      addUserMarker(lat, lng);
+      highlightNearest(lat, lng);
+    }, err=>{
+      // fallback: focus on first marker
+      if(markers.length) focusOnMarker(markers[0].core.position);
+    }, { enableHighAccuracy:true, maximumAge:5000, timeout:12000 });
+  }catch(e){
+    console.warn('geo fail', e);
+    if(markers.length) focusOnMarker(markers[0].core.position);
+  }
+}
+
+/* ====== Pointer label events (mobile + desktop) handled earlier) ====== */
+
+/* ====== Boot sequence: fetch stations then start engine ====== */
+(async function boot(){
+  const stations = await fetchStations();
+  // validate and filter
+  const good = stations.filter(s => s && s.lat && s.lng);
+  if(!good.length) good.push(...SAMPLE_STATIONS);
+  startEngine(good);
+})();
+
+/* ====== Animation & event helpers ready above ====== */
+
+/* Utility small functions (hexToRgba again for safety) */
+function hexToRgba(hex, a){ const c = hex.toString(16).padStart(6,'0'); const r=parseInt(c.substring(0,2),16); const g=parseInt(c.substring(2,4),16); const b=parseInt(c.substring(4,6),16); return `rgba(${r},${g},${b},${a})`; }
+
+/* Expose a debug hook to remove all markers */
+window._removeMarkers = ()=>{ markers.forEach(m=>{ markerGroup.remove(m.core); markerGroup.remove(m.sprite); }); markers=[]; };
+
 </script>
-
 </body>
 </html>
