@@ -1,189 +1,97 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fast Charger</title>
-
-<style>
-    body {
-        margin: 0;
-        padding: 18px;
-        font-family: 'Inter', sans-serif;
-        background: #111418;
-        color: white;
-    }
-
-    h2 {
-        margin-top: 12px;
-        margin-bottom: 16px;
-        font-size: 1.4rem;
-        font-weight: 600;
-    }
-
-    /* User location box */
-    .loc-box {
-        background: #1b1f27;
-        padding: 14px;
-        border-radius: 18px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-        border: 1px solid rgba(255,255,255,0.04);
-        margin-bottom: 20px;
-    }
-
-    /* Charger card */
-    .card {
-        background: #1a1d21;
-        padding: 16px;
-        border-radius: 18px;
-        margin-bottom: 18px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .card-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #ffffff;
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .distance {
-        color: #37f0d8;
-        font-weight: 600;
-        font-size: 1rem;
-    }
-
-    .card-info {
-        margin-top: 6px;
-        color: #c7c7c7;
-        font-size: 0.9rem;
-        line-height: 1.35rem;
-    }
-
-    .status {
-        margin-top: 10px;
-        color: #37f0d8;
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
-    .map-btn {
-        margin-top: 16px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.07);
-        background: rgba(255,255,255,0.04);
-        color: #37f0d8;
-        font-weight: 600;
-        width: fit-content;
-    }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FC Locator Premium</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+  </style>
 </head>
+<body class="bg-gray-100 min-h-screen">
 
-<body>
+  <header class="p-4 bg-white shadow-md sticky top-0 z-50">
+    <h1 class="text-xl font-bold text-gray-800">Fast Charger Locator</h1>
+    <p class="text-sm text-gray-500">Menampilkan stasiun terdekat otomatis</p>
+  </header>
 
-<h2>⚡ Charger Terdekat</h2>
-
-<!-- Lokasi user -->
-<div id="userLocation" class="loc-box">
-    Mendapatkan lokasi...
-</div>
-
-<!-- List charger -->
-<div id="chargerList"></div>
+  <main class="p-4" id="content">
+    <p class="text-center text-gray-500">Mengambil lokasi kamu...</p>
+  </main>
 
 <script>
-// ===============================
-// DATA LOKASI CHARGER
-// ===============================
+// Data Lokasi (Contoh)
 const chargers = [
-  { name: "MAKA Kelapa Gading", lat: -6.159635, lng: 106.906682, power: "60 kW", nozzle: 3, hours: "24 Jam", status: "Available", link: "https://maps.app.goo.gl/xxxx" },
-  { name: "Purnama Cibubur", lat: -6.368123, lng: 106.884412, power: "50 kW", nozzle: 2, hours: "24 Jam", status: "Available", link: "https://maps.app.goo.gl/xxxx" },
-  { name: "Senayan Park", lat: -6.22522, lng: 106.80121, power: "150 kW", nozzle: 2, hours: "Tidak 24 Jam", status: "Unavailable", link: "https://maps.app.goo.gl/xxxx" }
+  { name: "FC Cibubur", lat: -6.3675, lng: 106.8868, open: "00:00", close: "23:59" },
+  { name: "FC Bekasi", lat: -6.241, lng: 107.000, open: "08:00", close: "22:00" },
+  { name: "FC Kelapa Gading", lat: -6.1596, lng: 106.9066, open: "07:00", close: "23:00" }
 ];
 
-// ===============================
-// HITUNG JARAK
-// ===============================
+function isOpen(open, close) {
+  const now = new Date();
+  const current = now.getHours() * 60 + now.getMinutes();
+  const o = parseInt(open.split(":" )[0]) * 60 + parseInt(open.split(":" )[1]);
+  const c = parseInt(close.split(":" )[0]) * 60 + parseInt(close.split(":" )[1]);
+  return current >= o && current <= c;
+}
+
 function distance(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI/180;
-    const dLon = (lon2 - lon1) * Math.PI/180;
-    const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI/180;
+  const dLon = (lon2 - lon1) * Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
 }
 
-// ===============================
-// AMBIL LOKASI USER
-// ===============================
-navigator.geolocation.getCurrentPosition(success, error);
+navigator.geolocation.getCurrentPosition(pos => {
+  const userLat = pos.coords.latitude;
+  const userLng = pos.coords.longitude;
 
-function success(pos) {
-    const userLat = pos.coords.latitude;
-    const userLng = pos.coords.longitude;
+  chargers.forEach(c => {
+    c.dist = distance(userLat, userLng, c.lat, c.lng);
+    c.openStatus = isOpen(c.open, c.close);
+  });
 
-    document.getElementById("userLocation").innerHTML = `
-        📍 Lokasi Anda<br>
-        Lat: ${userLat.toFixed(6)}<br>
-        Lng: ${userLng.toFixed(6)}<br>
-        Akurasi: ${pos.coords.accuracy} m
-    `;
+  chargers.sort((a, b) => a.dist - b.dist);
 
-    // Hitung jarak charger
-    chargers.forEach(ch => {
-        ch.distance = distance(userLat, userLng, ch.lat, ch.lng);
-    });
+  const content = chargers.map(c => `
+    <div class='card bg-white rounded-2xl p-4 shadow mb-4'>
+      <div class='flex justify-between items-start'>
+        <div>
+          <h2 class='text-lg font-semibold text-gray-900'>${c.name}</h2>
+          <p class='text-gray-500 text-sm'>${c.dist.toFixed(1)} km dari lokasi kamu</p>
+        </div>
+        <div>
+          ${c.openStatus
+            ? `<span class='px-3 py-1 bg-green-100 text-green-600 text-xs rounded-full flex items-center gap-1'>
+                 <span>🟢</span> Online
+               </span>`
+            : `<span class='px-3 py-1 bg-red-100 text-red-600 text-xs rounded-full flex items-center gap-1'>
+                 <span>🔴</span> Offline
+               </span>`}
+        </div>
+      </div>
 
-    // Urutkan
-    chargers.sort((a,b) => a.distance - b.distance);
+      <div class='mt-4 flex justify-between text-sm text-gray-600'>
+        <span>Jam buka: ${c.open}</span>
+        <span>Tutup: ${c.close}</span>
+      </div>
 
-    // Tampilkan
-    renderChargers();
-}
+      <a href="https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}" target="_blank" class="mt-4 block text-center bg-blue-600 text-white py-2 rounded-xl font-medium">
+        Buka di Google Maps
+      </a>
+    </div>
+  `).join("");
 
-function error() {
-    document.getElementById("userLocation").innerHTML =
-        "❌ Izin lokasi ditolak";
-}
+  document.getElementById("content").innerHTML = content;
 
-// ===============================
-// RENDER CARD PREMIUM
-// ===============================
-function renderChargers() {
-    const box = document.getElementById("chargerList");
-    box.innerHTML = "";
-
-    chargers.forEach(ch => {
-        box.innerHTML += `
-            <div class="card">
-                <div class="card-title">
-                    ⚡ ${ch.name}
-                    <span class="distance">• ${ch.distance.toFixed(1)} km</span>
-                </div>
-
-                <div class="card-info">
-                    ${ch.power} • ${ch.nozzle} nozzle • ${ch.hours}
-                </div>
-
-                <div class="status">
-                    Status: ${ch.status}
-                </div>
-
-                <a href="${ch.link}" target="_blank">
-                    <div class="map-btn">Buka Maps →</div>
-                </a>
-            </div>
-        `;
-    });
-}
+}, err => {
+  document.getElementById("content").innerHTML = `<p class='text-center text-red-500'>Gagal mengambil lokasi. Izinkan GPS.</p>`;
+});
 </script>
-
 </body>
 </html>
