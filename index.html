@@ -11,119 +11,95 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #000;
-      font-family: Arial, sans-serif;
+      background: black;
     }
-
     #nearest {
       position: absolute;
       top: 20px;
       right: 20px;
-      padding: 12px 18px;
-      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.1);
       backdrop-filter: blur(10px);
-      color: #fff;
-      border-radius: 14px;
+      color: white;
+      border-radius: 12px;
       z-index: 10;
       font-size: 14px;
-    }
-
-    canvas {
-      display: block;
     }
   </style>
 </head>
 <body>
 
-<div id="nearest">Nearest: Loading...</div>
+<div id="nearest">Loading...</div>
 
-<!-- THREE.js Core -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.0/three.min.js"></script>
+<!-- LOAD THREE.JS FIRST -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
 
-<!-- OFFICIAL OrbitControls (Pasti cocok dengan versi di atas) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.0/examples/js/controls/OrbitControls.js"></script>
+<!-- LOAD ORBITCONTROLS AFTER THREE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-/* ============================
-   SCENE SETUP
-============================ */
+console.log("Three.js loaded?", typeof THREE);
+
+// Scene
 const scene = new THREE.Scene();
+
+// Camera
 const camera = new THREE.PerspectiveCamera(
   60,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(0, 0, 2.2);
+camera.position.z = 2.2;
 
+// Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-/* ============================
-   LIGHT
-============================ */
-const ambient = new THREE.AmbientLight(0xffffff, 1.2);
-scene.add(ambient);
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+const d = new THREE.DirectionalLight(0xffffff, 1);
+d.position.set(5, 2, 5);
+scene.add(d);
 
-const directional = new THREE.DirectionalLight(0xffffff, 1);
-directional.position.set(5, 2, 5);
-scene.add(directional);
-
-/* ============================
-   GLOBE TEXTURE (MEDIUM)
-============================ */
-const loader = new THREE.TextureLoader();
-
-loader.load(
-  "https://raw.githubusercontent.com/chrisrzhou/threejs-globe/master/examples/globe/earth-blue-marble.jpg",
-  texture => {
-    const geo = new THREE.SphereGeometry(1, 64, 64);
-    const mat = new THREE.MeshPhongMaterial({
-      map: texture
-    });
-
-    const globe = new THREE.Mesh(geo, mat);
+// Texture
+new THREE.TextureLoader().load(
+  "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+  tex => {
+    const globe = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 64, 64),
+      new THREE.MeshPhongMaterial({ map: tex })
+    );
     scene.add(globe);
-
     animate();
   },
   undefined,
-  error => {
-    console.log("Texture failed:", error);
-    document.getElementById("nearest").innerText = "Texture failed to load";
+  err => {
+    document.getElementById("nearest").innerText = "Texture failed!";
   }
 );
 
-/* ============================
-   CONTROLS (SAFE)
-============================ */
+// Controls
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableZoom = false;
 controls.enablePan = false;
 
-/* ============================
-   ANIMATION LOOP
-============================ */
+// Animate
 function animate() {
   requestAnimationFrame(animate);
-  scene.rotation.y += 0.0009;
+  scene.rotation.y += 0.001;
   renderer.render(scene, camera);
 }
 
-/* ============================
-   RESPONSIVE
-============================ */
+// Resize
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-/* ============================
-   DUMMY NEAREST
-============================ */
+// Dummy nearest
 setTimeout(() => {
   document.getElementById("nearest").innerText =
     "Nearest: Kelapa Gading (2.3 km)";
