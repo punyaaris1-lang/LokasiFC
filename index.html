@@ -1,533 +1,189 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Fast Charging — Lokasi Terdekat</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast Charger</title>
+
 <style>
-  :root{
-    --bg: #0f1619;
-    --surface: #11161a;
-    --card: #13181c;
-    --muted: #9aa3aa;
-    --accent: #2dd4bf;     /* teal accent */
-    --accent-2: #94fff0;
-    --glass: rgba(255,255,255,0.03);
-    --soft-shadow: 0 10px 30px rgba(2,6,23,0.6);
-    --radius-xl: 18px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-    background:linear-gradient(180deg,var(--bg),#081014);
-    color:#eaf6f2;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    -webkit-tap-highlight-color:transparent;
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
-  }
+    body {
+        margin: 0;
+        padding: 18px;
+        font-family: 'Inter', sans-serif;
+        background: #111418;
+        color: white;
+    }
 
-  /* Container */
-  .app {
-    width:100%;
-    max-width:920px;
-    margin:0 auto;
-    padding:14px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
+    h2 {
+        margin-top: 12px;
+        margin-bottom: 16px;
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
 
-  /* Header */
-  header.header {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .brand {
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
-  .logo {
-    width:44px;
-    height:44px;
-    border-radius:10px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#002;
-    font-weight:800;
-    box-shadow:0 8px 30px rgba(45,212,191,0.09);
-    flex-shrink:0;
-  }
-  .title {
-    display:flex;
-    flex-direction:column;
-  }
-  .title .main { font-size:1.05rem; font-weight:800; letter-spacing:-0.2px; line-height:1; color:#ffffff; }
-  .title .sub { font-size:0.78rem; color:var(--muted); margin-top:3px; font-weight:600; }
+    /* User location box */
+    .loc-box {
+        background: #1b1f27;
+        padding: 14px;
+        border-radius: 18px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.04);
+        margin-bottom: 20px;
+    }
 
-  .actions { display:flex; gap:8px; align-items:center; }
-  .icon-btn {
-    height:40px;
-    min-width:40px;
-    border-radius:10px;
-    background:var(--glass);
-    border:1px solid rgba(255,255,255,0.03);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--muted);
-    font-weight:700;
-    cursor:pointer;
-  }
-  .icon-btn:active{transform:scale(.98)}
+    /* Charger card */
+    .card {
+        background: #1a1d21;
+        padding: 16px;
+        border-radius: 18px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.04);
+    }
 
-  /* Hero / user location */
-  .hero {
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:var(--radius-xl);
-    padding:12px;
-    display:flex;
-    gap:12px;
-    align-items:center;
-    border:1px solid rgba(255,255,255,0.02);
-    box-shadow:var(--soft-shadow);
-  }
-  .loc {
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .loc .label { font-size:0.75rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:1px; }
-  .loc .place { font-size:1.05rem; font-weight:800; color:#fff; }
-  .loc .meta { font-size:0.84rem; color:var(--muted); }
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #ffffff;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
 
-  .hero .cta {
-    margin-left:auto;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    align-items:flex-end;
-  }
-  .btn-primary {
-    background:linear-gradient(90deg,var(--accent),var(--accent-2));
-    color:#002;
-    padding:9px 12px;
-    border-radius:12px;
-    font-weight:800;
-    text-decoration:none;
-    box-shadow:0 10px 30px rgba(45,212,191,0.08);
-  }
-  .hint { font-size:0.78rem; color:var(--muted) }
+    .distance {
+        color: #37f0d8;
+        font-weight: 600;
+        font-size: 1rem;
+    }
 
-  /* List container */
-  .list {
-    margin-top:6px;
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-    overflow:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:36px;
-  }
+    .card-info {
+        margin-top: 6px;
+        color: #c7c7c7;
+        font-size: 0.9rem;
+        line-height: 1.35rem;
+    }
 
-  /* Card group (by city) */
-  .group {
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .group-header {
-    display:flex;
-    gap:10px;
-    align-items:center;
-    padding:0 2px;
-  }
-  .group-title { font-size:0.82rem; font-weight:800; color:#fff; letter-spacing:0.8px; font-family:Inter; }
-  .group-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent) }
+    .status {
+        margin-top: 10px;
+        color: #37f0d8;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
 
-  /* Horizontal scroll row */
-  .row {
-    display:flex;
-    gap:14px;
-    overflow-x:auto;
-    padding:8px 2px 4px;
-    scroll-snap-type:x mandatory;
-  }
-  .row::-webkit-scrollbar{display:none}
-
-  /* Card */
-  .card {
-    scroll-snap-align:start;
-    min-width:78vw;
-    max-width:82vw;
-    background:linear-gradient(180deg, #12161a, #0f1417);
-    border-radius:14px;
-    padding:12px;
-    display:flex;
-    gap:12px;
-    align-items:center;
-    border:1px solid rgba(255,255,255,0.025);
-    box-shadow:0 8px 28px rgba(2,6,23,0.55);
-    transition:transform .16s ease, box-shadow .16s ease;
-    transform:translateY(6px);
-    opacity:0;
-    animation:cardIn .42s cubic-bezier(.2,.9,.3,1) forwards;
-    position:relative;
-  }
-  .card:active{transform:scale(.98)}
-  @keyframes cardIn { to{ transform:translateY(0); opacity:1; } }
-
-  .card .left {
-    width:56px;
-    height:56px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.02);
-    flex-shrink:0;
-    font-weight:800;
-    color:var(--accent);
-    font-size:1.1rem;
-  }
-  .card .body {
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    min-width:0;
-  }
-  .card .name {
-    font-weight:800;
-    font-size:1rem;
-    color:#fff;
-    line-height:1.05;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .card .meta {
-    font-size:0.85rem;
-    color:var(--muted);
-    display:flex;
-    gap:8px;
-    align-items:center;
-    flex-wrap:wrap;
-  }
-  .status {
-    display:inline-flex;
-    gap:8px;
-    align-items:center;
-    padding:6px 8px;
-    border-radius:999px;
-    background:rgba(255,255,255,0.02);
-    font-weight:700;
-    font-size:0.8rem;
-    color:var(--muted);
-  }
-  .dist {
-    font-weight:900;
-    color:var(--accent);
-    font-size:0.95rem;
-  }
-  .card .cta {
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    align-items:flex-end;
-  }
-  .map-btn {
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.04);
-    padding:8px 10px;
-    border-radius:10px;
-    font-weight:800;
-    color:var(--accent);
-    text-decoration:none;
-    font-size:0.86rem;
-  }
-
-  /* small screens -> card smaller height */
-  @media(min-width:760px){
-    .card{min-width:260px; max-width:320px; height:110px}
-    .row{padding-left:6px}
-  }
-
-  /* empty state */
-  .empty {
-    text-align:center;
-    color:var(--muted);
-    padding:24px 8px;
-    font-size:0.95rem;
-  }
+    .map-btn {
+        margin-top: 16px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(255,255,255,0.04);
+        color: #37f0d8;
+        font-weight: 600;
+        width: fit-content;
+    }
 </style>
 </head>
+
 <body>
-  <div class="app" id="app">
-    <header class="header" role="banner">
-      <div class="brand">
-        <div class="logo">⚡</div>
-        <div class="title">
-          <div class="main">Fast Charger Near You</div>
-          <div class="sub">MAKA Lintas Utara</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="icon-btn" id="btn-refresh" title="Refresh lokasi">⟳</button>
-        <button class="icon-btn" id="btn-info" title="Info">i</button>
-      </div>
-    </header>
 
-    <section class="hero" aria-label="Lokasi pengguna">
-      <div class="loc">
-        <div class="label">Lokasi Anda</div>
-        <div class="place" id="user-place">Mencari lokasi…</div>
-        <div class="meta" id="user-accuracy">Aktualisasi: —</div>
-      </div>
-      <div class="cta">
-        <a class="btn-primary" id="btn-find" href="#" role="button">Temukan Charger Terdekat</a>
-        <div class="hint">Izin lokasi akan diminta otomatis saat membuka situs</div>
-      </div>
-    </section>
+<h2>⚡ Charger Terdekat</h2>
 
-    <main class="list" id="list">
-      <div class="empty" id="empty">Menunggu lokasi & data charger…</div>
-    </main>
-  </div>
+<!-- Lokasi user -->
+<div id="userLocation" class="loc-box">
+    Mendapatkan lokasi...
+</div>
+
+<!-- List charger -->
+<div id="chargerList"></div>
 
 <script>
-/* ========== Sumber data (CSV Google Sheets) ========== */
-const URL_LOKASI = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv";
-const URL_BERITA = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv";
+// ===============================
+// DATA LOKASI CHARGER
+// ===============================
+const chargers = [
+  { name: "MAKA Kelapa Gading", lat: -6.159635, lng: 106.906682, power: "60 kW", nozzle: 3, hours: "24 Jam", status: "Available", link: "https://maps.app.goo.gl/xxxx" },
+  { name: "Purnama Cibubur", lat: -6.368123, lng: 106.884412, power: "50 kW", nozzle: 2, hours: "24 Jam", status: "Available", link: "https://maps.app.goo.gl/xxxx" },
+  { name: "Senayan Park", lat: -6.22522, lng: 106.80121, power: "150 kW", nozzle: 2, hours: "Tidak 24 Jam", status: "Unavailable", link: "https://maps.app.goo.gl/xxxx" }
+];
 
-/* state */
-let chargers = [];
-let user = {lat:null, lng:null, acc:null, label:null};
-
-/* util: parse CSV basic */
-function parseCSV(txt){
-  const lines = txt.trim().split(/\r?\n/).filter(Boolean);
-  const rows = lines.slice(1).map(line => {
-    // naive split - assumes no trailing commas in text cells
-    const cols = line.split(',');
-    return cols.map(c=>c.trim());
-  });
-  return rows;
+// ===============================
+// HITUNG JARAK
+// ===============================
+function distance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI/180;
+    const dLon = (lon2 - lon1) * Math.PI/180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
 }
 
-/* util: haversine -> return km (number) */
-function haversineKm(lat1, lon1, lat2, lon2){
-  const R = 6371;
-  const toRad = v => v * Math.PI/180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
+// ===============================
+// AMBIL LOKASI USER
+// ===============================
+navigator.geolocation.getCurrentPosition(success, error);
 
-/* fetch data */
-async function loadData(){
-  try{
-    const txt = await fetch(URL_LOKASI).then(r=>r.ok? r.text() : '');
-    if(!txt) { chargers = []; renderEmpty("Gagal memuat data lokasi."); return; }
-    const rows = parseCSV(txt);
-    chargers = rows.map((c,i)=>{
-      // assume columns: name, city, type, status, lat, lng, link, nozzle, cost
-      const name = c[0] || `Unknown ${i+1}`;
-      const city = c[1] || 'Lainnya';
-      const type = c[2] || '-';
-      const status = c[3] || '—';
-      const lat = parseFloat((c[4]||'').replace(',', '.'));
-      const lng = parseFloat((c[5]||'').replace(',', '.'));
-      const link = c[6] || '';
-      const nozzle = c[7] || '-';
-      const cost = c[8] || '-';
-      if(isNaN(lat) || isNaN(lng)) return null;
-      return {id:i, name, city, type, status, lat, lng, link, nozzle, cost, dist:Infinity};
-    }).filter(Boolean);
-    if(chargers.length === 0) renderEmpty("Tidak ada data charger valid.");
-    else renderEmpty("Menunggu lokasi & data charger…");
-  }catch(e){
-    console.error(e);
-    renderEmpty("Error memuat data.");
-  }
-}
+function success(pos) {
+    const userLat = pos.coords.latitude;
+    const userLng = pos.coords.longitude;
 
-/* render empty hint */
-function renderEmpty(msg){
-  const empty = document.getElementById('empty');
-  empty && (empty.innerText = msg);
-}
+    document.getElementById("userLocation").innerHTML = `
+        📍 Lokasi Anda<br>
+        Lat: ${userLat.toFixed(6)}<br>
+        Lng: ${userLng.toFixed(6)}<br>
+        Akurasi: ${pos.coords.accuracy} m
+    `;
 
-/* group by city */
-function groupByCity(list){
-  const g = {};
-  list.forEach(item=>{
-    const city = (item.city && item.city.trim()) || 'Lainnya';
-    if(!g[city]) g[city] = [];
-    g[city].push(item);
-  });
-  return g;
-}
-
-/* render UI */
-function renderUI(){
-  const list = document.getElementById('list');
-  list.innerHTML = ''; // clear
-
-  if(!user.lat){
-    const empty = document.createElement('div');
-    empty.className = 'empty';
-    empty.innerText = 'Izinkan lokasi untuk melihat charger terdekat.';
-    list.appendChild(empty);
-    return;
-  }
-
-  if(!chargers.length){
-    const empty = document.createElement('div');
-    empty.className = 'empty';
-    empty.innerText = 'Data charger kosong.';
-    list.appendChild(empty);
-    return;
-  }
-
-  // compute distances
-  chargers.forEach(ch=>{
-    ch.dist = haversineKm(user.lat, user.lng, ch.lat, ch.lng);
-  });
-  chargers.sort((a,b)=> a.dist - b.dist);
-
-  // hero top: nearest
-  const nearest = chargers[0];
-  if(nearest){
-    document.getElementById('user-place').innerText = `${nearest.city} • ${nearest.name}`;
-    document.getElementById('user-accuracy').innerText = `Jarak terdekat: ${nearest.dist.toFixed(1)} km • Akurasi: ${user.acc? user.acc+'m':''}`;
-  }
-
-  // grouping
-  const grouped = groupByCity(chargers);
-
-  Object.keys(grouped).forEach(city=>{
-    const section = document.createElement('section');
-    section.className = 'group';
-
-    const header = document.createElement('div');
-    header.className = 'group-header';
-    header.innerHTML = `<div class="group-title">${city}</div><div class="group-line" aria-hidden="true"></div>`;
-    section.appendChild(header);
-
-    const row = document.createElement('div');
-    row.className = 'row';
-
-    grouped[city].forEach((c, idx)=>{
-      const a = document.createElement('a');
-      a.className = 'card';
-      a.href = getMapLink(c);
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      // staggered animation delay
-      a.style.animationDelay = (idx * 90) + 'ms';
-
-      a.innerHTML = `
-        <div class="left">⚡</div>
-        <div class="body">
-          <div class="name">${escapeHtml(c.name)}</div>
-          <div class="meta">
-            <div class="status">${escapeHtml(c.type)} • ${escapeHtml(c.nozzle)} nozzle</div>
-            <div style="min-width:8px"></div>
-            <div class="meta" style="color:var(--muted)">${escapeHtml(c.cost)}</div>
-          </div>
-        </div>
-        <div class="cta">
-          <div class="dist">${isFinite(c.dist)? c.dist.toFixed(1) + ' km' : '—'}</div>
-          <div><span class="map-btn">Buka Maps ↗</span></div>
-        </div>
-      `;
-      row.appendChild(a);
+    // Hitung jarak charger
+    chargers.forEach(ch => {
+        ch.distance = distance(userLat, userLng, ch.lat, ch.lng);
     });
 
-    section.appendChild(row);
-    list.appendChild(section);
-  });
+    // Urutkan
+    chargers.sort((a,b) => a.distance - b.distance);
 
-  // smooth scroll to top of list
-  list.scrollTo({top:0, behavior:'smooth'});
+    // Tampilkan
+    renderChargers();
 }
 
-/* safe escape */
-function escapeHtml(s){
-  return String(s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function error() {
+    document.getElementById("userLocation").innerHTML =
+        "❌ Izin lokasi ditolak";
 }
 
-/* map link helper */
-function getMapLink(item){
-  if(item.link && item.link.trim().length > 6) return item.link;
-  if(user.lat) return `https://www.google.com/maps/dir/?api=1&origin=${user.lat},${user.lng}&destination=${item.lat},${item.lng}&travelmode=driving`;
-  return `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
+// ===============================
+// RENDER CARD PREMIUM
+// ===============================
+function renderChargers() {
+    const box = document.getElementById("chargerList");
+    box.innerHTML = "";
+
+    chargers.forEach(ch => {
+        box.innerHTML += `
+            <div class="card">
+                <div class="card-title">
+                    ⚡ ${ch.name}
+                    <span class="distance">• ${ch.distance.toFixed(1)} km</span>
+                </div>
+
+                <div class="card-info">
+                    ${ch.power} • ${ch.nozzle} nozzle • ${ch.hours}
+                </div>
+
+                <div class="status">
+                    Status: ${ch.status}
+                </div>
+
+                <a href="${ch.link}" target="_blank">
+                    <div class="map-btn">Buka Maps →</div>
+                </a>
+            </div>
+        `;
+    });
 }
-
-/* geolocation handling */
-function initGeo(){
-  if(!('geolocation' in navigator)){
-    document.getElementById('user-place').innerText = 'Perangkat tidak mendukung lokasi';
-    renderEmpty('Perangkat Anda tidak mendukung geolocation.');
-    return;
-  }
-
-  // watch position for live updates
-  navigator.geolocation.watchPosition(pos=>{
-    user.lat = pos.coords.latitude;
-    user.lng = pos.coords.longitude;
-    user.acc = Math.round(pos.coords.accuracy || 0);
-    // optional: reverse geocode could be added; we keep simple
-    document.getElementById('user-place').innerText = `Koordinat: ${user.lat.toFixed(5)}, ${user.lng.toFixed(5)}`;
-    document.getElementById('user-accuracy').innerText = `Akurasi: ${user.acc} m`;
-    renderUI();
-  }, err=>{
-    console.warn('geo err', err);
-    if(err.code === 1){
-      renderEmpty('Izin lokasi ditolak. Aktifkan izin lokasi di pengaturan browser.');
-    } else {
-      renderEmpty('Gagal menentukan lokasi. Pastikan GPS/Location menyala.');
-    }
-  }, { enableHighAccuracy:true, maximumAge:5000, timeout:10000 });
-}
-
-/* init */
-document.addEventListener('DOMContentLoaded', async ()=>{
-  await loadData();
-  initGeo();
-
-  // button actions
-  document.getElementById('btn-find').addEventListener('click', (e)=>{
-    e.preventDefault();
-    if(!user.lat) {
-      renderEmpty('Silakan izinkan lokasi atau geser halaman ke bawah untuk mencoba lagi.');
-      return;
-    }
-    renderUI();
-  });
-  document.getElementById('btn-refresh').addEventListener('click', ()=>{
-    // small UX: reload data and re-render
-    loadData().then(()=> renderUI());
-  });
-  document.getElementById('btn-info').addEventListener('click', ()=>{
-    alert('Fast Charger — daftar lokasi terdekat. Klik card untuk buka navigasi.');
-  });
-});
 </script>
+
 </body>
 </html>
