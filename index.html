@@ -1,130 +1,252 @@
-<!-- Premium FC Locator UI - Reborn Version -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <title>Premium FC Locator</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fast Charger — Premium Dark</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#06090b;
+    --bg-2:#0b1114;
+    --card:#0f1619;
+    --glass: rgba(255,255,255,0.03);
+    --accent:#00e6c3;   /* neon cyan */
+    --accent-2:#00b39f;
+    --muted:#9aa3a7;
+    --radius:20px;
+    --glow: 0 10px 40px rgba(0,230,195,0.07);
+  }
 
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background: #0c0f12;
-            font-family: 'Inter', sans-serif;
-            color: white;
-        }
-        .glass {
-            backdrop-filter: blur(14px) saturate(170%);
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glow-soft {
-            box-shadow: 0 0 40px rgba(0, 255, 140, 0.12);
-        }
-        .status-online {
-            background: rgba(0, 255, 120, 0.15);
-            color: #4dffb8;
-        }
-        .status-offline {
-            background: rgba(255, 70, 70, 0.15);
-            color: #ff7a7a;
-        }
-    </style>
+  /* Base */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6fbf5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .page{max-width:980px;margin:0 auto;padding:18px 16px 28px}
+
+  /* Header */
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:52px;height:52px;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;color:#002;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.6), var(--glow)
+  }
+  .brand h1{font-size:1.25rem;margin:0;font-weight:800}
+  .brand p{margin:0;font-size:0.82rem;color:var(--muted);margin-top:2px}
+
+  /* User card */
+  .user{
+    display:flex;gap:12px;align-items:center;padding:14px;border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+    border:1px solid rgba(255,255,255,0.04); box-shadow:var(--glow);
+  }
+  .user .pin{width:56px;height:56px;border-radius:12px;background:linear-gradient(90deg,rgba(0,0,0,0.25),rgba(255,255,255,0.02));display:flex;align-items:center;justify-content:center;font-size:22px}
+  .u-meta{display:flex;flex-direction:column}
+  .u-label{font-size:0.75rem;color:var(--muted);font-weight:700;letter-spacing:0.8px;text-transform:uppercase}
+  .u-place{font-size:1rem;font-weight:800;margin-top:4px;color:#fff}
+  .u-acc{font-size:0.85rem;color:var(--muted);margin-top:4px}
+
+  /* Station list */
+  .list{margin-top:16px;display:flex;flex-direction:column;gap:14px}
+  .card{
+    display:flex;gap:14px;padding:14px;border-radius:20px;align-items:flex-start;
+    background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+    transform: translateY(12px); opacity:0; transition: transform .36s cubic-bezier(.2,.9,.3,1), opacity .36s;
+  }
+  .card.show{transform:translateY(0);opacity:1}
+  .card-left{width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--accent);font-size:20px}
+  .card-body{flex:1;min-width:0}
+  .name-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .name{font-size:1.05rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .distance{font-weight:800;color:var(--accent);font-size:0.95rem;white-space:nowrap}
+  .meta{margin-top:8px;color:var(--muted);font-size:0.88rem;display:flex;gap:10px;flex-wrap:wrap}
+  .meta .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}
+  .hours{margin-top:10px;color:var(--muted);font-size:0.86rem}
+
+  /* status chip */
+  .status-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:0.86rem;border:1px solid rgba(255,255,255,0.02)}
+  .status-online{background:linear-gradient(90deg, rgba(0,230,195,0.08), rgba(0,180,160,0.04));color:var(--accent);box-shadow:0 6px 30px rgba(0,230,195,0.06)}
+  .status-offline{background:linear-gradient(90deg, rgba(255,90,90,0.06), rgba(255,90,90,0.02));color:#ff9b9b}
+
+  /* CTA small */
+  .cta{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .btn-map{
+    padding:9px 12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent);font-weight:800;display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-map:active{transform:translateY(1px)}
+  .note{font-size:0.85rem;color:var(--muted)}
+
+  /* small screens tweaks */
+  @media(min-width:720px){
+    .page{padding:26px}
+    .brand h1{font-size:1.5rem}
+    .card{padding:18px}
+    .name{font-size:1.15rem}
+  }
+</style>
 </head>
-<body class="px-4 pt-6 pb-20">
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">⚡</div>
+        <div>
+          <h1>Fast Charging — Premium</h1>
+          <p>Dark / Futuristic • Auto nearest</p>
+        </div>
+      </div>
+      <div>
+        <button id="refresh" class="btn-map" title="Refresh posisi" style="background:transparent;border:1px solid rgba(255,255,255,0.02);">⟳ Refresh</button>
+      </div>
+    </header>
 
-    <!-- Header Premium -->
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold tracking-tight">⚡ Fast Charging Locator</h1>
-        <p class="text-gray-400 text-sm mt-1">Temukan fast charger terdekat dengan tampilan premium</p>
-    </div>
+    <section class="user" role="status" aria-live="polite">
+      <div class="pin card-left">📍</div>
+      <div class="u-meta">
+        <div class="u-label">LOKASI ANDA</div>
+        <div id="uPlace" class="u-place">Mencari lokasi…</div>
+        <div id="uAcc" class="u-acc">Akurasi: —</div>
+      </div>
+    </section>
 
-    <!-- Lokasi Anda Card -->
-    <div class="glass rounded-2xl p-5 mb-6 glow-soft">
-        <p class="text-gray-400 text-xs mb-1">LOKASI ANDA</p>
-        <p id="locText" class="text-lg font-semibold">Mengambil lokasi...</p>
-        <p id="locAcc" class="text-gray-400 text-sm">Akurasi: -</p>
-    </div>
-
-    <!-- Container station cards -->
-    <div id="stationList" class="space-y-5"></div>
+    <main id="list" class="list" aria-live="polite">
+      <!-- cards injected here -->
+    </main>
+  </div>
 
 <script>
-// ================== DATA MANUAL ==================
-const stations = [
-    { name: "FC Kelapa Gading", lat: -6.15963, lng: 106.90668, power: "60 kW", nozzle: 3, price: "Gratis", open: "07:00", close: "23:00" },
-    { name: "FC Cibubur", lat: -6.402484, lng: 106.936786, power: "50 kW", nozzle: 2, price: "Berbayar", open: "00:00", close: "23:59" },
-    { name: "FC Bekasi", lat: -6.241586, lng: 107.000732, power: "50 kW", nozzle: 2, price: "Berbayar", open: "08:00", close: "22:00" }
+/* ====================== CONFIG ======================
+   * Optional: replace SAMPLE_DATA with fetch from CSV/Sheets.
+   * If you want me to plug your Google Sheet URL, tell me and I'll wire it.
+   ==================================================*/
+const SAMPLE_DATA = [
+  { name:"FC Kelapa Gading", lat:-6.159635, lng:106.906682, power:"60 kW", nozzle:3, price:"Gratis", open:"07:00", close:"23:00", link:"https://www.google.com/maps?q=-6.159635,106.906682" },
+  { name:"FC Cibubur", lat:-6.3675, lng:106.8868, power:"50 kW", nozzle:2, price:"Berbayar", open:"00:00", close:"23:59", link:"https://www.google.com/maps?q=-6.3675,106.8868" },
+  { name:"FC Bekasi", lat:-6.241, lng:107.000, power:"50 kW", nozzle:2, price:"Berbayar", open:"08:00", close:"22:00", link:"https://www.google.com/maps?q=-6.241,107.000" }
 ];
 
-// FUNCTION HITUNG ONLINE / OFFLINE
-function isOpen(open, close) {
-    const now = new Date();
-    const cur = now.getHours() * 60 + now.getMinutes();
-    const o = parseInt(open.split(":" )[0]) * 60 + parseInt(open.split(":" )[1]);
-    const c = parseInt(close.split(":" )[0]) * 60 + parseInt(close.split(":" )[1]);
-
-    if (o <= c) return cur >= o && cur <= c;
-    return cur >= o || cur <= c; // untuk 24 jam mode
+/* Utility: parse HH:MM to minutes */
+function toMin(hhmm){
+  const [h,m] = hhmm.split(':').map(v=>parseInt(v,10)||0);
+  return h*60 + m;
+}
+function nowMin(){
+  const d = new Date(); return d.getHours()*60 + d.getMinutes();
+}
+/* isOpen handles overnight ranges */
+function isOpen(open, close){
+  const o = toMin(open), c = toMin(close), n = nowMin();
+  if(o <= c) return n >= o && n <= c;
+  return n >= o || n <= c;
 }
 
-// ================== GET LOCATION ==================
-navigator.geolocation.getCurrentPosition(
-    pos => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+/* Haversine (km) */
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371, toRad=v=>v*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
-        document.getElementById("locText").innerText = `Lat ${lat.toFixed(6)}, Lng ${lng.toFixed(6)}`;
-        document.getElementById("locAcc").innerText = `Akurasi: ${pos.coords.accuracy.toFixed(0)} m`;
-
-        renderStations(lat, lng);
-    },
-    () => alert("Gagal mengambil lokasi. Aktifkan GPS anda.")
-);
-
-// ================== RENDER LIST ==================
-function renderStations(userLat, userLng) {
-    const container = document.getElementById("stationList");
-    container.innerHTML = "";
-
-    stations.forEach(st => {
-        const distance = calcDistance(userLat, userLng, st.lat, st.lng);
-        const open = isOpen(st.open, st.close);
-
-        container.innerHTML += `
-
-        <div class="glass rounded-2xl p-5 relative">
-
-            <div class="flex items-center justify-between mb-2">
-                <h2 class="text-xl font-semibold">${st.name}</h2>
-                <span class="px-3 py-1 text-sm rounded-full ${open ? 'status-online' : 'status-offline'}">
-                    ${open ? '● Online' : '● Offline'}
-                </span>
-            </div>
-
-            <p class="text-gray-400 text-sm mb-1">${distance.toFixed(1)} km dari lokasi kamu</p>
-            <p class="text-gray-300 text-sm mb-1">${st.power} • ${st.nozzle} nozzle</p>
-            <p class="text-gray-300 text-sm mb-2">${st.open} — ${st.close}</p>
-
-            <div class="flex items-center justify-between mt-3">
-                <span class="text-gray-400">${st.price}</span>
-                <a href="https://maps.google.com/?q=${st.lat},${st.lng}" class="px-4 py-2 rounded-xl bg-green-500 text-black font-semibold">Buka di Maps</a>
-            </div>
+/* Render one card HTML */
+function cardHtml(item){
+  const online = isOpen(item.open,item.close);
+  const distLabel = (item.dist !== undefined) ? (item.dist < 1 ? Math.round(item.dist*1000) + ' m' : item.dist.toFixed(1) + ' km') : '—';
+  const statusClass = online ? 'status-online' : 'status-offline';
+  const statusText = online ? 'Online' : 'Offline';
+  const star = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:.9"><path d="M12 2l2.6 5.3L20 8.2l-4 3.6L17 20l-5-2.8L7 20l1-8.2L4 8.2l5.4-.9L12 2z" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+  return `
+    <article class="card" role="article">
+      <div class="card-left">⚡</div>
+      <div class="card-body">
+        <div class="name-row">
+          <div style="min-width:0">
+            <div class="name">${escapeHtml(item.name)}</div>
+            <div class="note small" style="margin-top:6px;color:var(--muted)">${escapeHtml(distLabel)} dari lokasi kamu</div>
+          </div>
+          <div class="cta">
+            <div class="status-chip ${statusClass}"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;background:${online ? '#00e6c3' : '#ff6b6b'}"></span> ${statusText}</div>
+          </div>
         </div>
 
-        `;
+        <div class="meta" aria-hidden="true" style="margin-top:10px">
+          <span>${escapeHtml(item.power || '—')}</span>
+          <span>•</span>
+          <span>${escapeHtml(String(item.nozzle||'-'))} nozzle</span>
+          <span>•</span>
+          <span>${escapeHtml(item.open)} — ${escapeHtml(item.close)}</span>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:12px">
+          <div class="note" style="color:var(--muted)">${escapeHtml(item.price||'')}</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <a class="btn-map" href="${item.link}" target="_blank" rel="noopener noreferrer" onclick="trackMaps('${escapeHtml(item.name)}')">Buka Maps ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,ch=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])) }
+
+/* Render list and animate */
+function renderList(items){
+  const el = document.getElementById('list');
+  el.innerHTML = items.map(i=>cardHtml(i)).join('');
+  // stagger show
+  requestAnimationFrame(()=>{
+    const cards = el.querySelectorAll('.card');
+    cards.forEach((c, idx)=>{
+      setTimeout(()=> c.classList.add('show'), idx*90);
     });
+  });
 }
 
-// ================== FUNCTION DISTANCE ==================
-function calcDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI/180;
-    const dLon = (lon2 - lon1) * Math.PI/180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+/* Main: use geolocation and sample data; also supports optional fetch from CSV */
+async function main(){
+  // Use SAMPLE_DATA for now; if you want I can wire to your Google Sheet and parse CSV
+  let data = SAMPLE_DATA.slice();
+
+  // get position
+  if(!navigator.geolocation){
+    document.getElementById('uPlace').innerText = 'Perangkat tidak mendukung lokasi';
+    renderList(data);
+    return;
+  }
+
+  function onPos(p){
+    const lat = p.coords.latitude, lng = p.coords.longitude;
+    document.getElementById('uPlace').innerText = `Lat ${lat.toFixed(6)}, Lng ${lng.toFixed(6)}`;
+    document.getElementById('uAcc').innerText = `Akurasi: ${Math.round(p.coords.accuracy)} m`;
+
+    data.forEach(d => { d.dist = haversine(lat,lng,d.lat,d.lng); });
+    data.sort((a,b)=> (a.dist||1e9) - (b.dist||1e9));
+    renderList(data);
+  }
+
+  function onErr(e){
+    document.getElementById('uPlace').innerText = 'Izin lokasi ditolak / gagal';
+    document.getElementById('uAcc').innerText = '';
+    // render unsorted list so user still sees stations
+    renderList(data);
+  }
+
+  navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy:true, maximumAge:5000, timeout:12000 });
+  // also watch for updates to keep UI live
+  navigator.geolocation.watchPosition(onPos, ()=>{}, { enableHighAccuracy:true, maximumAge:5000, timeout:20000 });
 }
+
+/* small noop tracker */
+function trackMaps(name){ /* placeholder for analytics if needed */ }
+
+/* refresh button */
+document.getElementById('refresh').addEventListener('click', main);
+
+/* start */
+main();
 </script>
-
 </body>
 </html>
