@@ -1,179 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fast Charger – Globe Premium</title>
-
-<!-- Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Globe Premium</title>
+  <style>
     html, body {
-        margin: 0;
-        padding: 0;
-        background: #000;
-        overflow: hidden;
-        font-family: "Inter", sans-serif;
-        touch-action: none;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
     }
 
-    #globeCanvas {
-        width: 100vw;
-        height: 100vh;
-        display: block;
+    #nearest {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      border-radius: 14px;
+      z-index: 10;
+      font-size: 14px;
     }
 
-    /* FLOAT NEAREST */
-    #nearestBox {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: rgba(0,0,0,0.55);
-        padding: 10px 18px;
-        border-radius: 14px;
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.13);
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-        z-index: 9999;
-        max-width: 60%;
+    canvas {
+      display: block;
     }
-
-    #nearestBox b {
-        color: #4DFF8F;
-        font-weight: 700;
-    }
-</style>
-
+  </style>
 </head>
 <body>
 
-<canvas id="globeCanvas"></canvas>
-<div id="nearestBox">Nearest: —</div>
+<div id="nearest">Nearest: Loading...</div>
 
-<!-- Include Three.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://unpkg.com/three-globe"></script>
+<!-- THREE.js Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.0/three.min.js"></script>
+
+<!-- OFFICIAL OrbitControls (Pasti cocok dengan versi di atas) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.0/examples/js/controls/OrbitControls.js"></script>
 
 <script>
-/* ===========================
-   DATA FAST CHARGER
-   =========================== */
-const chargers = [
-    { name: "MAKA Kelapa Gading", lat: -6.1596, lng: 106.9066 },
-    { name: "Senayan Park", lat: -6.2279, lng: 106.8084 },
-    { name: "Purnama Cibubur", lat: -6.3741, lng: 106.8958 }
-];
-
-/* ===========================
-   THREE + GLOBE
-   =========================== */
-const canvas = document.getElementById("globeCanvas");
-
-// Renderer
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-
-// Scene
+/* ============================
+   SCENE SETUP
+============================ */
 const scene = new THREE.Scene();
-
-// Camera
 const camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    2000
+  60,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
 );
-camera.position.z = 350;
+camera.position.set(0, 0, 2.2);
 
-// Globe
-const globe = new ThreeGlobe({
-    animateIn: true
-})
-.globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-.bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
-.pointOfView({ lat: -6.2, lng: 106.8, altitude: 1.8 })
-.atmosphereColor("#4D9FFF")
-.atmosphereAltitude(0.20);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
 
-// Marker style
-globe
-    .labelsData(chargers)
-    .labelLat(d => d.lat)
-    .labelLng(d => d.lng)
-    .labelText(d => "●")
-    .labelSize(1.6)
-    .labelColor(() => "#4DFF8F");
+/* ============================
+   LIGHT
+============================ */
+const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+scene.add(ambient);
 
-// Add to scene
-scene.add(globe);
+const directional = new THREE.DirectionalLight(0xffffff, 1);
+directional.position.set(5, 2, 5);
+scene.add(directional);
 
-// Lights
-const light = new THREE.AmbientLight(0xffffff, 1.2);
-scene.add(light);
+/* ============================
+   GLOBE TEXTURE (MEDIUM)
+============================ */
+const loader = new THREE.TextureLoader();
 
-/* ===========================
-   AUTO ROTATE
-   =========================== */
-function animate() {
-    globe.rotation.y += 0.0009; // smooth auto rotate
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-}
-animate();
-
-/* ===========================
-   FIND NEAREST CHARGER
-   =========================== */
-function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI/180;
-    const dLon = (lon2 - lon1) * Math.PI/180;
-    const a =
-        Math.sin(dLat/2)*Math.sin(dLat/2) +
-        Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) *
-        Math.sin(dLon/2)*Math.sin(dLon/2);
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-}
-
-function updateNearest(lat, lng) {
-    let best = null;
-    let bestDist = Infinity;
-
-    chargers.forEach(c => {
-        const d = getDistance(lat, lng, c.lat, c.lng);
-        if (d < bestDist) {
-            bestDist = d;
-            best = c;
-        }
+loader.load(
+  "https://raw.githubusercontent.com/chrisrzhou/threejs-globe/master/examples/globe/earth-blue-marble.jpg",
+  texture => {
+    const geo = new THREE.SphereGeometry(1, 64, 64);
+    const mat = new THREE.MeshPhongMaterial({
+      map: texture
     });
 
-    if (best) {
-        document.getElementById("nearestBox").innerHTML =
-            `Nearest: <b>${best.name}</b> (${bestDist.toFixed(1)} km)`;
-    }
+    const globe = new THREE.Mesh(geo, mat);
+    scene.add(globe);
+
+    animate();
+  },
+  undefined,
+  error => {
+    console.log("Texture failed:", error);
+    document.getElementById("nearest").innerText = "Texture failed to load";
+  }
+);
+
+/* ============================
+   CONTROLS (SAFE)
+============================ */
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableZoom = false;
+controls.enablePan = false;
+
+/* ============================
+   ANIMATION LOOP
+============================ */
+function animate() {
+  requestAnimationFrame(animate);
+  scene.rotation.y += 0.0009;
+  renderer.render(scene, camera);
 }
 
-/* ===========================
-   GET USER LOCATION
-   =========================== */
-navigator.geolocation.getCurrentPosition(pos => {
-    updateNearest(pos.coords.latitude, pos.coords.longitude);
-}, err => {
-    document.getElementById("nearestBox").innerHTML = "Location error.";
+/* ============================
+   RESPONSIVE
+============================ */
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-/* Resize */
-window.addEventListener("resize", () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-});
+/* ============================
+   DUMMY NEAREST
+============================ */
+setTimeout(() => {
+  document.getElementById("nearest").innerText =
+    "Nearest: Kelapa Gading (2.3 km)";
+}, 1200);
 </script>
 
 </body>
 </html>
-
