@@ -1,157 +1,133 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lokasi Fast Charging</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lokasi FC</title>
 
-<!-- Leaflet (Wajib untuk Jawg Maps) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-  body { margin: 0; padding: 0; font-family: Arial; }
+  body { margin:0; padding:0; background:#000; }
+  #map { width:100vw; height:100vh; }
 
-  #mapWrapper {
+  /* ikon */
+  .icon-motor { width:40px; }
+  .icon-fc { width:40px; }
+
+  /* modal */
+  #lokasiModal {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-    display: none;
-    z-index: 9999;
-  }
-
-  #mapBox {
-    width: 100%;
-    height: 75vh;
-    background: #000;
-    border-radius: 16px 16px 0 0;
-    position: absolute;
     bottom: 0;
     left: 0;
-    overflow: hidden;
-  }
-
-  #map {
     width: 100%;
-    height: 100%;
-  }
-
-  .closeBtn {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    padding: 8px 16px;
-    background: white;
-    border-radius: 10px;
-    font-weight: bold;
+    height: 55%;
+    background: #000;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display: none;
+    flex-direction: column;
+    padding: 20px;
     z-index: 9999;
   }
-
-  .gmapBtn {
-    width: calc(100% - 40px);
-    margin: 10px 20px 20px 20px;
-    padding: 14px;
+  #lokasiModal h2 {
+    margin: 0;
+    color: #d4ff38;
+    font-size: 22px;
+  }
+  #lokasiModal button {
+    margin-top: auto;
+    padding: 14px 18px;
     background: white;
-    border-radius: 12px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
+    font-weight: 700;
+    border-radius: 14px;
   }
 </style>
 </head>
+
 <body>
 
-<!-- MAP WRAPPER -->
-<div id="mapWrapper">
-  <div class="closeBtn" onclick="closeMap()">Tutup</div>
-  <div id="mapBox">
-    <div id="map"></div>
-  </div>
-  <div id="gmapBtn" class="gmapBtn">Buka di Google Maps</div>
+<div id="map"></div>
+
+<!-- Modal Lokasi -->
+<div id="lokasiModal">
+  <h2 id="namaLokasi">Nama FC</h2>
+  <button id="btnGmap">Buka di Google Maps</button>
 </div>
 
 <script>
-/* ============================
-   TOKEN JAWG KAMU
-============================ */
-const JAWG_TOKEN = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA";
 
-/* ============================
-   ICON CUSTOM (Motor + Petir)
-============================ */
-const userIcon = L.icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/3202/3202926.png", // ikon motor
-    iconSize: [50, 50],
-    iconAnchor: [25, 25]
+const token = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA"; // ← tempel token kamu
+
+// ─────────────────────────────────────────
+// MAP JAWG
+// ─────────────────────────────────────────
+const map = L.map('map').setView([-6.2, 106.8], 13);
+
+L.tileLayer(
+  `https://tile.jawg.io/jawg-light/{z}/{x}/{y}.png?access-token=${token}`,
+  {
+    maxZoom: 22,
+    attribution: '<a href="https://jawg.io" target="_blank">© Jawg Maps</a>'
+  }
+).addTo(map);
+
+// ─────────────────────────────────────────
+// ICON MOTOR (USER) — hijau
+// ─────────────────────────────────────────
+const iconMotor = L.icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+  iconSize: [40, 40]
 });
 
-const chargerIcon = L.icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/869/869869.png", // ikon petir
-    iconSize: [55, 55],
-    iconAnchor: [27, 27]
+// ─────────────────────────────────────────
+// ICON PETIR (FC)
+// ─────────────────────────────────────────
+const iconFC = L.icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/9511/9511478.png",
+  iconSize: [40, 40]
 });
 
-/* ============================
-   FUNGSI BUKA MAP
-============================ */
-let map;
-let userMarker;
-let fcMarker;
+// ─────────────────────────────────────────
+// LOKASI USER (GPS)
+// ─────────────────────────────────────────
+navigator.geolocation.getCurrentPosition(
+  pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
 
-function openMap(fcName, lat, lng) {
-    document.getElementById("mapWrapper").style.display = "block";
+    L.marker([lat, lng], { icon: iconMotor }).addTo(map);
+    map.setView([lat, lng], 15);
+  },
+  err => console.log("GPS error:", err)
+);
 
-    if (!map) {
-        map = L.map("map").setView([lat, lng], 16);
+// ─────────────────────────────────────────
+// LOKASI FC SAMPLE
+// ─────────────────────────────────────────
+const fcList = [
+  {
+    nama: "Bethany Motor",
+    lat: -6.189,
+    lng: 106.834
+  }
+];
 
-        L.tileLayer(
-            `https://tile.jawg.io/jawg-streets/{z}/{x}/{y}.png?access-token=${JAWG_TOKEN}`,
-            {
-                maxZoom: 22,
-                attribution: '<a href="https://jawg.io" target="_blank">© Jawg Maps</a>'
-            }
-        ).addTo(map);
-    } else {
-        map.setView([lat, lng], 16);
-    }
+fcList.forEach(fc => {
+  const marker = L.marker([fc.lat, fc.lng], { icon: iconFC }).addTo(map);
 
-    // Marker Fast Charging
-    if (fcMarker) map.removeLayer(fcMarker);
-    fcMarker = L.marker([lat, lng], { icon: chargerIcon }).addTo(map)
-      .bindPopup(`<b>${fcName}</b>`).openPopup();
+  marker.on("click", () => {
+    document.getElementById("namaLokasi").innerText = fc.nama;
 
-    // Lokasi User (GPS)
-    navigator.geolocation.getCurrentPosition(pos => {
-        let uLat = pos.coords.latitude;
-        let uLng = pos.coords.longitude;
-
-        if (userMarker) map.removeLayer(userMarker);
-
-        userMarker = L.marker([uLat, uLng], { icon: userIcon }).addTo(map)
-          .bindPopup("Lokasi Anda").openPopup();
-    });
-
-    // Tombol buka Google Maps
-    document.getElementById("gmapBtn").onclick = () => {
-        window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
+    document.getElementById("btnGmap").onclick = () => {
+      window.open(`https://www.google.com/maps/search/?api=1&query=${fc.lat},${fc.lng}`);
     };
-}
 
-/* ============================
-   FUNGSI TUTUP MAP
-============================ */
-function closeMap() {
-    document.getElementById("mapWrapper").style.display = "none";
-}
-
-/* ============================
-   CONTOH PEMANGGILAN
-   (nanti kamu ganti sesuai klik)
-============================ */
-// Contoh → buka map Bethany Motor
-// openMap("Bethany Motor", -6.2222, 106.8531);
+    document.getElementById("lokasiModal").style.display = "flex";
+  });
+});
 
 </script>
 
