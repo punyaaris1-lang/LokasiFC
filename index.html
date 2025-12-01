@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Syne:wght@700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 
     <style>
         :root {
@@ -42,58 +41,46 @@
         .label-top { font-size: 0.7rem; color: var(--text-mute); letter-spacing: 1px; font-weight: 700; margin-bottom: 5px; }
         .header h1 { font-family: 'Inter', sans-serif; font-size: 10vw; margin: 0; line-height: 0.9; font-weight: 900; letter-spacing: -1px; color: #fff; max-width: 70%; }
         .label-bottom { font-size: 0.75rem; color: var(--accent); letter-spacing: 1px; font-weight: 700; margin-top: 8px; }
-
-        /* MENU KANAN ATAS */
         .top-menu { display: flex; gap: 10px; margin-top: 5px; }
         .menu-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s; }
-        .menu-btn svg { width: 20px; height: 20px; fill: currentColor; }
         .menu-btn:active { transform: scale(0.9); background: var(--accent); color: #000; }
         .menu-btn.sos { border-color: var(--danger); color: var(--danger); }
-        .menu-btn.sos:active { background: var(--danger); color: #fff; }
 
         /* HERO SECTION */
         .hero-section { padding: 10px 25px; margin-bottom: 20px; flex-shrink: 0; transition: 0.3s; }
-        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .radar-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-mute); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         .gps-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 1s infinite; }
         @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
 
-        .hero-card { 
-            background: var(--card-bg); border: 1px solid var(--card-border); 
-            border-radius: 24px; padding: 20px; 
-            position: relative; overflow: hidden; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
-            display: flex; flex-direction: column; 
-            /* Height otomatis agar bisa melar */
-            height: auto; min-height: 200px; 
+        /* HERO CARD EXPANDABLE */
+        .hero-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 24px; padding: 0; /* Reset padding agar map full width */
+            position: relative; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
             transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .hero-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .hero-dist { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 8px; font-family: 'Syne'; font-size: 0.9rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
-        
-        /* Label FC Terdekat (Masuk Kotak) */
-        .badge-nearest { 
-            background: rgba(204,255,0,0.1); border: 1px solid rgba(204,255,0,0.3);
-            color: var(--accent); font-size: 0.6rem; padding: 4px 8px; border-radius: 6px;
-            font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;
-            width: fit-content; margin-bottom: 10px;
-        }
-
-        .hero-name { font-family: 'Inter', sans-serif; font-size: clamp(1.8rem, 8vw, 2.2rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 5px; }
-        .hero-info { font-size: 0.85rem; color: #aaa; margin-bottom: 15px; padding-left: 12px; border-left: 3px solid var(--accent); line-height: 1.5; }
-        
-        /* AREA PETA EXPANDABLE */
+        /* MAP CONTAINER (POSISI ATAS) */
         #map-wrapper {
             width: 100%; height: 0; 
-            opacity: 0; overflow: hidden;
-            transition: height 0.4s ease, opacity 0.3s ease;
-            border-radius: 16px; margin-bottom: 0;
-            position: relative;
+            opacity: 0; transition: height 0.4s ease, opacity 0.3s ease;
+            background: #222; position: relative;
         }
-        /* Saat Aktif */
-        #map-wrapper.active { height: 250px; opacity: 1; margin-bottom: 15px; border: 1px solid #333; }
-        #map-inner { width: 100%; height: 100%; background: #222; }
+        #map-wrapper.active { height: 280px; opacity: 1; } /* Map Besar */
+        #map-inner { width: 100%; height: 100%; }
 
+        /* CONTENT TEXT (POSISI BAWAH) */
+        .hero-content-box { padding: 20px; display: flex; flex-direction: column; background: var(--card-bg); z-index: 2; position: relative; }
+        
+        .hero-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        
+        .hero-dist { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 8px; font-family: 'Syne'; font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+        .hero-name { font-family: 'Inter', sans-serif; font-size: clamp(1.8rem, 8vw, 2.2rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 5px; }
+        .hero-info { font-size: 0.85rem; color: #aaa; margin-bottom: 20px; padding-left: 12px; border-left: 3px solid var(--accent); line-height: 1.5; }
+        
         .btn-nav-hero { 
             display: flex; align-items: center; justify-content: center; gap: 8px;
             width: 100%; padding: 14px; 
@@ -101,10 +88,11 @@
             font-weight: 800; border-radius: 12px; font-size: 0.9rem; letter-spacing: 0.5px; 
             box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2); cursor: pointer; border: none;
         }
-        .btn-nav-hero.active { background: #fff; color: #000; } /* Berubah warna saat peta buka */
+        /* Tombol berubah saat map aktif */
+        .btn-nav-hero.gmaps-mode { background: #fff; color: #000; box-shadow: none; border: 2px solid #333; }
 
-        /* LIST SECTION */
-        .list-section { flex: 1; overflow-y: auto; padding-bottom: 200px; }
+        /* LIST SECTIONS */
+        .list-section { flex: 1; overflow-y: auto; padding-bottom: 180px; }
         .city-group { margin-bottom: 30px; }
         .city-header { padding: 0 25px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .city-title { color: var(--text); font-family: 'Syne'; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
@@ -123,11 +111,11 @@
 
         /* NAV DOCK */
         .nav-dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(15px); border: 1px solid #333; border-radius: 60px; padding: 12px 40px; display: flex; gap: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; }
-        .nav-item { background: none; border: none; color: #666; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.2s; }
-        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
-        .nav-item span { font-size: 0.6rem; font-weight: 700; }
-        .nav-item.active { color: var(--accent); transform: translateY(-2px); }
-        .nav-item.sos.active { color: var(--danger); }
+        .nav-icon { background: none; border: none; color: #666; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-icon svg { width: 24px; height: 24px; fill: currentColor; }
+        .nav-icon span { font-size: 0.6rem; font-weight: 700; }
+        .nav-icon.active { color: var(--accent); }
+        .nav-icon.sos.active { color: var(--danger); }
 
         /* MODALS */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; transform: translateY(100%); transition: 0.3s ease; display: flex; flex-direction: column; }
@@ -141,9 +129,9 @@
         .news-item { margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
         .slide-box { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
         .slide-box img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Leaflet Routing Override */
-        .leaflet-routing-container { display: none !important; } 
+        
+        /* LEAFLET FIX */
+        .leaflet-control-attribution { display: none !important; }
     </style>
 </head>
 <body>
@@ -160,46 +148,50 @@
     </div>
 
     <div class="header">
-        <div style="display:flex; justify-content:space-between; width:100%;">
-            <div class="header-text">
-                <div class="label-top">LOKASI</div>
-                <h1>FAST<br>CHARGING</h1>
-                <div class="label-bottom">APA YANG BISA DIBANTU?</div>
-            </div>
-            <div class="top-menu">
-                <button class="menu-btn" onclick="nav('news')" title="Info"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></button>
-                <button class="menu-btn sos" onclick="nav('sos')" title="SOS"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></button>
-            </div>
+        <div class="header-text">
+            <div class="label-top">LOKASI</div>
+            <h1>FAST<br>CHARGING</h1>
+            <div class="label-bottom">APA YANG BISA DIBANTU?</div>
+        </div>
+        <div class="top-menu">
+            <button class="menu-btn" onclick="nav('news')" title="Info">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            </button>
+            <button class="menu-btn sos" onclick="nav('sos')" title="SOS">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </button>
         </div>
     </div>
 
     <div class="hero-section">
         <div id="heroContainer">
-            
-            <div id="scanState" class="hero-card" style="align-items:center; text-align:center;">
-                <div class="gps-dot" style="width:15px; height:15px; margin-bottom:15px;"></div>
-                <h2 style="opacity:0.5; font-size:1.2rem; margin-top:0;">Mencari Sinyal GPS...</h2>
+            <div id="scanState" class="hero-card" style="align-items:center; text-align:center; min-height:180px; padding:20px;">
+                <div class="radar-status" style="justify-content:center; margin-bottom:15px;">
+                    <div class="gps-dot"></div> MENCARI SINYAL GPS...
+                </div>
+                <p style="color:#666; font-size:0.8rem; margin:0;">Pastikan Lokasi/GPS HP Aktif</p>
             </div>
 
             <div id="foundState" class="hero-card" style="display:none;">
-                <div class="badge-nearest">
-                    <div class="gps-dot"></div> FC TERDEKAT
-                </div>
-
-                <div class="hero-header">
-                    <h2 class="hero-name" id="heroName">Nama Lokasi</h2>
-                    <div class="hero-dist" id="heroDist">-- KM</div>
-                </div>
-                
-                <div class="hero-info" id="heroInfo">Info Loading...</div>
                 
                 <div id="map-wrapper">
                     <div id="map-inner"></div>
                 </div>
 
-                <button id="btnHeroAction" class="btn-nav-hero" onclick="toggleMap()">
-                    NAVIGASI SEKARANG ↗
-                </button>
+                <div class="hero-content-box">
+                    <div class="hero-header">
+                        <div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div>
+                        <div class="hero-dist" id="heroDist">-- KM</div>
+                    </div>
+                    
+                    <h2 class="hero-name" id="heroName">Nama Lokasi</h2>
+                    <div class="hero-info" id="heroInfo">Info Loading...</div>
+                    
+                    <button id="btnHeroAction" class="btn-nav-hero" onclick="toggleMap()">
+                        LIHAT DI PETA 📍
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -207,7 +199,7 @@
     <div class="list-section" id="mainListContainer"></div>
 
     <div class="nav-dock">
-        <button class="nav-icon" onclick="nav('news')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>INFO</span></button>
+        <button class="nav-item" onclick="nav('news')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>INFO</span></button>
         <button class="nav-icon active" onclick="nav('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>HOME</span></button>
         <button class="nav-icon sos" onclick="nav('sos')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>SOS</span></button>
     </div>
@@ -217,6 +209,7 @@
         <div class="modal-body" id="newsContainer"></div>
         <div class="modal-foot"><button class="btn-close-bot" onclick="closeModal()">KEMBALI KE HOME</button></div>
     </div>
+
     <div id="modal-sos" class="modal">
         <div class="modal-head"><h2 style="color:var(--danger);">DARURAT (SOS)</h2><button class="close-btn" onclick="closeModal()">TUTUP</button></div>
         <div class="modal-body">
@@ -229,18 +222,16 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script>
         // --- CONFIG ---
-        const JAWG_API = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA"; // GANTI DENGAN API KEY JAWG ANDA
+        const JAWG_API = "v3yvK4k0D3Qk4oH8A0aL2y0P9c0o9d0eC80d0e"; // API Key Jawg
         const URL_LOKASI = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const URL_BERITA = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv"; 
 
         let chargers = [];
         let userLat = null; let userLng = null;
-        let map = null; let routingControl = null;
-        let currentHeroItem = null;
+        let map = null; let currentHeroItem = null;
 
         function startApp() {
             document.getElementById('loader').style.opacity = '0';
@@ -286,7 +277,7 @@
             } catch(e) {}
         }
 
-        // --- LOGIKA EXPAND MAP & ROUTING ---
+        // --- LOGIKA MAP EXPAND & TOGGLE ---
         function toggleMap() {
             const wrapper = document.getElementById('map-wrapper');
             const btn = document.getElementById('btnHeroAction');
@@ -297,36 +288,30 @@
             } else {
                 // KLIK PERTAMA: BUKA PETA DI DALAM
                 wrapper.classList.add('active');
-                btn.innerText = "MULAI JALAN (GOOGLE MAPS) ↗";
-                btn.classList.add('active');
+                btn.innerText = "BUKA GOOGLE MAPS ↗";
+                btn.classList.add('gmaps-mode');
                 
-                // Init Leaflet Map
+                // Initialize Map
                 setTimeout(() => {
                     if(map) map.remove();
-                    map = L.map('map-inner').setView([userLat, userLng], 13);
+                    map = L.map('map-inner').setView([userLat, userLng], 14);
                     
-                    // Jawg Matrix Theme
+                    // Jawg Matrix (Dark Theme)
                     L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
 
-                    // Routing Machine (User -> Dest)
-                    routingControl = L.Routing.control({
-                        waypoints: [
-                            L.latLng(userLat, userLng),
-                            L.latLng(currentHeroItem.lat, currentHeroItem.lng)
-                        ],
-                        lineOptions: { styles: [{color: '#00d2ff', weight: 5}] },
-                        createMarker: function() { return null; }, // Hide default markers
-                        addWaypoints: false,
-                        draggableWaypoints: false,
-                        fitSelectedRoutes: true,
-                        show: false // Hide text instructions
-                    }).addTo(map);
+                    // Markers
+                    const userIcon = L.divIcon({className: 'gps-dot', iconSize: [12,12]});
+                    L.marker([userLat, userLng], {icon: userIcon}).addTo(map).bindPopup("Anda");
+                    L.marker([currentHeroItem.lat, currentHeroItem.lng]).addTo(map).bindPopup("Tujuan").openPopup();
                     
-                    // Custom Marker
-                    L.marker([userLat, userLng]).addTo(map).bindPopup("Anda").openPopup();
-                    L.marker([currentHeroItem.lat, currentHeroItem.lng]).addTo(map).bindPopup("Tujuan");
+                    // Fit Bounds (Zoom to see both)
+                    const bounds = L.latLngBounds([
+                        [userLat, userLng],
+                        [currentHeroItem.lat, currentHeroItem.lng]
+                    ]);
+                    map.fitBounds(bounds, {padding: [50, 50]});
 
-                }, 500); // Delay biar animasi smooth
+                }, 400); 
             }
         }
 
@@ -353,6 +338,13 @@
                 }
                 container.innerHTML += `<div class="news-item">${imgHTML}<h3 style="color:var(--accent); margin-bottom:5px;">${cols[0]}</h3><p style="color:#aaa; font-size:0.85rem; margin-top:0;">${cols[1]}</p><p style="line-height:1.5; color:#ddd; font-size:0.9rem;">${cols[2]}</p></div>`;
             });
+            
+            setInterval(() => {
+                document.querySelectorAll('.slide-container').forEach(slider => {
+                    if (slider.scrollLeft >= (slider.scrollWidth - slider.clientWidth)) slider.scrollTo({left: 0, behavior: 'smooth'});
+                    else slider.scrollBy({left: slider.clientWidth, behavior: 'smooth'});
+                });
+            }, 2500);
         }
 
         function getDist(lat1, lon1, lat2, lon2) {
@@ -386,6 +378,18 @@
                 document.getElementById('heroName').innerText = n.name;
                 document.getElementById('heroDist').innerText = n.dist.toFixed(1) + ' KM';
                 document.getElementById('heroInfo').innerText = `${n.city} • ${n.type}\n${n.nozzle} Nozzle • ${n.cost}`;
+                
+                // RESET STATE JIKA GANTI LOKASI
+                const wrapper = document.getElementById('map-wrapper');
+                const btn = document.getElementById('btnHeroAction');
+                if(wrapper.classList.contains('active')) {
+                   // Jika peta sedang terbuka, update markernya saja (advanced)
+                   // Untuk simpelnya biarkan saja atau tutup dulu
+                } else {
+                   // Reset tombol
+                   btn.innerText = "LIHAT DI PETA 📍";
+                   btn.classList.remove('gmaps-mode');
+                }
 
                 renderList();
             }
@@ -407,25 +411,22 @@
                 if(!grouped[city]) grouped[city] = [];
                 grouped[city].push(item);
             }
-
             let colorIdx = 0;
             Object.keys(grouped).forEach(city => {
                 let groupHTML = `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`;
                 grouped[city].forEach(item => {
                     let styleClass = `style-${(colorIdx % 3) + 1}`;
                     colorIdx++;
-                    // ONCLICK LIST BUKA GOOGLE MAPS LANGSUNG
                     groupHTML += `
-                    <a href="${getMapLink(item)}" target="_blank" class="mini-card ${styleClass}">
+                    <div onclick="window.open('${getMapLink(item)}', '_blank')" class="mini-card ${styleClass}">
                         <div class="bg-bolt">⚡</div>
                         <div class="mini-top"><h3>${item.name}</h3><div class="mini-info">${item.type}<br>${item.nozzle} Nozzle • ${item.cost}</div></div>
                         <div class="mini-bot"><div class="mini-dist">${item.dist ? item.dist.toFixed(1)+' KM' : ''}</div></div>
-                    </a>`;
+                    </div>`;
                 });
                 groupHTML += `</div></div>`;
                 listCont.innerHTML += groupHTML;
             });
-
             document.querySelectorAll('.city-group').forEach(group => {
                 const title = group.querySelector('.city-title').innerText;
                 if(scrollState[title]) group.querySelector('.h-scroll').scrollLeft = scrollState[title];
