@@ -1,27 +1,251 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>Test</title><style>body{margin:0;overflow:hidden;background:#000}</style></head>
-<body><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-<script>
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charging Finder</title>
 
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(5,5,5);
-scene.add(light);
+<!-- Leaflet + Jawg -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 32, 32),
-  new THREE.MeshBasicMaterial({ color: 0x00aaff })
-);
-scene.add(sphere);
-
-function animate(){
-  requestAnimationFrame(animate);
-  sphere.rotation.y += 0.01;
-  renderer.render(scene, camera);
+<style>
+body {
+    margin: 0;
+    background: #fafafa;
+    font-family: Arial, sans-serif;
 }
-animate();
-</script></body></html>
+
+/* MAP VIEW */
+#mapView {
+    position: fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    display:none;
+    z-index: 999999;
+}
+#map {
+    width:100%; height:100%;
+}
+.map-close {
+    position:absolute;
+    top:15px; right:15px;
+    background:white;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
+    z-index:9999999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* LIST STYLE */
+#list-aos {
+    padding:18px;
+}
+.city-group {
+    margin-bottom:28px;
+}
+.city-title {
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+.h-scroll {
+    display:flex;
+    overflow-x:auto;
+    gap:12px;
+}
+.mini-card {
+    min-width:200px;
+    padding:14px;
+    border-radius:14px;
+    color:white;
+    position:relative;
+    text-decoration:none;
+}
+.style-1 { background:#ff6f6f; }
+.style-2 { background:#5a8cff; }
+.style-3 { background:#13c48b; }
+.mini-top h3 {
+    margin:0 0 4px 0;
+    font-size:17px;
+}
+.mini-info {
+    font-size:13px;
+    opacity:0.85;
+}
+.mini-dist {
+    position:absolute;
+    bottom:8px; right:12px;
+    font-size:14px;
+    font-weight:bold;
+}
+.bg-bolt {
+    position:absolute;
+    left:12px; bottom:8px;
+    opacity:0.3;
+    font-size:22px;
+}
+
+/* Modal simple */
+.modal {
+    position:fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    background:rgba(0,0,0,0.55);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:1000000;
+}
+.modal.show { display:flex; }
+.modal-box {
+    background:white;
+    padding:22px;
+    border-radius:12px;
+    width:80%;
+    max-width:350px;
+    text-align:center;
+}
+.modal-box button {
+    margin-top:18px;
+    padding:8px 14px;
+    border-radius:6px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- LIST -->
+<div id="list-aos"></div>
+
+<!-- MAP VIEW -->
+<div id="mapView">
+    <div class="map-close" onclick="closeMap()">Close</div>
+    <div id="map"></div>
+</div>
+
+<!-- DUMMY MODAL -->
+<div id="modal-news" class="modal">
+    <div class="modal-box">
+        <h2>News</h2>
+        <p>No news yet.</p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<div id="modal-sos" class="modal">
+    <div class="modal-box">
+        <h2>SOS</h2>
+        <p>Emergency contact not configured.</p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<script>
+/* ============================
+   DUMMY DATA (CONTOH)
+   ============================ */
+const data = [
+    { city: "Jakarta", name:"SPKLU A", type:"Ultra Fast", nozzle:"2", cost:"Rp 5.000/kWh", lat:-6.2, lng:106.8, dist:1.2 },
+    { city: "Jakarta", name:"SPKLU B", type:"Fast", nozzle:"1", cost:"Rp 4.000/kWh", lat:-6.21, lng:106.81, dist:2.1 },
+    { city: "Bandung", name:"SPKLU C", type:"Super", nozzle:"2", cost:"Rp 4.500/kWh", lat:-6.9, lng:107.6, dist:3.5 }
+];
+
+/* ============================
+   GROUPING CITY
+   ============================ */
+let grouped = {};
+data.forEach(item => {
+    if (!grouped[item.city]) grouped[item.city] = [];
+    grouped[item.city].push(item);
+});
+
+/* ============================
+   RENDER LIST
+   ============================ */
+const listCont = document.getElementById("list-aos");
+let scrollState = {};
+
+function renderList() {
+    listCont.innerHTML = "";
+    Object.keys(grouped).forEach(city => {
+
+        scrollState[city] = scrollState[city] || 0;
+        let colorIdx = 0;
+
+        let html = `
+            <div class="city-group">
+                <div class="city-title">${city}</div>
+                <div class="h-scroll">`;
+
+        grouped[city].forEach(item => {
+            colorIdx++;
+            let styleClass = "style-" + ((colorIdx % 3) + 1);
+
+            html += `
+                <div class="mini-card ${styleClass}" onclick="openMap(${item.lat}, ${item.lng}, '${item.name}')">
+                    <div class="mini-top">
+                        <h3>${item.name}</h3>
+                        <div class="mini-info">${item.type} • ${item.nozzle} Nozzle<br>${item.cost}</div>
+                    </div>
+                    <div class="mini-dist">${item.dist} KM</div>
+                    <div class="bg-bolt">⚡</div>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+        listCont.innerHTML += html;
+    });
+}
+
+renderList();
+
+/* ============================
+   MAP JAWG SUNNY
+   ============================ */
+let map, marker;
+const JAWG_TOKEN = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA";
+
+function openMap(lat, lng, name) {
+    document.getElementById("mapView").style.display = "block";
+
+    if (!map) {
+        map = L.map("map").setView([lat, lng], 15);
+
+        L.tileLayer(
+            `https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}.png?access-token=${JAWG_TOKEN}`,
+            { maxZoom:22, attribution:'<a href="https://jawg.io">© Jawg</a>' }
+        ).addTo(map);
+
+        marker = L.marker([lat, lng]).addTo(map);
+    } else {
+        map.setView([lat, lng], 15);
+        marker.setLatLng([lat, lng]);
+    }
+
+    marker.bindPopup(name).openPopup();
+}
+
+function closeMap() {
+    document.getElementById("mapView").style.display = "none";
+}
+
+/* ============================
+   MODAL SIMPLE
+   ============================ */
+function nav(type) {
+    if (type === "news") document.getElementById("modal-news").classList.add("show");
+    if (type === "sos") document.getElementById("modal-sos").classList.add("show");
+}
+function closeModal() {
+    document.getElementById("modal-news").classList.remove("show");
+    document.getElementById("modal-sos").classList.remove("show");
+}
+</script>
+
+</body>
+</html>
