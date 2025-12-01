@@ -1,41 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Jawg Cartoon Map</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MLU Live Map</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <style>
-    body { margin: 0; padding: 0; background: #000; }
-    #map { width: 100vw; height: 100vh; }
-  </style>
+<style>
+    body {
+        margin: 0;
+        background: #000;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    #map {
+        height: 90vh;
+        width: 100%;
+        margin-top: 10px;
+        border: 2px solid #00ff00;
+        border-radius: 10px;
+    }
+
+    /* Animasi glowing icon */
+    .glow {
+        filter: drop-shadow(0 0 8px #00ff00);
+    }
+</style>
 </head>
 <body>
 
+<h2>🚀 LIVE TRACKING MLU</h2>
 <div id="map"></div>
 
 <script>
-  // ================================================
-  // MASUKKAN TOKEN JAWG DI SINI
-  const token = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA";
-  // ================================================
+/* -------------------------------
+   1. SETUP MAP JAWG
+--------------------------------*/
+var map = L.map('map').setView([-6.2, 106.8], 12);
 
-  const map = L.map('map').setView([-6.2, 106.8], 12);
+// Ganti TOKEN di sini
+var jawgToken = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA";
 
-  // CARTOON STYLE — jawg-light, jawg- sunny, jawg-terrain, dll
-  L.tileLayer(
-    `https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}.png?access-token=${token}`,
-    {
-      maxZoom: 22,
-      attribution: '<a href="https://jawg.io" target="_blank">© Jawg Maps</a>'
-    }
-  ).addTo(map);
+L.tileLayer(
+  `https://tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token=${jawgToken}`,
+  {
+    attribution: "&copy; Jawg Maps",
+    maxZoom: 22
+  }
+).addTo(map);
 
-  L.marker([-6.2, 106.8]).addTo(map)
-    .bindPopup("Map Jawg Sunny Aktif!");
+/* ----------------------------------
+   2. ICON KARTUN (KENDARAAN)
+-------------------------------------*/
+var vehicleIcon = L.icon({
+    iconUrl: "https://raw.githubusercontent.com/yaaris1-lang/asset/main/cartoon-motor.png",
+    iconSize: [60, 60],
+    iconAnchor: [30, 30],
+    className: "glow"
+});
+
+/* -----------------------------------------------------
+   3. COORDINATE JALUR (ANIMASI GERAK KENDARAAN)
+   → Tinggal ganti sesuai lokasi asli
+------------------------------------------------------*/
+var path = [
+    [-6.200, 106.800],
+    [-6.205, 106.805],
+    [-6.210, 106.810],
+    [-6.215, 106.815],
+    [-6.220, 106.820]
+];
+
+/* --------------------------------------------
+   4. TAMPILKAN POLYLINE JALUR
+---------------------------------------------*/
+L.polyline(path, { color: "lime", weight: 4 }).addTo(map);
+
+/* --------------------------------------------
+   5. MARKER KENDARAAN BERGERAK
+---------------------------------------------*/
+var marker = L.marker(path[0], { icon: vehicleIcon }).addTo(map);
+
+let i = 0;
+function animate() {
+    if (i >= path.length - 1) i = 0;
+
+    let start = path[i];
+    let end = path[i + 1];
+    let step = 0;
+    let steps = 100;      // smooth animation
+    let delay = 80;       // kecepatan
+
+    let interval = setInterval(() => {
+        step++;
+        let lat = start[0] + (end[0] - start[0]) * (step / steps);
+        let lng = start[1] + (end[1] - start[1]) * (step / steps);
+
+        marker.setLatLng([lat, lng]);
+
+        if (step >= steps) {
+            clearInterval(interval);
+            i++;
+            animate();
+        }
+    }, delay);
+}
+
+animate();
 </script>
 
 </body>
