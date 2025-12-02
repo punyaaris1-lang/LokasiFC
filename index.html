@@ -26,8 +26,12 @@
         .loader { position: fixed; inset:0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease-out; }
         .loader-logo { width: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(204, 255, 0, 0.3)); animation: floatLogo 3s infinite; }
         @keyframes floatLogo { 0%{transform:translateY(0)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0)} }
+        
+        /* TEKS LOADER UPDATE */
         #animText1 { font-size: 1rem; color: var(--accent); margin-bottom: 5px; font-weight: 600; }
-        #animText2 { font-family: 'Syne'; font-size: 1.8rem; font-weight: 800; color: #fff; text-transform: uppercase; margin-bottom: 30px; text-align: center; }
+        #animText2 { font-family: 'Syne'; font-size: 1.8rem; font-weight: 800; color: #fff; text-transform: uppercase; margin-bottom: 10px; text-align: center; }
+        #animText3 { font-size: 0.9rem; color: var(--cyan); letter-spacing: 2px; font-weight: 700; text-transform: uppercase; margin-bottom: 40px; opacity: 0; transition: opacity 1s; text-align: center; }
+        
         .loader-actions { display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px; opacity: 0; transform: translateY(20px); transition: all 0.8s ease; }
         .loader-actions.show { opacity: 1; transform: translateY(0); }
         .btn-entry { padding: 15px; border-radius: 12px; font-weight: 800; text-transform: uppercase; border: none; width: 100%; cursor: pointer; }
@@ -39,7 +43,9 @@
         .header-text { display: flex; flex-direction: column; max-width: 60%; }
         .label-top { font-size: 0.7rem; color: var(--text-mute); letter-spacing: 1px; font-weight: 700; margin-bottom: 5px; }
         .header h1 { font-family: 'Inter', sans-serif; font-size: 10vw; margin: 0; line-height: 0.9; font-weight: 900; letter-spacing: -1px; color: #fff; }
-        .label-bottom { font-size: 0.75rem; color: var(--accent); letter-spacing: 1px; font-weight: 700; margin-top: 8px; }
+        
+        /* HEADER TEXT UPDATE */
+        .label-bottom { font-size: 0.75rem; color: var(--accent); letter-spacing: 1px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
 
         /* MENU KANAN ATAS */
         .top-menu { display: flex; gap: 10px; margin-top: 5px; position:absolute; right: 25px; top: 35px;}
@@ -59,8 +65,6 @@
         .hero-dist { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 8px; font-family: 'Syne'; font-size: 0.9rem; font-weight: 700; color: var(--accent); }
         .hero-name { font-family: 'Inter', sans-serif; font-size: clamp(1.8rem, 8vw, 2.2rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 5px; }
         .hero-info { font-size: 0.85rem; color: #aaa; margin-bottom: 20px; padding-left: 12px; border-left: 3px solid var(--accent); line-height: 1.5; }
-        
-        /* TOMBOL NAVIGASI HERO */
         .btn-nav-hero { display: block; width: 100%; padding: 14px; background: var(--accent); color: #000; text-align: center; text-decoration: none; font-weight: 800; border-radius: 12px; font-size: 0.9rem; letter-spacing: 0.5px; box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2); cursor: pointer; border: none; }
 
         /* LIST SECTION */
@@ -81,40 +85,62 @@
         .mini-info { font-size: 0.7rem; opacity: 0.8; margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px; line-height: 1.4; z-index: 2; color: inherit; }
         .mini-dist { font-size: 0.85rem; color: var(--accent); font-weight: 800; z-index: 2; text-align: right; margin-top: 5px; }
 
-        /* MODALS & MAP OVERLAY */
+        /* MAP OVERLAY (FULLSCREEN GAYA GRAB/GOJEK) */
+        .map-overlay { 
+            position: fixed; inset: 0; background: #111; z-index: 9999; 
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            display: flex; flex-direction: column; 
+        }
+        .map-overlay.active { transform: translateY(0); }
+        
+        /* PETA DI ATAS (BESAR) */
+        .map-container { flex: 1; width: 100%; background: #000; position: relative; }
+        
+        /* PANEL KONTROL DI BAWAH (SHEET) */
+        .map-controls { 
+            background: #1a1a1a; padding: 25px; 
+            border-top: 1px solid #333; border-radius: 24px 24px 0 0;
+            display: flex; flex-direction: column; gap: 15px; 
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+            position: relative; margin-top: -20px; /* Overlap map slightly */
+            z-index: 10000;
+        }
+        .map-title { font-family: 'Inter'; font-weight: 800; font-size: 1.4rem; color: #fff; margin: 0; }
+        .map-subtitle { font-size: 0.9rem; color: #aaa; margin: 0 0 10px 0; border-left: 3px solid var(--accent); padding-left: 10px; }
+        
+        .btn-gmaps-start { 
+            width: 100%; padding: 18px; background: var(--accent); color: #000; 
+            border: none; border-radius: 14px; font-weight: 800; text-transform: uppercase; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; 
+            text-decoration: none; font-size: 1rem;
+        }
+        .btn-map-close { 
+            position: absolute; top: 20px; left: 20px; 
+            background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,255,255,0.2);
+            width: 40px; height: 40px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem; cursor: pointer; z-index: 10001;
+        }
+
+        /* GLOSSY POPUP */
+        .leaflet-popup-content-wrapper { 
+            background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; border-radius: 12px; 
+        }
+        .leaflet-popup-tip { background: rgba(20, 20, 20, 0.85); }
+
+        /* MODALS */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; transform: translateY(100%); transition: 0.3s ease; display: flex; flex-direction: column; }
         .modal.show { transform: translateY(0); }
-        .modal-head { padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; background: #000; }
+        .modal-head { padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .close-btn { background: #222; border: 1px solid #333; color: #fff; font-size: 0.8rem; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 700; }
         .modal-body { padding: 25px; overflow-y: auto; flex: 1; }
         .modal-foot { padding: 20px; border-top: 1px solid #222; background: #050505; }
-        
-        /* MAP OVERLAY SPECIFIC */
-        #mapOverlay { z-index: 9000; } /* Paling atas */
-        .map-container { flex: 1; width: 100%; background: #111; }
-        .map-controls { background: #111; padding: 25px; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 15px; }
-        
-        /* GLOSSY MAP POPUP (REQUEST USER) */
-        .leaflet-popup-content-wrapper { 
-            background: rgba(0, 0, 0, 0.85); /* Hitam transparan */
-            backdrop-filter: blur(8px); /* Efek kaca */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px; 
-            color: #fff; font-family: 'Inter'; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .leaflet-popup-tip { background: rgba(0, 0, 0, 0.85); }
-        .leaflet-popup-content b { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; display:block; margin-bottom:4px;}
-        .leaflet-container a.leaflet-popup-close-button { color: #fff; }
-
-        .btn-gmaps-start { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; font-size: 0.95rem; }
-        .btn-map-close { width: 100%; padding: 12px; background: transparent; color: #fff; border: 1px solid #333; border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
-
+        .btn-close-bot { width: 100%; padding: 15px; border-radius: 12px; background: #111; border: 1px solid #333; color: var(--accent); font-weight: 800; cursor: pointer; text-transform: uppercase; }
         .help-row { background: #111; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; margin-bottom: 10px; border: 1px solid #222; }
         .news-item { margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
         .slide-box { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
         .slide-box img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Leaflet Attribution Hide */
         .leaflet-control-attribution { display: none !important; }
     </style>
 </head>
@@ -159,26 +185,26 @@
                 </div>
                 <h2 class="hero-name" id="heroName">Nama Lokasi</h2>
                 <div class="hero-info" id="heroInfo">Info Loading...</div>
-                
-                <button id="btnHeroNav" class="btn-nav-hero" onclick="openMapModal()">NAVIGASI SEKARANG ↗</button>
+                <button id="btnHeroNav" class="btn-nav-hero" onclick="openMapModal()">LIHAT DI PETA 📍</button>
             </div>
         </div>
     </div>
 
     <div class="list-section" id="mainListContainer"></div>
 
-    <div id="mapOverlay" class="modal">
-        <div class="modal-body" style="padding:0; display:flex; flex-direction:column;">
-            <div id="map" class="map-container"></div>
-            <div class="map-controls">
-                <div><h3 id="mapTitle" style="color:#fff; margin:0; font-family:'Inter';">Nama Lokasi</h3>
-                     <p id="mapSub" style="color:#888; font-size:0.8rem; margin:5px 0;">Jarak: -- KM</p></div>
-                
-                <a href="#" id="btnGmaps" target="_blank" class="btn-gmaps-start">
-                    BUKA GOOGLE MAPS APP ↗
-                </a>
-                <button class="btn-map-close" onclick="closeMapModal()">TUTUP PETA ✕</button>
+    <div id="mapOverlay" class="map-overlay">
+        <button class="btn-map-close" onclick="closeMapModal()">✕</button>
+        
+        <div id="map" class="map-container"></div>
+        
+        <div class="map-controls">
+            <div>
+                <h3 id="mapTitle" class="map-title">Nama Lokasi</h3>
+                <p id="mapSub" class="map-subtitle">Jarak: -- KM</p>
             </div>
+            <a href="#" id="btnGmaps" target="_blank" class="btn-gmaps-start">
+                MULAI JALAN (GOOGLE MAPS) ↗
+            </a>
         </div>
     </div>
 
@@ -200,7 +226,6 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
         const URL_LOKASI = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const URL_BERITA = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv"; 
@@ -253,30 +278,26 @@
             } catch(e) {}
         }
 
-        // MAP LOGIC (INTERNAL OVERLAY)
         function openMapModal(item) {
             if (!item) item = currentMapTarget;
             currentMapTarget = item;
 
-            document.getElementById('mapOverlay').classList.add('show');
+            document.getElementById('mapOverlay').classList.add('active');
             document.getElementById('mapTitle').innerText = item.name;
             document.getElementById('mapSub').innerText = `Jarak: ${item.dist ? item.dist.toFixed(1) : '--'} KM`;
             
             const realLink = (item.link && item.link.length > 10) ? item.link : `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
             document.getElementById('btnGmaps').href = realLink;
 
-            // INIT MAP (CARTO DARK - FREE & STABLE)
             setTimeout(() => {
-                if(map) map.remove();
-                map = L.map('map', {zoomControl: false}).setView([item.lat, item.lng], 15);
+                if(map) { map.remove(); map = null; }
+                map = L.map('map', {zoomControl: false}).setView([item.lat, item.lng], 14);
                 
+                // CARTO DARK MATTER (GRATIS & STABIL)
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; OpenStreetMap &copy; CARTO',
-                    subdomains: 'abcd',
-                    maxZoom: 19
+                    subdomains: 'abcd', maxZoom: 19
                 }).addTo(map);
 
-                // User Marker
                 if(userLat) {
                     const userIcon = L.divIcon({
                         className: 'custom-icon',
@@ -284,21 +305,21 @@
                         iconSize: [15, 15]
                     });
                     L.marker([userLat, userLng], {icon: userIcon}).addTo(map);
+                    // Fit Bounds
+                    const bounds = L.latLngBounds([[userLat, userLng], [item.lat, item.lng]]);
+                    map.fitBounds(bounds, {padding: [50, 100]}); // Padding bawah lebih besar karena ada panel
+                } else {
+                    map.setView([item.lat, item.lng], 15);
                 }
-
-                // Destination Marker
+                
+                // Marker Tujuan
                 L.marker([item.lat, item.lng]).addTo(map)
                  .bindPopup(`<b>${item.name}</b><br>${item.nozzle} Nozzle`).openPopup();
 
-                // Fit Bounds
-                if(userLat) {
-                    const bounds = L.latLngBounds([[userLat, userLng], [item.lat, item.lng]]);
-                    map.fitBounds(bounds, {padding: [50, 50]});
-                }
             }, 300);
         }
 
-        function closeMapModal() { document.getElementById('mapOverlay').classList.remove('show'); }
+        function closeMapModal() { document.getElementById('mapOverlay').classList.remove('active'); }
 
         function enterApp(mode) {
             document.getElementById('loader').style.opacity = '0';
@@ -318,7 +339,7 @@
                 let imgHTML = '';
                 if(images.length > 0) {
                     imgHTML = `<div class="slide-container">`;
-                    images.forEach(url => { imgHTML += `<div class="slide-box-multi"><img src="${url}"></div>`; });
+                    images.forEach(url => { imgHTML += `<div class="slide-box"><img src="${url}"></div>`; });
                     imgHTML += `</div>`;
                 }
                 container.innerHTML += `<div class="news-item">${imgHTML}<h3 style="color:var(--accent); margin-bottom:5px;">${cols[0]}</h3><p style="color:#aaa; font-size:0.85rem; margin-top:0;">${cols[1]}</p><p style="line-height:1.5; color:#ddd; font-size:0.9rem;">${cols[2]}</p></div>`;
