@@ -13,7 +13,7 @@
             --bg: #050505;
             --card: #111;
             --card-border: #222;
-            --accent: #CCFF00;
+            --accent: #CCFF00; /* Kuning Stabilo */
             --cyan: #00d2ff;
             --danger: #FF3B30;
             --text: #ffffff;
@@ -34,68 +34,93 @@
         .btn-entry.primary { background: var(--accent); color: #000; }
         .btn-entry.danger { background: rgba(255,59,48,0.2); border: 1px solid var(--danger); color: var(--danger); }
 
-        /* HEADER */
-        .header { padding: 20px 25px 10px; display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0; position: relative; }
-        .header-text { display: flex; flex-direction: column; }
+        /* HEADER & MENU ATAS */
+        .header { 
+            padding: 20px 25px 10px; 
+            display: flex; justify-content: space-between; align-items: flex-start;
+            flex-shrink: 0; position: relative; z-index: 50;
+        }
+        .header-text { display: flex; flex-direction: column; max-width: 65%; }
         .label-top { font-size: 0.7rem; color: var(--text-mute); letter-spacing: 1px; font-weight: 700; margin-bottom: 5px; }
-        .header h1 { font-family: 'Inter', sans-serif; font-size: 10vw; margin: 0; line-height: 0.9; font-weight: 900; letter-spacing: -1px; color: #fff; max-width: 70%; }
+        .header h1 { 
+            font-family: 'Inter', sans-serif; font-size: 10vw; margin: 0; line-height: 0.9; 
+            font-weight: 900; letter-spacing: -1px; color: #fff; 
+        }
         .label-bottom { font-size: 0.75rem; color: var(--accent); letter-spacing: 1px; font-weight: 700; margin-top: 8px; }
 
-        /* TOP MENU (FIXED COLOR) */
-        .top-menu { display: flex; gap: 10px; margin-top: 5px; position:absolute; right: 25px; top: 35px;}
+        /* MENU POJOK KANAN ATAS (BULAT) */
+        .top-menu { 
+            display: flex; gap: 8px; margin-top: 10px;
+        }
         .menu-btn { 
-            width: 40px; height: 40px; border-radius: 50%; 
-            background: #222; /* Lebih terang dikit dari bg */
-            border: 1px solid #444; /* Border lebih jelas */
+            width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+            background: rgba(255,255,255,0.1); border: 1px solid #333; 
             display: flex; align-items: center; justify-content: center; 
             color: #fff; cursor: pointer; transition: 0.2s; 
         }
         .menu-btn svg { width: 20px; height: 20px; fill: currentColor; }
         .menu-btn:active { transform: scale(0.9); background: var(--accent); color: #000; border-color: var(--accent); }
-        .menu-btn.sos { border-color: var(--danger); color: var(--danger); }
+        
+        .menu-btn.home { background: var(--accent); color: #000; border-color: var(--accent); } /* Home Active */
+        .menu-btn.sos { border-color: var(--danger); color: var(--danger); background: rgba(255, 59, 48, 0.1); }
         .menu-btn.sos:active { background: var(--danger); color: #fff; }
 
-        /* HERO CARD */
+        /* HERO SECTION */
         .hero-section { padding: 10px 25px; margin-bottom: 20px; flex-shrink: 0; }
-        .hero-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; min-height: 180px; justify-content: center; }
-        .hero-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .hero-card { 
+            background: var(--card); border: 1px solid var(--card-border); 
+            border-radius: 24px; padding: 20px; 
+            position: relative; overflow: hidden; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            display: flex; flex-direction: column; min-height: 180px; justify-content: center; 
+        }
+        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; }
         .gps-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 1s infinite; }
         @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
-        .hero-dist { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 8px; font-family: 'Syne'; font-size: 0.9rem; font-weight: 700; color: var(--accent); }
-        .hero-name { font-family: 'Inter', sans-serif; font-size: clamp(1.8rem, 8vw, 2.2rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 5px; }
+        
+        .hero-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .hero-dist { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); padding: 4px 10px; border-radius: 8px; font-family: 'Syne'; font-size: 0.9rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .hero-name { font-family: 'Inter', sans-serif; font-size: clamp(1.8rem, 8vw, 2.2rem); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 5px; margin-right: 10px;}
         .hero-info { font-size: 0.85rem; color: #aaa; margin-bottom: 20px; padding-left: 12px; border-left: 3px solid var(--accent); line-height: 1.5; }
         .btn-nav-hero { display: block; width: 100%; padding: 14px; background: var(--accent); color: #000; text-align: center; text-decoration: none; font-weight: 800; border-radius: 12px; font-size: 0.9rem; letter-spacing: 0.5px; box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2); cursor: pointer; border: none; }
 
         /* LIST SECTION */
-        .list-section { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+        .list-section { flex: 1; overflow-y: auto; padding-bottom: 50px; } /* Padding bawah normal karena ga ada menu bawah */
         .city-group { margin-bottom: 30px; }
         .city-header { padding: 0 25px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .city-title { color: var(--text); font-family: 'Syne'; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
         .city-line { height: 1px; background: #333; flex-grow: 1; }
         .h-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 0 25px; scroll-snap-type: x mandatory; scrollbar-width: none; }
         .h-scroll::-webkit-scrollbar { display: none; }
-        .mini-card { min-width: 160px; width: 160px; height: 190px; border-radius: 18px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start; flex-shrink: 0; text-decoration: none; position: relative; overflow: hidden; transition: transform 0.2s; cursor: pointer; }
+        
+        .mini-card { 
+            min-width: 160px; width: 160px; height: 190px; 
+            border-radius: 18px; padding: 15px; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            scroll-snap-align: start; flex-shrink: 0; text-decoration: none; position: relative; overflow: hidden; 
+            transition: transform 0.2s; cursor: pointer; 
+        }
         .mini-card:active { transform: scale(0.95); }
         .style-1 { background: linear-gradient(145deg, #111, #1a1a1a); border: 1px solid #333; color: white; }
         .style-2 { background: linear-gradient(145deg, #022c22, #064e3b); border: 1px solid #065f46; color: #d1fae5; }
         .style-3 { background: linear-gradient(145deg, #0f172a, #1e293b); border: 1px solid #1e3a8a; color: #bfdbfe; }
+        
         .bg-bolt { position: absolute; right: -10px; bottom: -20px; font-size: 5rem; opacity: 0.1; transform: rotate(-15deg); pointer-events: none; color: #fff; }
         .mini-top h3 { margin: 0 0 8px 0; font-size: 0.9rem; line-height: 1.3; font-weight: 700; color: inherit; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .mini-info { font-size: 0.7rem; opacity: 0.8; margin-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px; line-height: 1.4; z-index: 2; color: inherit; }
         .mini-dist { font-size: 0.85rem; color: var(--accent); font-weight: 800; z-index: 2; text-align: right; margin-top: 5px; }
 
-        /* NAV DOCK */
-        .nav-dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(15px); border: 1px solid #333; border-radius: 60px; padding: 12px 40px; display: flex; gap: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 1000; }
-        .nav-item { background: none; border: none; color: #666; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 50px; }
-        .nav-item svg { width: 24px; height: 24px; fill: currentColor; transition: fill 0.2s; }
-        .nav-item span { font-size: 0.6rem; font-weight: 700; transition: color 0.2s; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item.active svg { fill: var(--accent); }
-        .nav-item.sos.active { color: var(--danger); }
-        .nav-item.sos.active svg { fill: var(--danger); }
+        /* FULLSCREEN MAP OVERLAY */
+        .map-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; }
+        .map-overlay.active { transform: translateY(0); }
+        .map-container { flex: 1; width: 100%; background: #111; position: relative; }
+        .map-controls { background: #111; padding: 25px; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+        .map-title { font-family: 'Inter'; font-weight: 800; font-size: 1.2rem; color: #fff; margin: 0; }
+        .map-subtitle { font-size: 0.8rem; color: #888; margin: 0 0 10px 0; }
+        .btn-gmaps-start { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; font-size: 0.95rem; }
+        .btn-map-close { width: 100%; padding: 12px; background: transparent; color: #fff; border: 1px solid #333; border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
 
-        /* MODAL FULLSCREEN (Berita & SOS) */
+        /* MODALS */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; transform: translateY(100%); transition: 0.3s ease; display: flex; flex-direction: column; }
         .modal.show { transform: translateY(0); }
         .modal-head { padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
@@ -104,44 +129,12 @@
         .modal-foot { padding: 20px; border-top: 1px solid #222; background: #050505; }
         .btn-close-bot { width: 100%; padding: 15px; border-radius: 12px; background: #111; border: 1px solid #333; color: var(--accent); font-weight: 800; cursor: pointer; text-transform: uppercase; }
         .help-row { background: #111; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; margin-bottom: 10px; border: 1px solid #222; }
-        
-        /* BERITA FIX */
-        .news-item { margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px; }
-        .slide-container { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: flex; scroll-snap-type: x mandatory; overflow-x: scroll; scroll-behavior: smooth; scrollbar-width: none;}
-        .slide-box-multi { min-width: 100%; height: 100%; scroll-snap-align: start; position: relative; }
-        .slide-box-multi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .news-item { margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .slide-box { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 15px; }
+        .slide-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* MAP MODAL (FULLSCREEN OVERLAY) */
-        .map-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 9999; 
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: flex; flex-direction: column;
-        }
-        .map-overlay.active { transform: translateY(0); }
-        
-        .map-container { flex: 1; width: 100%; background: #111; position: relative; }
-        .map-controls { 
-            background: #111; padding: 25px; border-top: 1px solid #333; 
-            display: flex; flex-direction: column; gap: 15px; 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-        }
-        .map-title { font-family: 'Inter'; font-weight: 800; font-size: 1.2rem; color: #fff; margin: 0; }
-        .map-subtitle { font-size: 0.8rem; color: #888; margin: 0 0 10px 0; }
-        
-        .btn-gmaps-start {
-            width: 100%; padding: 16px; background: var(--accent); color: #000;
-            border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-decoration: none; font-size: 0.95rem;
-        }
-        .btn-map-close {
-            width: 100%; padding: 12px; background: transparent; color: #fff;
-            border: 1px solid #333; border-radius: 12px; font-weight: 700;
-            cursor: pointer; text-transform: uppercase; font-size: 0.85rem;
-        }
-        /* Hide Leaflet attribution for cleaner look */
+        /* Leaflet Fixes */
         .leaflet-control-attribution { display: none !important; }
-
     </style>
 </head>
 <body>
@@ -150,7 +143,7 @@
         <img src="mlu-logo.png" alt="Logo" class="loader-logo">
         <div id="animText1">SELAMAT DATANG</div>
         <div id="animText2">SAHABAT MLU</div>
-        <div id="animText3">• HOME OF MLU •</div>
+        <div id="animText3">• MLU | Mau Ape Lu •</div>
         <div class="loader-actions" id="loaderBtns">
             <button class="btn-entry primary" onclick="enterApp('home')">LOKASI FC ⚡</button>
             <button class="btn-entry danger" onclick="enterApp('sos')">BANTUAN SOS 🚨</button>
@@ -161,11 +154,18 @@
         <div class="header-text">
             <div class="label-top">LOKASI</div>
             <h1>FAST<br>CHARGING</h1>
-            <div class="label-bottom">APA YANG BISA DIBANTU?</div>
+            <div class="label-bottom">MAKA LINTAS UTARA</div>
         </div>
         <div class="top-menu">
-            <button class="menu-btn" onclick="nav('news')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></button>
-            <button class="menu-btn sos" onclick="nav('sos')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></button>
+            <button class="menu-btn home" title="Home">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </button>
+            <button class="menu-btn" onclick="nav('news')" title="Info">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            </button>
+            <button class="menu-btn sos" onclick="nav('sos')" title="SOS">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </button>
         </div>
     </div>
 
@@ -192,22 +192,11 @@
 
     <div class="list-section" id="mainListContainer"></div>
 
-    <div class="nav-dock">
-        <button class="nav-icon" onclick="nav('news')"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>INFO</span></button>
-        <button class="nav-icon active" onclick="nav('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>HOME</span></button>
-        <button class="nav-icon sos" onclick="nav('sos')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>SOS</span></button>
-    </div>
-
     <div id="mapOverlay" class="map-overlay">
         <div id="map" class="map-container"></div>
         <div class="map-controls">
-            <div>
-                <h3 id="mapTitle" class="map-title">Nama Lokasi</h3>
-                <p id="mapSub" class="map-subtitle">Jarak: -- KM</p>
-            </div>
-            <a href="#" id="btnGmaps" target="_blank" class="btn-gmaps-start">
-                BUKA GOOGLE MAPS ↗
-            </a>
+            <div><h3 id="mapTitle" class="map-title">Nama Lokasi</h3><p id="mapSub" class="map-subtitle">Jarak: -- KM</p></div>
+            <a href="#" id="btnGmaps" target="_blank" class="btn-gmaps-start">MULAI JALAN (GOOGLE MAPS) ↗</a>
             <button class="btn-map-close" onclick="closeMapModal()">TUTUP PETA ✕</button>
         </div>
     </div>
@@ -232,7 +221,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        // --- GANTI TOKEN JAWG ANDA DISINI ---
         const JAWG_API = "v3yvK4k0D3Qk4oH8A0aL2y0P9c0o9d0eC80d0e"; 
+        
         const URL_LOKASI = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const URL_BERITA = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv"; 
 
@@ -284,34 +275,38 @@
             } catch(e) {}
         }
 
-        // --- MAP LOGIC (FULLSCREEN) ---
         function openMapModal(item) {
-            if (!item) item = currentMapTarget; // Use hero item if arg missing
+            if (!item) item = currentMapTarget;
             currentMapTarget = item;
 
             document.getElementById('mapOverlay').classList.add('active');
             document.getElementById('mapTitle').innerText = item.name;
             document.getElementById('mapSub').innerText = `Jarak: ${item.dist ? item.dist.toFixed(1) : '--'} KM`;
             
-            // Set Google Maps Link
-            const realLink = (item.link && item.link.length > 10) ? item.link : `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`;
+            const realLink = (item.link && item.link.length > 10) ? item.link : `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
             document.getElementById('btnGmaps').href = realLink;
 
-            // Render Leaflet
             setTimeout(() => {
                 if(map) map.remove();
                 map = L.map('map', {zoomControl: false}).setView([item.lat, item.lng], 15);
                 
+                // PAKE JAWG MAPS (Pastikan Token Benar)
                 L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
 
-                // Markers
+                // MARKER USER
                 if(userLat) {
-                    const userIcon = L.divIcon({className: 'gps-dot', iconSize: [12,12]});
+                    const userIcon = L.divIcon({
+                        className: 'custom-icon',
+                        html: '<div style="width:15px;height:15px;background:#CCFF00;border-radius:50%;box-shadow:0 0 10px #CCFF00;"></div>',
+                        iconSize: [15, 15]
+                    });
                     L.marker([userLat, userLng], {icon: userIcon}).addTo(map);
                 }
+
+                // MARKER TUJUAN
                 L.marker([item.lat, item.lng]).addTo(map).bindPopup(item.name).openPopup();
 
-                // Fit Bounds if user exists
+                // FIT BOUNDS
                 if(userLat) {
                     const bounds = L.latLngBounds([[userLat, userLng], [item.lat, item.lng]]);
                     map.fitBounds(bounds, {padding: [50, 50]});
@@ -319,9 +314,7 @@
             }, 300);
         }
 
-        function closeMapModal() {
-            document.getElementById('mapOverlay').classList.remove('active');
-        }
+        function closeMapModal() { document.getElementById('mapOverlay').classList.remove('active'); }
 
         function enterApp(mode) {
             document.getElementById('loader').style.opacity = '0';
@@ -336,33 +329,16 @@
             rows.forEach(r => {
                 const cols = r.split(','); 
                 if(cols.length < 3) return;
-                
                 let images = [];
-                cols.forEach(val => {
-                    if(val.includes('http') && (val.includes('.jpg') || val.includes('.png') || val.includes('ibb'))) {
-                        images.push(val);
-                    }
-                });
-
+                cols.forEach(val => { if(val.includes('http') && (val.includes('.jpg') || val.includes('.png') || val.includes('ibb'))) images.push(val); });
                 let imgHTML = '';
                 if(images.length > 0) {
                     imgHTML = `<div class="slide-container">`;
-                    images.forEach(url => {
-                        imgHTML += `<div class="slide-box-multi"><img src="${url}"></div>`;
-                    });
+                    images.forEach(url => { imgHTML += `<div class="slide-box-multi"><img src="${url}"></div>`; });
                     imgHTML += `</div>`;
                 }
-
                 container.innerHTML += `<div class="news-item">${imgHTML}<h3 style="color:var(--accent); margin-bottom:5px;">${cols[0]}</h3><p style="color:#aaa; font-size:0.85rem; margin-top:0;">${cols[1]}</p><p style="line-height:1.5; color:#ddd; font-size:0.9rem;">${cols[2]}</p></div>`;
             });
-            
-            // Auto Slide News
-            setInterval(() => {
-                document.querySelectorAll('.slide-container').forEach(slider => {
-                    if (slider.scrollLeft >= (slider.scrollWidth - slider.clientWidth)) slider.scrollTo({left: 0, behavior: 'smooth'});
-                    else slider.scrollBy({left: slider.clientWidth, behavior: 'smooth'});
-                });
-            }, 3000);
         }
 
         function getDist(lat1, lon1, lat2, lon2) {
@@ -370,46 +346,34 @@
             const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
             return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
         }
+        function getMapLink(i) {
+            if(i.link && i.link.length > 10) return i.link;
+            if(userLat) return `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${i.lat},${i.lng}&travelmode=motorcycle`;
+            return `https://www.google.com/maps/search/?api=1&query=${i.lat},${i.lng}`;
+        }
 
         function processData() {
             if(userLat) { 
                 chargers.forEach(c => c.dist=parseFloat(getDist(userLat,userLng,c.lat,c.lng))); 
-                chargers.sort((a,b)=> {
-                    if(isNaN(a.dist)) return 1;
-                    if(isNaN(b.dist)) return -1;
-                    return a.dist-b.dist;
-                });
+                chargers.sort((a,b)=> { if(isNaN(a.dist)) return 1; if(isNaN(b.dist)) return -1; return a.dist-b.dist; });
             }
             
             if(chargers.length > 0) {
                 const n = chargers[0];
-                currentMapTarget = n; // Simpan target terdekat
-
+                currentMapTarget = n;
                 document.getElementById('scanState').style.display = 'none';
                 document.getElementById('foundState').style.display = 'flex';
-                
                 document.getElementById('heroName').innerText = n.name;
                 document.getElementById('heroDist').innerText = n.dist.toFixed(1) + ' KM';
                 document.getElementById('heroInfo').innerText = `${n.city} • ${n.type}\n${n.nozzle} Nozzle • ${n.cost}`;
-                
-                // BIND TOMBOL HERO KE FUNGSI MAP MODAL
-                document.getElementById('btnHeroAction').onclick = function() { openMapModal(n); };
-
+                document.getElementById('btnHeroNav').onclick = function() { openMapModal(n); };
                 renderList();
             }
         }
 
         function renderList() {
             const listCont = document.getElementById('mainListContainer');
-            // Simpan scroll
-            let scrollState = {};
-            document.querySelectorAll('.city-group').forEach(group => {
-                const title = group.querySelector('.city-title').innerText;
-                scrollState[title] = group.querySelector('.h-scroll').scrollLeft;
-            });
-
             listCont.innerHTML = ''; 
-
             let grouped = {};
             for(let i=0; i<chargers.length; i++) {
                 let item = chargers[i];
@@ -417,42 +381,21 @@
                 if(!grouped[city]) grouped[city] = [];
                 grouped[city].push(item);
             }
-
             let colorIdx = 0;
             Object.keys(grouped).forEach(city => {
-                let groupHTML = `
-                <div class="city-group">
-                    <div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div>
-                    <div class="h-scroll">`;
-                
+                let groupHTML = `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`;
                 grouped[city].forEach(item => {
                     let styleClass = `style-${(colorIdx % 3) + 1}`;
                     colorIdx++;
-                    // PENTING: Kirim Objek item ke fungsi
-                    // Kita simpan data di atribut data-json agar aman
-                    let itemJson = JSON.stringify(item).replace(/"/g, '&quot;');
-                    
                     groupHTML += `
-                    <div class="mini-card ${styleClass}" onclick='openMapModal(${JSON.stringify(item)})'>
+                    <div onclick='openMapModal(${JSON.stringify(item).replace(/'/g, "\\'")})' class="mini-card ${styleClass}">
                         <div class="bg-bolt">⚡</div>
-                        <div class="mini-top">
-                            <h3>${item.name}</h3>
-                            <div class="mini-info">${item.type}<br>${item.nozzle} Nozzle • ${item.cost}</div>
-                        </div>
-                        <div class="mini-bot">
-                            <div class="mini-dist">${item.dist ? item.dist.toFixed(1)+' KM' : ''}</div>
-                        </div>
+                        <div class="mini-top"><h3>${item.name}</h3><div class="mini-info">${item.type}<br>${item.nozzle} Nozzle • ${item.cost}</div></div>
+                        <div class="mini-bot"><div class="mini-dist">${item.dist ? item.dist.toFixed(1)+' KM' : ''}</div></div>
                     </div>`;
                 });
-                
                 groupHTML += `</div></div>`;
                 listCont.innerHTML += groupHTML;
-            });
-
-            // Restore scroll
-            document.querySelectorAll('.city-group').forEach(group => {
-                const title = group.querySelector('.city-title').innerText;
-                if(scrollState[title]) group.querySelector('.h-scroll').scrollLeft = scrollState[title];
             });
         }
 
@@ -461,9 +404,7 @@
             if(p==='news') document.getElementById('modal-news').classList.add('show');
             if(p==='sos') document.getElementById('modal-sos').classList.add('show');
         }
-        function closeModal() {
-            document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
-        }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
 
         function animateText(id, txt, delay) {
             const el = document.getElementById(id);
@@ -480,7 +421,6 @@
             loadDataBackground();
         }
         runIntro();
-
     </script>
 </body>
 </html>
