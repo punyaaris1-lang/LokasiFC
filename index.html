@@ -23,79 +23,84 @@
             --glass-bg: rgba(12, 20, 35, 0.95);
             --glass-border: rgba(0, 243, 255, 0.4);
             --danger: #ff2a6d;
-            --wa-color: #25D366;
             --text: #ffffff;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; background-color: var(--bg-dark); background-image: linear-gradient(180deg, #020408 0%, #0a1525 100%); color: var(--text); font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        #bgLogoFull { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%; height: 100%; pointer-events: none; z-index: 0; background: url('mlu-logo.png') center center no-repeat; background-size: contain; opacity: 0.1; filter: grayscale(100%) drop-shadow(0 0 30px var(--deep-blue)); display: none; }
+        /* LOGO BG */
+        #bgLogoFull { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%; height: 100%; pointer-events: none; z-index: 0; background: url('mlu-logo.png') center center no-repeat; background-size: contain; opacity: 0.15; filter: grayscale(100%) drop-shadow(0 0 30px var(--deep-blue)); display: none; }
         #bgLogoFull.visible { display: block; animation: breathe 6s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { opacity: 0.1; transform: scale(0.9); } 50% { opacity: 0.15; transform: scale(0.95); } }
+        @keyframes breathe { 0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(0.9); } 50% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.95); } }
 
-        /* HEADER */
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
-        .header h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0; line-height: 0.9; color: #fff; }
-        .label-top { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
-        .top-controls { display: flex; align-items: center; gap: 8px; }
-        .toggle-mode { background: #111; border: 1px solid #333; border-radius: 20px; display: flex; padding: 2px; }
-        .t-btn { padding: 5px 12px; font-size: 0.65rem; font-weight: 800; color: #888; cursor: pointer; border-radius: 18px; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
-        .t-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
-        .btn-home-mini { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border: 1px solid #333; color: #fff; cursor: pointer; }
+        /* HOME TITLE DESIGN (FIXED) */
+        .home-header { text-align: center; margin-bottom: 40px; position: relative; z-index: 2; }
+        .app-title {
+            font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; color: #fff;
+            text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--deep-blue);
+            margin: 0; letter-spacing: 2px;
+        }
+        .app-subtitle {
+            background: linear-gradient(90deg, #0044ff, #00ccff);
+            padding: 6px 20px; border-radius: 30px; font-size: 0.75rem; font-weight: 800; color: #fff;
+            display: inline-block; margin-top: 10px; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); text-transform: uppercase; font-family: 'Orbitron';
+        }
 
         /* VIEWS */
         #view-home, #view-fc, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; display: none; position: relative; z-index: 10; }
         #view-home.active, #view-fc.active, #view-queue.active { display: flex; flex-direction: column; }
 
-        /* HOME */
-        .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 25px; }
+        /* HOME CONTAINER */
+        .home-container { padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; gap: 20px; }
         .menu-grid { display: grid; gap: 18px; width: 100%; max-width: 380px; }
-        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .glass-btn { 
+            background: linear-gradient(135deg, rgba(12, 20, 35, 0.85), rgba(0, 0, 0, 0.7)); 
+            border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(8px); 
+            border-radius: 18px; padding: 18px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; 
+            transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.4); position: relative; overflow: hidden;
+        }
         .glass-btn:active { transform: scale(0.97); border-color: var(--neon-blue); }
-        .menu-icon-box { width: 48px; height: 48px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
+        .menu-icon-box { width: 50px; height: 50px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
         .menu-text h3 { font-size: 1.1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
         .menu-text span { font-size: 0.75rem; color: #aaa; font-weight: bold; }
-        .mitra-area { width: 100%; max-width: 380px; margin-top: 15px; }
+
+        .mitra-area { width: 100%; max-width: 380px; margin-top: 20px; }
         .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .mitra-btn { flex-direction: column; padding: 15px; text-align: center; gap: 8px; }
 
         /* LIST FC */
-        #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; display: block; }
-        .hero-card { margin: 15px 20px; background: var(--glass-bg); border: 1px solid var(--neon-blue); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
-        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
-        .gps-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
-        .dist-badge { position: absolute; top: 20px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
+        .header-fc { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
+        .header-fc h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0; color: #fff; }
+        .toggle-mode { background: #111; border: 1px solid #333; border-radius: 20px; display: flex; padding: 2px; }
+        .t-btn { padding: 5px 12px; font-size: 0.65rem; font-weight: 800; color: #888; cursor: pointer; border-radius: 18px; display: flex; align-items: center; gap: 5px; }
+        .t-btn.active { background: var(--neon-blue); color: #000; }
+        .btn-home-mini { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border: 1px solid #333; color: #fff; cursor: pointer; }
+
+        #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; }
+        /* HERO FULL WIDTH FIXED */
+        .hero-card { margin: 15px 0; width: 100%; background: rgba(12, 20, 35, 0.95); border-top: 1px solid var(--neon-blue); border-bottom: 1px solid var(--neon-blue); padding: 30px 20px; position: relative; box-shadow: 0 0 25px rgba(0, 243, 255, 0.1); }
+        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
+        .blink-me { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.3; } }
+        .dist-badge { position: absolute; top: 30px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
         
-        .city-group { margin-bottom: 25px; }
         .city-header { padding: 0 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
         .city-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px var(--deep-blue); }
         .city-line { height: 1px; background: #333; flex-grow: 1; }
         .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        
-        .mini-card { 
-            min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; 
-            display: flex; flex-direction: column; justify-content: space-between; 
-            scroll-snap-align: start; position: relative; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); 
-        }
+        .mini-card { min-width: 160px; width: 160px; height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
         .style-1 { background: linear-gradient(135deg, #0b101a, #1a237e); border-color: #2979ff; }
         .style-2 { background: linear-gradient(135deg, #001514, #004d40); border-color: #00bfa5; }
         .style-3 { background: linear-gradient(135deg, #1a1a1a, #333); border-color: #555; }
-        .bg-bolt { position: absolute; right: -10px; bottom: -20px; font-size: 5rem; opacity: 0.1; color: #fff; transform: rotate(-15deg); }
-        .mini-top h3 { margin: 0 0 5px 0; font-size: 0.8rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; z-index: 2; position: relative; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .mini-info { font-size: 0.65rem; opacity: 0.8; z-index: 2; position: relative; color: #ddd; }
-        .mini-dist { font-size: 0.85rem; font-weight: 800; text-align: right; color: var(--neon-blue); z-index: 2; position: relative; margin-top: auto; }
         .btn-go-list { background: var(--neon-blue); color: #000; font-weight: 800; border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: auto; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.7rem; z-index: 5; }
 
         /* MAP */
         #fc-map-container { flex: 1; width: 100%; height: 100%; display: none; position: relative; }
         #fullMap { width: 100%; height: 100%; }
-        .btn-map-back { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; padding: 10px 25px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-blue); border-radius: 20px; color: #fff; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; box-shadow: 0 0 15px rgba(0,243,255,0.3); backdrop-filter: blur(5px); }
-        .leaflet-popup-content-wrapper { background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--neon-blue); color: #fff; border-radius: 12px; padding: 0; overflow: hidden; }
+        .btn-map-back { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; padding: 10px 25px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-blue); border-radius: 20px; color: #fff; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; backdrop-filter: blur(5px); }
+        .leaflet-popup-content-wrapper { background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--neon-blue); color: #fff; border-radius: 12px; }
         .leaflet-popup-tip { background: var(--neon-blue); }
-        .popup-content { padding: 15px; text-align: center; }
-        .popup-btn { display: block; width: 100%; padding: 10px; background: var(--neon-blue); color: #000; font-weight: bold; text-decoration: none; text-align: center; margin-top: 10px; border-radius: 5px; font-family: 'Orbitron'; }
         .user-pulse { width: 15px; height: 15px; background: var(--neon-blue); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 15px var(--neon-blue); animation: userPulse 2s infinite; }
         @keyframes userPulse { 0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(0, 243, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); } }
 
@@ -104,7 +109,7 @@
         .btn-back { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 12px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .q-container { padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; overflow-y: auto; }
         .glass-card { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-        .form-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-bottom: 2px solid var(--deep-blue); border-radius: 8px; color: #fff; font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; text-align: center; outline: none; margin-bottom: 12px; }
+        .form-input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-bottom: 2px solid var(--deep-blue); border-radius: 8px; color: #fff; font-family: 'Rajdhani'; font-weight: 700; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 12px; }
         .btn-daftar { width: 100%; padding: 12px; border-radius: 10px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; margin-top: 5px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
         
         .q-dashboard { background: linear-gradient(135deg, #0b101a, #000); border: 1px solid var(--deep-blue); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
@@ -120,13 +125,16 @@
         .bolt-anim { font-size: 18px; color: #000; animation: blinkBolt 1s infinite; }
         @keyframes blinkBolt { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .btn-wa-notif { padding: 5px 8px; font-size: 0.6rem; border: none; border-radius: 5px; cursor: pointer; background: var(--wa-color); color: #fff; font-weight: bold; margin-top: 5px; text-decoration: none; display: flex; align-items: center; gap: 5px; justify-content: center; width: 100%; }
-        
         .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--danger); position: relative; }
         .adm-btn { width: 100%; padding: 8px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
-        .btn-close-adm { position: absolute; top: 10px; right: 10px; color: #888; background: none; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; color: var(--danger); }
+        .btn-close-adm { position: absolute; top: 10px; right: 10px; color: var(--danger); background: none; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
         
+        .slide-container { width: 100%; overflow: hidden; border-radius: 15px; margin-bottom: 20px; aspect-ratio: 16/9; position: relative; border: 1px solid #333; }
+        .slide-wrapper { display: flex; transition: transform 0.5s ease-in-out; height: 100%; }
+        .slide-item { min-width: 100%; height: 100%; }
+        .slide-item img { width: 100%; height: 100%; object-fit: cover; }
+
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-box { background: #0b101a; border: 1px solid var(--neon-blue); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
@@ -143,9 +151,9 @@
 
     <div id="view-home">
         <div class="home-container">
-            <div class="main-title">
-                <h1 style="color:var(--neon-blue); font-size:2.5rem; text-shadow:0 0 20px var(--deep-blue); margin-bottom: 5px;">MLU APPS</h1>
-                <div style="font-size:0.8rem; background:var(--deep-blue); padding:3px 12px; border-radius:4px; display:inline-block; font-weight:bold; letter-spacing:1px;">MAKA LINTAS UTARA SQUAD</div>
+            <div class="home-header">
+                <h1 class="app-title">MLU APPS</h1>
+                <div class="app-subtitle">MAKA LINTAS UTARA SQUAD</div>
             </div>
 
             <div class="menu-grid">
@@ -180,11 +188,10 @@
     </div>
 
     <div id="view-fc">
-        <div class="header">
+        <div class="header-fc">
             <div class="header-text">
                 <div class="label-top">LOKASI</div>
-                <h1>FAST<br>CHARGING</h1>
-                <div class="label-bottom">MAKA LINTAS UTARA</div>
+                <h1>FAST CHARGING</h1>
             </div>
             <div class="top-controls">
                 <div class="toggle-mode">
@@ -196,12 +203,7 @@
         </div>
 
         <div id="fc-list-container">
-            <div id="heroContainer" style="padding:0 20px; margin-top: 15px;">
-                <div class="glass-card" style="text-align:center; padding:30px;">
-                    <div class="gps-dot" style="width:15px; height:15px; margin:0 auto 10px;"></div>
-                    <div style="color:#888; font-size:0.9rem;">Mencari lokasi terdekat...</div>
-                </div>
-            </div>
+            <div id="heroContainer" style="padding:0 20px; margin-top: 15px;"></div>
             <div id="otherListContainer" style="margin-top:20px;"></div>
         </div>
 
@@ -223,7 +225,6 @@
             </div>
             
             <div style="text-align:center; margin-top:20px; margin-bottom:5px; font-family:'Orbitron'; color:#fff; letter-spacing:2px;">STATUS SLOT (LIVE)</div>
-            
             <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
             
             <div class="q-dashboard">
@@ -252,7 +253,18 @@
     </div>
 
     <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger); margin-bottom:15px;">DARURAT (SOS)</h3><a href="https://wa.me/6287722285445" class="glass-btn" style="margin-bottom:10px;"><span style="font-size:1.5rem;">🚑</span> TOWING / MOGOK</a><a href="https://wa.me/6283179721893" class="glass-btn"><span style="font-size:1.5rem;">🚨</span> URC KECELAKAAN</a><button onclick="closeModal()" class="adm-btn" style="margin-top:20px;">TUTUP</button></div></div>
-    <div id="modal-news" class="modal"><div class="modal-box" style="max-width:400px; height:80vh; display:flex; flex-direction:column;"><h3 style="margin-bottom:15px;">INFO & EVENT</h3><div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc;">Memuat Berita...</div><button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button></div></div>
+    
+    <div id="modal-news" class="modal">
+        <div class="modal-box" style="max-width:400px; height:auto; display:flex; flex-direction:column;">
+            <h3 style="margin-bottom:15px;">INFO & EVENT</h3>
+            <div id="slideFrame" class="slide-container">
+                <div id="slideWrapper" class="slide-wrapper"></div>
+            </div>
+            <div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc; max-height: 250px;">Memuat Info...</div>
+            <button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button>
+        </div>
+    </div>
+    
     <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg" style="margin:15px 0; color:#ddd;">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none; margin-bottom:15px;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -331,7 +343,7 @@
             document.querySelectorAll('.h-scroll').forEach((el, idx) => { scrolls[idx] = el.scrollLeft; });
 
             const n = chargers[0];
-            const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
+            const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status blink-me"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
             document.getElementById('heroContainer').innerHTML = heroHTML;
 
             let listHTML = '';
@@ -376,9 +388,38 @@
             }, 300);
         }
 
-        async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
+        // === SLIDESHOW & NEWS ===
+        async function loadNews() {
+            try { 
+                const t = await fetch(NEWS_API).then(r=>r.text()); 
+                const r = t.split('\n').slice(1).map(x=>x.split(',')); 
+                let imgHTML = ''; let txtHTML = '';
+                r.forEach(c => { 
+                    if(c.length>2) {
+                        // Regex cari link gambar di kolom 3 atau 4
+                        let imgUrl = c[3] || (c[2].match(/http\S+\.(jpg|png|jpeg)/gi) || [])[0];
+                        if(imgUrl) imgHTML += `<div class="slide-item"><img src="${imgUrl}"></div>`;
+                        txtHTML+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; 
+                    }
+                }); 
+                document.getElementById('newsContent').innerHTML = txtHTML || 'Tidak ada berita.';
+                
+                const wrap = document.getElementById('slideWrapper');
+                if(imgHTML) {
+                    wrap.innerHTML = imgHTML;
+                    let idx = 0; const items = wrap.children;
+                    if(items.length > 1) {
+                        setInterval(() => {
+                            idx = (idx + 1) % items.length;
+                            wrap.style.transform = `translateX(-${idx * 100}%)`;
+                        }, 3000); // 3 detik ganti slide
+                    }
+                } else { document.getElementById('slideFrame').style.display='none'; }
 
-        // === NEW LIMIT LOGIC HELPER ===
+            } catch(e){} 
+        }
+
+        // === QUEUE LOGIC (UPDATED LIMIT) ===
         function getDynamicLimit(count) {
             if(count > 10) return 85;
             if(count >= 6) return 90;
@@ -386,7 +427,6 @@
             return 100;
         }
 
-        // === DURATION CALCULATION ===
         function getDuration(startBat, limit) {
             let total = 0;
             for(let i=startBat; i<limit; i++) {
@@ -417,7 +457,7 @@
                     let s = d.chargingSlots || [null,null,null]; let q = d.waitingQueue || []; if(s.some(x=>x?.name===p) || q.some(x=>x?.name===p)) throw "Sudah terdaftar!";
                     let empty = s.findIndex(x=>!x);
                     
-                    // USE NEW LIMIT LOGIC
+                    // NEW LOGIC LIMIT
                     let limit = getDynamicLimit(q.length);
                     let dur = getDuration(b, limit);
 
@@ -431,7 +471,7 @@
                 const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
                 
-                // UPDATE LIMIT DISPLAY
+                // UPDATE LIMIT TEXT
                 document.getElementById('limitInfo').innerText = `MAX: ${getDynamicLimit(q.length)}%`;
 
                 s.forEach(x => {
@@ -453,7 +493,7 @@
                         if(left > 0) { let m = Math.floor(left/60000); let sc = Math.floor((left%60000)/1000); txt = `${m}:${sc<10?'0'+sc:sc}`; h = 100; } 
                         else { txt = "SELESAI"; }
                     }
-                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"><div class="bolt-anim">⚡</div></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? (txt==='SELESAI'&&x.phone?`<a href="https://wa.me/${x.phone.startsWith('0')?'62'+x.phone.slice(1):x.phone}?text=Selesai" target="_blank" class="btn-wa-notif">🔔 WA</a>`:`<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>`):`<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
+                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"><div class="bolt-anim">⚡</div></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? (txt==='SELESAI'?'SELESAI':`<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>`):`<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
                 }).join('');
             });
 
@@ -461,12 +501,12 @@
                 if(type==='stop') { 
                     if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; 
                     s[i] = null; 
+                    // AUTO NAIK DARI ANTRIAN
                     if(q.length > 0) {
                         let next = q.shift();
-                        // RECALCULATE LIMIT & DURATION ON MOVE
-                        let newLimit = getDynamicLimit(q.length);
-                        next.duration = getDuration(next.startBattery, newLimit);
-                        next.target = newLimit;
+                        let limit = getDynamicLimit(q.length);
+                        next.duration = getDuration(next.startBattery, limit);
+                        next.target = limit;
                         s[i] = next;
                     }
                 } else { s[i].startTime = new Date(); } 
