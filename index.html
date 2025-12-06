@@ -12,17 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
-            /* PALET WARNA CYBER BLUE */
             --bg-dark: #050a14;
-            --neon-blue: #00f3ff; /* Cyan Electric */
-            --deep-blue: #2979ff; /* Royal Blue */
-            --glass-bg: rgba(12, 20, 35, 0.65);
-            --glass-border: rgba(0, 243, 255, 0.2);
+            --neon-blue: #00f3ff;
+            --deep-blue: #2979ff;
+            --glass-bg: rgba(12, 20, 35, 0.7);
+            --glass-border: rgba(0, 243, 255, 0.3);
             --danger: #ff2a6d;
             --text: #ffffff;
         }
@@ -32,160 +32,135 @@
         body { 
             margin: 0; padding: 0; 
             background-color: var(--bg-dark); 
-            /* BACKGROUND ABSTRAK BIRU GELAP */
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(41, 121, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 40%),
-                linear-gradient(180deg, #020408 0%, #0a1525 100%);
-            color: var(--text); 
-            font-family: 'Rajdhani', sans-serif; 
+            background-image: linear-gradient(180deg, #020408 0%, #0a1525 100%);
+            color: var(--text); font-family: 'Rajdhani', sans-serif; 
             height: 100vh; overflow: hidden; display: flex; flex-direction: column; 
         }
 
-        /* BACKGROUND LOGO (Hanya muncul di Home) */
-        .bg-logo-overlay {
+        /* === BACKGROUND LOGO BESAR (FULL PAGE) === */
+        #bgLogoFull {
             position: absolute; inset: 0; pointer-events: none; z-index: 0;
             background: url('mlu-logo.png') center center no-repeat;
-            background-size: 80%; opacity: 0.1;
-            filter: grayscale(100%) drop-shadow(0 0 20px var(--deep-blue));
+            background-size: contain; /* Logo Full Halaman */
+            opacity: 0.15; /* Transparan */
+            filter: grayscale(100%) drop-shadow(0 0 50px var(--deep-blue));
+            transform: scale(0.8);
             display: none;
         }
-        .bg-logo-overlay.visible { display: block; animation: pulseLogo 5s infinite alternate; }
-        @keyframes pulseLogo { 0% {transform: scale(1); opacity: 0.1;} 100% {transform: scale(1.05); opacity: 0.15;} }
+        #bgLogoFull.visible { display: block; animation: breathe 6s infinite ease-in-out; }
+        @keyframes breathe { 0%, 100% { transform: scale(0.8); opacity: 0.15; } 50% { transform: scale(0.85); opacity: 0.25; } }
 
-        /* === KOMPONEN GLASS (KACA) === */
+        /* === GLASS COMPONENTS === */
         .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-            border-radius: 20px; padding: 20px; position: relative;
+            background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
         .glass-btn {
-            background: linear-gradient(135deg, rgba(41, 121, 255, 0.2), rgba(0, 243, 255, 0.1));
+            background: linear-gradient(135deg, rgba(41, 121, 255, 0.15), rgba(0, 243, 255, 0.05));
             border: 1px solid var(--deep-blue); color: #fff;
-            backdrop-filter: blur(5px); border-radius: 15px;
-            padding: 15px; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; gap: 15px; text-decoration: none;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px); border-radius: 15px; padding: 15px; cursor: pointer; 
+            display: flex; align-items: center; gap: 15px; text-decoration: none; transition: 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .glass-btn:active { transform: scale(0.96); background: rgba(0, 243, 255, 0.2); box-shadow: 0 0 20px var(--neon-blue); border-color: var(--neon-blue); }
-        
-        /* TYPOGRAPHY */
+        .glass-btn:active { transform: scale(0.96); border-color: var(--neon-blue); background: rgba(0, 243, 255, 0.15); }
+
+        /* HEADER & TEXT */
         h1, h2, h3 { font-family: 'Orbitron', sans-serif; margin: 0; letter-spacing: 2px; text-transform: uppercase; }
-        .text-neon { color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+        .text-neon { color: var(--neon-blue); text-shadow: 0 0 15px rgba(0, 243, 255, 0.6); }
 
-        /* === LOADER === */
-        .loader { position: fixed; inset:0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
-        .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(0, 243, 255, 0.2); border-top: 4px solid var(--neon-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 100% {transform: rotate(360deg);} }
-
-        /* === VIEWS (SPA) === */
-        #view-home, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; display: none; position: relative; z-index: 10; }
-        #view-home.active, #view-queue.active { display: flex; flex-direction: column; }
+        /* === VIEWS MANAGER === */
+        #view-home, #view-list, #view-queue, #view-map-ui { 
+            flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; 
+            display: none; position: relative; z-index: 10; 
+        }
+        #view-home.active, #view-list.active, #view-queue.active, #view-map-ui.active { display: flex; flex-direction: column; }
 
         /* === HALAMAN HOME === */
-        .home-container { padding: 30px 25px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .logo-area { text-align: center; margin-bottom: 40px; margin-top: 20px; }
-        .logo-img { width: 100px; height: 100px; margin-bottom: 15px; filter: drop-shadow(0 0 20px var(--deep-blue)); }
+        .home-container { padding: 30px 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .main-title { text-align: center; margin-bottom: 40px; position: relative; z-index: 20; }
         
-        .menu-grid { display: grid; gap: 20px; width: 100%; max-width: 400px; }
-        .menu-icon-box { width: 50px; height: 50px; background: rgba(0, 243, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--neon-blue); font-size: 24px; box-shadow: 0 0 10px rgba(0,243,255,0.2); }
+        .menu-grid { display: grid; gap: 15px; width: 100%; max-width: 400px; position: relative; z-index: 20; }
+        .menu-icon-box { width: 50px; height: 50px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(0,243,255,0.2); }
         
-        .mitra-area { margin-top: auto; width: 100%; max-width: 400px; padding-top: 30px; }
-        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .mitra-btn { flex-direction: column; padding: 10px; text-align: center; font-size: 0.8rem; }
+        .mitra-area { margin-top: 40px; width: 100%; max-width: 400px; position: relative; z-index: 20; }
+        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
 
+        /* === HALAMAN LIST LOKASI (BARU) === */
+        .list-header { padding: 20px 25px; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); border-bottom: 1px solid #333; }
+        .list-container { padding: 20px; }
+        .loc-card { 
+            background: linear-gradient(145deg, #0b101a, #161b22); border: 1px solid #333; 
+            border-radius: 16px; padding: 15px; margin-bottom: 15px; cursor: pointer; position: relative; overflow: hidden;
+        }
+        .loc-card:active { transform: scale(0.98); border-color: var(--neon-blue); }
+        .loc-dist { position: absolute; top: 15px; right: 15px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-weight: bold; font-size: 0.8rem; }
+        
         /* === HALAMAN ANTRIAN === */
-        .q-header { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3); }
-        .btn-back { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(0,243,255,0.2); }
+        .q-header { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); }
+        .btn-back { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 8px 16px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         
         .q-container { padding: 20px; width: 100%; max-width: 500px; margin: 0 auto; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-label { font-family: 'Orbitron'; font-size: 0.7rem; color: var(--neon-blue); margin-bottom: 5px; display: block; letter-spacing: 1px; }
         .form-input { 
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1); border-bottom: 2px solid var(--deep-blue);
-            border-radius: 8px; color: #fff; font-family: 'Rajdhani'; font-weight: 700; font-size: 1.1rem;
-            text-align: center; outline: none; transition: 0.3s;
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); 
+            border-bottom: 2px solid var(--deep-blue); border-radius: 8px; color: #fff; font-family: 'Rajdhani'; font-weight: 700; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 15px;
         }
-        .form-input:focus { border-bottom-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0,243,255,0.1); background: rgba(0,243,255,0.05); }
-
-        .btn-daftar {
-            width: 100%; padding: 15px; border-radius: 12px; border: none; cursor: pointer;
-            background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue));
-            color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 1rem;
-            box-shadow: 0 0 20px rgba(41, 121, 255, 0.4); margin-top: 10px;
-            text-transform: uppercase;
-        }
-
-        /* Slot Visual */
-        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
-        .slot-card {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; padding: 10px 5px; text-align: center; height: 230px;
-            display: flex; flex-direction: column; align-items: center; position: relative;
-        }
-        .slot-card.active { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0,243,255,0.1); }
+        .form-input:focus { border-bottom-color: var(--neon-blue); background: rgba(0,243,255,0.05); }
+        .btn-daftar { width: 100%; padding: 15px; border-radius: 12px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 1rem; margin-top: 10px; }
         
-        .bat-body {
-            width: 40px; height: 70px; border: 2px solid #555; border-radius: 6px;
-            position: relative; display: flex; align-items: flex-end; padding: 3px; margin: 10px 0;
-        }
+        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 10px 5px; text-align: center; height: 230px; display: flex; flex-direction: column; align-items: center; }
+        .slot-card.active { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0,243,255,0.1); }
+        .bat-body { width: 40px; height: 70px; border: 2px solid #555; border-radius: 6px; position: relative; display: flex; align-items: flex-end; padding: 3px; margin: 10px 0; }
         .slot-card.active .bat-body { border-color: #fff; }
         .bat-body::before { content:''; position: absolute; top:-6px; left:10px; width:16px; height:4px; background:#555; border-radius:2px 2px 0 0; }
         .bat-liquid { width: 100%; background: var(--neon-blue); border-radius: 2px; box-shadow: 0 0 10px var(--neon-blue); transition: height 0.5s; }
-        
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; margin-top: 5px; box-shadow: 0 0 5px #000; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; margin-top: 5px; }
         .status-dot.on { background: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
-        .status-dot.busy { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
 
-        .wait-item {
-            background: rgba(255,255,255,0.05); border-left: 3px solid #444;
-            padding: 12px; border-radius: 8px; margin-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .wait-item.top { border-left-color: var(--neon-blue); background: rgba(0,243,255,0.05); }
-
-        /* Admin & Modal */
+        /* ADMIN & MODAL */
         .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; }
         .adm-btn { width: 100%; padding: 10px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
-        
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
-        .modal-box { background: #0b101a; border: 1px solid var(--neon-blue); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 0 30px rgba(0,243,255,0.2); }
+        .modal-box { background: #0b101a; border: 1px solid var(--neon-blue); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
+
+        /* MAP FULLSCREEN */
+        #map { width: 100%; height: 100%; }
+        .map-controls { position: absolute; bottom: 20px; left: 20px; right: 20px; background: #000; padding: 20px; border-radius: 15px; border: 1px solid var(--neon-blue); z-index: 999; }
+        
+        .loader { position: fixed; inset:0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(0, 243, 255, 0.2); border-top: 4px solid var(--neon-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 100% {transform: rotate(360deg);} }
     </style>
 </head>
 <body>
 
     <audio id="alarm" loop preload="auto"><source src="data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" type="audio/mp3"></audio>
 
-    <div id="loader" class="loader">
-        <div class="loader-spinner"></div>
-        <div style="font-family:'Orbitron'; color:var(--neon-blue); letter-spacing:2px;">MLU SYSTEM</div>
-    </div>
+    <div id="loader" class="loader"><div class="loader-spinner"></div><div style="font-family:'Orbitron'; color:var(--neon-blue);">MLU SYSTEM</div></div>
 
-    <div id="bgLogo" class="bg-logo-overlay"></div>
+    <div id="bgLogoFull"></div>
 
     <div id="view-home">
         <div class="home-container">
-            <div class="logo-area">
-                <img src="mlu-logo.png" class="logo-img" alt="MLU">
-                <h1 class="text-neon" style="font-size: 2rem;">MLU APPS</h1>
-                <div style="font-size: 0.8rem; background: var(--deep-blue); padding: 2px 10px; border-radius: 4px; display: inline-block; margin-top: 5px;">MAKA LINTAS UTARA SQUAD</div>
+            <div class="main-title">
+                <h1 class="text-neon" style="font-size: 2.5rem;">MLU APPS</h1>
+                <div style="font-size: 0.8rem; background: var(--deep-blue); padding: 3px 15px; border-radius: 4px; display: inline-block; margin-top: 5px; font-weight: bold;">MAKA LINTAS UTARA SQUAD</div>
             </div>
 
             <div class="menu-grid">
-                <div class="glass-btn" onclick="openMapList()">
+                <div class="glass-btn" onclick="nav('list')">
                     <div class="menu-icon-box">📍</div>
                     <div><h3>LOKASI FC</h3><span style="font-size: 0.8rem; color: #aaa;">Cari charging station</span></div>
                 </div>
+
                 <div class="glass-btn" onclick="openModal('sos')">
                     <div class="menu-icon-box" style="border-color:var(--danger); color:var(--danger);">🆘</div>
                     <div><h3 style="color:var(--danger);">MAKA SOS</h3><span style="font-size: 0.8rem; color: #aaa;">Layanan Darurat</span></div>
                 </div>
+
                 <div class="glass-btn" onclick="nav('queue')">
                     <div class="menu-icon-box">⚡</div>
                     <div><h3>ANTRIAN</h3><span style="font-size: 0.8rem; color: #aaa;">Daftar & Pantau</span></div>
@@ -198,63 +173,65 @@
                     <div style="height:1px; background:var(--neon-blue); flex:1; opacity:0.5;"></div>
                 </div>
                 <div class="mitra-grid">
-                    <a href="https://casan.id" target="_blank" class="glass-btn mitra-btn"><span style="font-size:1.5rem;">🔌</span> CASAN.ID</a>
-                    <a href="https://play.google.com/store/apps/details?id=com.starvo" target="_blank" class="glass-btn mitra-btn"><span style="font-size:1.5rem;">📱</span> STARVO</a>
+                    <a href="https://casan.id" target="_blank" class="glass-btn" style="flex-direction:column; padding:10px; font-size:0.8rem;"><span style="font-size:1.5rem;">🔌</span> CASAN.ID</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.starvo" target="_blank" class="glass-btn" style="flex-direction:column; padding:10px; font-size:0.8rem;"><span style="font-size:1.5rem;">📱</span> STARVO</a>
                 </div>
                 <div class="glass-btn" onclick="openModal('news')" style="margin-top:15px; justify-content:center; padding:10px; font-size:0.9rem;">📰 INFO & EVENT MLU</div>
             </div>
-            <div style="margin-top:20px; font-size:0.7rem; color:#444;">v35.0 Cyber Glass Edition</div>
+            
+            <div style="margin-top:auto; font-size:0.7rem; color:#444;">v40.0 Cyber Glass Edition</div>
+        </div>
+    </div>
+
+    <div id="view-list">
+        <div class="list-header">
+            <button class="btn-back" onclick="nav('home')">⬅ HOME</button>
+            <div style="font-family:'Orbitron'; font-size:1rem;">LOKASI CHARGING</div>
+        </div>
+        <div class="list-container" id="locContainer">
+            <div style="text-align:center; color:#888;">Memuat Lokasi...</div>
+        </div>
+    </div>
+
+    <div id="view-map-ui">
+        <div id="map"></div>
+        <div class="map-controls">
+            <h3 id="mapTitle" style="color:var(--neon-blue); margin-bottom:5px;">LOKASI</h3>
+            <p id="mapDesc" style="font-size:0.9rem; color:#ccc; margin-bottom:15px;">Jarak: -- KM</p>
+            <div style="display:flex; gap:10px;">
+                <button class="adm-btn" onclick="nav('list')">KEMBALI KE LIST</button>
+                <button id="btnNavGoogle" class="adm-btn" style="background:var(--neon-blue); color:#000; border:none;">NAVIGASI (GMAPS)</button>
+            </div>
         </div>
     </div>
 
     <div id="view-queue">
-        <div class="q-header">
-            <button class="btn-back" onclick="nav('home')">⬅ KEMBALI</button>
-            <div style="font-family:'Orbitron'; font-size:1.2rem; color:#fff;">ANTRIAN</div>
-            <div style="width:70px;"></div>
-        </div>
-
+        <div class="q-header"><button class="btn-back" onclick="nav('home')">⬅ HOME</button><div style="font-family:'Orbitron'; font-size:1.2rem;">ANTRIAN</div><div style="width:70px;"></div></div>
         <div class="q-container">
             <div class="glass-card">
-                <div class="form-group"><label class="form-label">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase;"></div>
-                <div class="form-group"><label class="form-label">WHATSAPP (Notif)</label><input id="uWa" type="number" class="form-input" placeholder="08xxxxxxxxxx"></div>
-                <div class="form-group"><label class="form-label">SISA BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0 - 99"></div>
+                <div style="margin-bottom:15px;"><label style="font-family:'Orbitron'; font-size:0.7rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase;"></div>
+                <div style="margin-bottom:15px;"><label style="font-family:'Orbitron'; font-size:0.7rem; color:var(--neon-blue);">WHATSAPP</label><input id="uWa" type="number" class="form-input" placeholder="08xxxxxxxxxx"></div>
+                <div style="margin-bottom:15px;"><label style="font-family:'Orbitron'; font-size:0.7rem; color:var(--neon-blue);">BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0 - 99"></div>
                 <button id="btnDaftar" class="btn-daftar">DAFTAR ANTRIAN</button>
                 <p id="locStatus" style="text-align:center; font-size:0.7rem; color:var(--neon-blue); margin-top:10px; display:none;">Cek Lokasi...</p>
             </div>
-
-            <div style="margin-top:20px; font-family:'Orbitron'; font-size:0.8rem; color:#aaa; letter-spacing:1px; text-align:center;">STATUS SLOT (LIVE)</div>
-            <div class="slot-grid" id="slots">
-                <div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue); animation:pulse 1s infinite;">CONNECTING...</div>
-            </div>
-
+            <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
             <div class="glass-card" style="padding:15px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
-                    <span style="font-family:'Orbitron'; font-size:0.8rem;">DAFTAR TUNGGU</span>
-                    <span id="qCount" style="font-family:'Rajdhani'; font-weight:bold; color:var(--neon-blue);">0 ANTRIAN</span>
-                </div>
-                <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.8rem;">- Kosong -</div></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);"><span style="font-family:'Orbitron'; font-size:0.8rem;">DAFTAR TUNGGU</span><span id="qCount" style="color:var(--neon-blue); font-weight:bold;">0 ANTRIAN</span></div>
+                <div id="qListContainer"><div style="text-align:center; color:#555;">- Kosong -</div></div>
             </div>
-
             <div style="text-align:center; margin-top:30px; cursor:pointer; opacity:0.5;" onclick="showAdminLogin()">🔒 ADMIN PANEL</div>
-
             <div id="admPan" class="admin-panel">
                 <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">MASTER CONTROL</h4>
                 <select id="mSlot" class="form-input" style="text-align:left; margin-bottom:5px;"><option value="0">Slot 3 (Kiri)</option><option value="1">Slot 2 (Tengah)</option><option value="2">Slot 1 (Kanan)</option></select>
-                <button onclick="clrSlot()" class="adm-btn">HAPUS SLOT TERPILIH</button>
+                <button onclick="clrSlot()" class="adm-btn">HAPUS SLOT</button>
                 <button onclick="fillQ()" class="adm-btn" style="border-color:var(--neon-blue); color:var(--neon-blue);">NAIKKAN (AUTO)</button>
-                
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <button onclick="startAll()" class="adm-btn" style="background:#fff; color:#000;">START ALL</button>
-                    <button onclick="stopAll()" class="adm-btn danger">STOP ALL</button>
-                </div>
-
                 <div style="height:1px; background:#333; margin:15px 0;"></div>
-                <input id="blockPlatInput" class="form-input" placeholder="PLAT BLOKIR" style="font-size:0.9rem;">
+                <input id="blockPlatInput" class="form-input" placeholder="PLAT BLOKIR">
                 <button onclick="blockUser()" class="adm-btn danger">BLOKIR USER INI 🚫</button>
                 <div style="height:1px; background:#333; margin:15px 0;"></div>
-                <button onclick="resAll()" class="adm-btn danger" style="border:2px solid var(--danger);">⚠ RESET SEMUA DATA ⚠</button>
-                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn" style="margin-top:15px; border:none;">TUTUP</button>
+                <button onclick="resAll()" class="adm-btn danger" style="border:2px solid var(--danger);">⚠ RESET DATA ⚠</button>
+                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn" style="border:none; margin-top:10px;">TUTUP</button>
             </div>
         </div>
     </div>
@@ -266,28 +243,29 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const FIREBASE_CFG = { apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", authDomain: "sistem-antrian-b1c39.firebaseapp.com", projectId: "sistem-antrian-b1c39", storageBucket: "sistem-antrian-b1c39.firebasestorage.app", messagingSenderId: "454124587608", appId: "1:454124587608:web:34fbb0f5211067a67f982d" };
+        const LOC_DATA_URL = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const NEWS_API = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv";
         const STATION_LOC = { lat: -6.171583, lng: 106.899844 }; 
-        const MAX_DIST = 200; // Meter
-        let userLat=null, userLng=null, isAdmin=false;
+        const MAX_DIST = 200; 
 
-        // PWA REGISTRATION
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw-baru.js').catch(err => console.log('SW Fail:', err)); }); }
+        let userLat=null, userLng=null, isAdmin=false, chargers=[], map=null;
 
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw-baru.js').catch(err => console.log(err)); }); }
         window.addEventListener('load', () => {
-            document.getElementById('loader').style.opacity='0';
-            setTimeout(()=>{document.getElementById('loader').style.display='none'},500);
-            nav('home'); initFirebase(); loadNews();
-            if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude;}, e=>{}, {enableHighAccuracy:true});
+            document.getElementById('loader').style.opacity='0'; setTimeout(()=>{document.getElementById('loader').style.display='none'},500);
+            nav('home'); initFirebase(); loadNews(); loadLocData();
+            if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
         function nav(page) {
             document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
-            document.getElementById('view-home').classList.remove('active');
-            document.getElementById('view-queue').classList.remove('active');
-            document.getElementById('bgLogo').classList.remove('visible');
-            if(page==='home') { document.getElementById('view-home').classList.add('active'); document.getElementById('bgLogo').classList.add('visible'); } 
+            ['view-home','view-list','view-queue','view-map-ui'].forEach(id => document.getElementById(id).classList.remove('active'));
+            document.getElementById('bgLogoFull').classList.remove('visible');
+
+            if(page==='home') { document.getElementById('view-home').classList.add('active'); document.getElementById('bgLogoFull').classList.add('visible'); } 
+            else if(page==='list') { document.getElementById('view-list').classList.add('active'); }
             else if(page==='queue') { document.getElementById('view-queue').classList.add('active'); }
+            else if(page==='map') { document.getElementById('view-map-ui').classList.add('active'); setTimeout(()=>{if(map)map.invalidateSize()},300); }
         }
         function openModal(id) { document.getElementById('modal-'+id).classList.add('show'); }
         function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
@@ -296,12 +274,57 @@
             const i=document.getElementById('alertInput'); i.style.display=inp?'block':'none'; if(inp)i.value='';
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
-        function openMapList() { if(userLat) window.open(`https://www.google.com/maps/search/SPKLU/@${userLat},${userLng},13z`, '_blank'); else window.open(`https://www.google.com/maps/search/SPKLU/`, '_blank'); }
-        
+
+        // === LOCATION LOGIC (INTERNAL) ===
+        async function loadLocData() {
+            try {
+                const t = await fetch(LOC_DATA_URL).then(r=>r.text());
+                chargers = t.split('\n').slice(1).map((r,i) => {
+                    const c = r.split(','); let lat=parseFloat(c[4]), lng=parseFloat(c[5]);
+                    if(isNaN(lat)) return null;
+                    return { id:i, name:c[0], city:c[1], type:c[2], lat:lat, lng:lng, dist:999 };
+                }).filter(i=>i);
+                renderLocList();
+            } catch(e){}
+        }
+        function calcDist() {
+            if(!userLat) return;
+            chargers.forEach(c => {
+                const R=6371; const dLat=(c.lat-userLat)*Math.PI/180; const dLon=(c.lng-userLng)*Math.PI/180;
+                const a=Math.sin(dLat/2)**2+Math.cos(userLat*Math.PI/180)*Math.cos(c.lat*Math.PI/180)*Math.sin(dLon/2)**2;
+                c.dist = (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
+            });
+            chargers.sort((a,b)=>a.dist-b.dist);
+            renderLocList();
+        }
+        function renderLocList() {
+            const el = document.getElementById('locContainer'); el.innerHTML='';
+            chargers.forEach(c => {
+                const item = document.createElement('div'); item.className = 'loc-card';
+                item.innerHTML = `<h3>${c.name}</h3><div style="font-size:0.8rem; color:#aaa;">${c.city} • ${c.type}</div><div class="loc-dist">${c.dist} KM</div>`;
+                item.onclick = () => showMap(c);
+                el.appendChild(item);
+            });
+        }
+        function showMap(c) {
+            nav('map');
+            document.getElementById('mapTitle').innerText = c.name;
+            document.getElementById('mapDesc').innerText = `Jarak: ${c.dist} KM • ${c.type}`;
+            document.getElementById('btnNavGoogle').onclick = () => window.open(`http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}`, '_blank');
+            
+            if(map) map.remove();
+            map = L.map('map').setView([c.lat, c.lng], 14);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+            L.marker([c.lat, c.lng]).addTo(map).bindPopup(c.name).openPopup();
+            if(userLat) L.marker([userLat, userLng]).addTo(map).bindPopup('Anda');
+        }
+
+        // === NEWS ===
         async function loadNews() {
             try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){}
         }
 
+        // === QUEUE SYSTEM ===
         function initFirebase() {
             if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
@@ -319,8 +342,7 @@
                     const d = (await t.get(ref)).data() || {}; const block = d.blockedList || []; if(block.includes(p)) throw "PLAT ANDA DIBLOKIR!";
                     let s = d.chargingSlots || [null,null,null]; let q = d.waitingQueue || []; if(s.some(x=>x?.name===p) || q.some(x=>x?.name===p)) throw "Sudah terdaftar!";
                     let empty = s.findIndex(x=>!x);
-                    if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:(q.length>5?85:100), startTime:null, duration:(100-b)*1.5 };
-                    else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 });
+                    if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:(q.length>5?85:100), startTime:null, duration:(100-b)*1.5 }; else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 });
                     t.set(ref, {chargingSlots:s, waitingQueue:q, blockedList:block}, {merge:true});
                 }).then(()=>{ showAlert('SUKSES','Berhasil masuk antrian!'); document.getElementById('uPlat').value=''; btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; stat.style.display='none'; localStorage.setItem('myPlat', p); }).catch(e=>{ showAlert('GAGAL', e); btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; });
             };
@@ -346,8 +368,6 @@
             window.showAdminLogin=()=>{ showAlert('ADMIN','Masukkan PIN:', ()=>{if(document.getElementById('alertInput').value==='1131'){document.getElementById('admPan').style.display='block';isAdmin=true;document.getElementById('modal-alert').classList.remove('show');}else alert('Salah!')}, true); };
             window.clrSlot=()=>{const i=document.getElementById('mSlot').value; db.runTransaction(async t=>{const s=(await t.get(ref)).data().chargingSlots;s[i]=null;t.update(ref,{chargingSlots:s})});};
             window.fillQ=()=>{db.runTransaction(async t=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0&&s.includes(null)){let idx=s.indexOf(null);let n=q.shift();n.duration=(100-n.startBattery)*1.5;s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
-            window.startAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x&&!x.startTime) window.act(i,'start') }); });};
-            window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
             window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
             window.resAll=()=>{if(confirm('RESET TOTAL?')) ref.set({chargingSlots:[null,null,null],waitingQueue:[],blockedList:[]});};
         }
