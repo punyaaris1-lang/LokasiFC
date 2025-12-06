@@ -15,11 +15,10 @@
 
     <style>
         :root {
-            /* TEMA UTAMA (INDEX) */
             --bg: #050505;
             --card: #111;
             --card-border: #222;
-            --accent: #CCFF00; /* KUNING STABILO */
+            --accent: #CCFF00;
             --cyan: #00d2ff;
             --danger: #FF3B30;
             --text: #ffffff;
@@ -28,7 +27,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* === LOADER (Index) === */
+        /* LOADER */
         .loader { position: fixed; inset:0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease-out; }
         .loader-logo { width: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(204, 255, 0, 0.3)); animation: floatLogo 3s infinite; }
         @keyframes floatLogo { 0%{transform:translateY(0)} 50%{transform:translateY(-10px)} 100%{transform:translateY(0)} }
@@ -42,83 +41,57 @@
         .btn-entry.queue { background: #222; border: 1px solid var(--accent); color: var(--accent); }
         .btn-entry.danger { background: rgba(255,59,48,0.1); border: 1px solid var(--danger); color: var(--danger); }
 
-        /* === HEADER (Index) === */
-        .header { padding: 20px 25px 10px; display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0; position: relative; z-index: 50; background: linear-gradient(180deg, #050505 90%, transparent); }
+        /* HEADER UTAMA (LOKASI) */
+        .header { padding: 20px 25px 10px; display: flex; justify-content: space-between; align-items: flex-start; flex-shrink: 0; position: relative; z-index: 50; background: linear-gradient(180deg, #050505 90%, transparent); transition: 0.3s; }
+        .header.hidden { display: none; } /* Class untuk sembunyikan header */
+        
         .header-text { display: flex; flex-direction: column; max-width: 60%; }
         .label-top { font-size: 0.7rem; color: var(--text-mute); letter-spacing: 1px; font-weight: 700; margin-bottom: 5px; }
         .header h1 { font-family: 'Inter', sans-serif; font-size: 2.5rem; margin: 0; line-height: 0.9; font-weight: 900; letter-spacing: -1px; color: #fff; }
         .label-bottom { font-size: 0.75rem; color: var(--accent); letter-spacing: 1px; font-weight: 700; margin-top: 8px; }
 
-        /* === CONTROLS === */
         .top-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; position: absolute; right: 25px; top: 25px; }
         .toggle-mode { background: #222; border: 1px solid #444; border-radius: 20px; display: flex; padding: 2px; }
         .t-btn { padding: 6px 12px; font-size: 0.65rem; font-weight: 800; color: #888; cursor: pointer; border-radius: 18px; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
         .t-btn.active { background: var(--accent); color: #000; }
         .menu-row { display: flex; gap: 8px; }
         .menu-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: 0.2s; }
-        .menu-btn:active, .menu-btn.active { transform: scale(0.9); background: var(--accent); color: #000; border-color: var(--accent); }
+        .menu-btn:active { transform: scale(0.9); background: var(--accent); color: #000; border-color: var(--accent); }
         .menu-btn.sos { border-color: var(--danger); color: var(--danger); background: rgba(255, 59, 48, 0.1); }
 
-        /* === VIEWS LAYOUT === */
+        /* VIEWS */
         #view-list, #view-map, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; display: none; }
         #view-list.active, #view-map.active, #view-queue.active { display: flex; flex-direction: column; }
         #view-map { position: relative; }
         #fullMap { width: 100%; height: 100%; }
 
-        /* === CSS ANTRIAN (Diadaptasi ke Tema Index) === */
-        .q-container { padding: 0 25px 80px 25px; width: 100%; max-width: 500px; margin: 0 auto; }
-        
-        .q-card { 
-            background: var(--card); border: 1px solid var(--card-border); 
-            border-radius: 24px; padding: 20px; margin-bottom: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .q-label { display: block; font-family: 'Syne'; font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .q-input { 
-            width: 100%; padding: 12px; background: #000; 
-            border: 1px solid #333; border-radius: 12px; 
-            text-align: center; font-size: 1.1rem; font-weight: 700; color: #fff; 
-            margin-bottom: 15px; outline: none; font-family: 'Inter';
-        }
-        .q-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(204,255,0,0.1); }
-        
-        .btn-q-daftar { 
-            width: 100%; padding: 15px; background: var(--accent); color: #000; 
-            border: none; border-radius: 12px; font-family: 'Inter'; font-weight: 900; 
-            font-size: 0.9rem; cursor: pointer; text-transform: uppercase; 
-            box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2); transition: 0.2s;
-        }
-        .btn-q-daftar:disabled { background: #333; color: #555; cursor: not-allowed; box-shadow: none; }
+        /* HEADER KHUSUS ANTRIAN (BARU) */
+        .queue-header-custom { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(180deg, #050505 90%, transparent); flex-shrink: 0; }
+        .btn-q-back { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 20px; font-family: 'Inter'; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .q-page-title { font-family: 'Syne'; font-size: 1.2rem; font-weight: 800; color: #fff; text-transform: uppercase; }
 
-        /* Grid Slot Antrian */
+        /* ANTRIAN STYLES */
+        .q-container { padding: 0 25px 80px 25px; width: 100%; max-width: 500px; margin: 0 auto; }
+        .q-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .q-label { display: block; font-family: 'Syne'; font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .q-input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 12px; text-align: center; font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 15px; outline: none; font-family: 'Inter'; }
+        .q-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(204,255,0,0.1); }
+        .btn-q-daftar { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-family: 'Inter'; font-weight: 900; font-size: 0.9rem; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 20px rgba(204, 255, 0, 0.2); }
+
         .q-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .q-slot { 
-            background: #111; border: 1px solid #222; border-radius: 16px; 
-            padding: 10px 5px; text-align: center; height: 240px; 
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
-            transition: 0.3s;
-        }
+        .q-slot { background: #111; border: 1px solid #222; border-radius: 16px; padding: 10px 5px; text-align: center; height: 240px; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: 0.3s; }
         .q-slot.active { border-color: var(--accent); background: rgba(204,255,0,0.02); }
         .q-slot-head { font-size: 0.6rem; color: #666; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .q-slot.active .q-slot-head { color: var(--accent); }
-
-        /* Icon Baterai */
+        
         .bat-wrap { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
-        .bat-icon { 
-            width: 40px; height: 75px; border: 2px solid #555; border-radius: 8px; 
-            position: relative; display: flex; align-items: flex-end; padding: 3px; 
-            background: rgba(255,255,255,0.02);
-        }
+        .bat-icon { width: 40px; height: 75px; border: 2px solid #555; border-radius: 8px; position: relative; display: flex; align-items: flex-end; padding: 3px; background: rgba(255,255,255,0.02); }
         .q-slot.active .bat-icon { border-color: #fff; }
         .bat-icon::before { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 14px; height: 4px; background: #555; border-radius: 2px 2px 0 0; }
-        .q-slot.active .bat-icon::before { background: #fff; }
-        
         .bat-fill { width: 100%; background: var(--accent); border-radius: 3px; transition: height 0.5s; box-shadow: 0 0 15px var(--accent); }
-        .bat-bolt { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; color: #000; z-index: 2; }
-
+        
         .q-percent { font-family: 'Syne'; font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 2px; }
         .q-plat { font-weight: 700; font-size: 0.8rem; margin: 4px 0; color: #ccc; }
-        
         .q-timer { font-family: 'Inter'; font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
         .q-timer.done { color: var(--danger); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
@@ -127,31 +100,22 @@
         .btn-start { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
         .btn-stop { background: rgba(255, 59, 48, 0.1); border: 1px solid var(--danger); color: var(--danger); }
 
-        /* Dashboard & List */
-        .q-dashboard { 
-            background: linear-gradient(135deg, #111, #000); border-radius: 18px; border: 1px solid #333;
-            padding: 15px; text-align: center; margin-bottom: 20px;
-        }
+        .q-dashboard { background: linear-gradient(135deg, #111, #000); border-radius: 18px; border: 1px solid #333; padding: 15px; text-align: center; margin-bottom: 20px; }
         .qd-num { font-size: 1.8rem; font-weight: 800; color: #fff; font-family: 'Syne'; }
-        .qd-info { font-size: 0.7rem; color: #000; background: var(--accent); padding: 2px 8px; border-radius: 4px; display: inline-block; font-weight: 700; margin-top: 5px; }
-
-        .wait-item { 
-            background: #111; border-left: 3px solid #333; border-radius: 8px; 
-            padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; 
-        }
+        
+        .wait-item { background: #111; border-left: 3px solid #333; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .wait-item.first { border-left-color: var(--accent); background: rgba(204,255,0,0.05); }
-        .wait-name { font-weight: 700; color: #fff; font-size: 0.9rem; }
-        .wait-wa { font-size: 0.7rem; color: #666; }
         .btn-del { color: #444; font-weight: bold; padding: 5px; cursor: pointer; }
 
-        /* Admin & Modal */
+        /* ADMIN & MODAL */
         .admin-panel { display: none; background: #000; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-top: 20px; }
-        .adm-btn { width: 100%; padding: 10px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; }
+        .adm-btn { width: 100%; padding: 10px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; font-family: 'Inter'; }
+        .adm-btn.danger { background: rgba(255, 59, 48, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        
         .q-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; }
         .q-modal-box { background: #111; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; }
-
-        /* === INDEX STYLES (Existing) === */
-        /* (Disalin dari index lama untuk kompatibilitas) */
+        
+        /* STYLE BAWAAN INDEX (HERO, LIST, MAP) */
         .hero-section { padding: 10px 25px; margin-bottom: 20px; flex-shrink: 0; }
         .hero-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; min-height: 180px; justify-content: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 800; color: var(--accent); background: rgba(204,255,0,0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(204,255,0,0.3); width: fit-content; }
@@ -160,7 +124,6 @@
         .hero-name { font-family: 'Inter'; font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.1; margin: 10px 0 5px 0; }
         .hero-info { font-size: 0.85rem; color: #aaa; margin-bottom: 20px; padding-left: 12px; border-left: 3px solid var(--accent); }
         .btn-nav-hero { width: 100%; padding: 14px; background: var(--accent); color: #000; border: none; font-weight: 800; border-radius: 12px; cursor: pointer; }
-        
         .list-section { flex: 1; padding-bottom: 50px; }
         .city-group { margin-bottom: 30px; }
         .city-header { padding: 0 25px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
@@ -173,27 +136,21 @@
         .mini-top h3 { margin: 0 0 8px 0; font-size: 0.9rem; font-weight: 700; line-height: 1.3; }
         .mini-info { font-size: 0.7rem; opacity: 0.8; margin-top: 5px; border-top: 1px solid #333; padding-top: 5px; }
         .mini-dist { font-size: 0.85rem; color: var(--accent); font-weight: 800; text-align: right; }
-
-        /* Map Overlay */
         .map-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; }
         .map-overlay.active { transform: translateY(0); }
         .map-container { flex: 1; background: #111; }
         .map-controls { background: #111; padding: 25px; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
         .btn-gmaps-start { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 800; text-transform: uppercase; cursor: pointer; text-decoration: none; text-align: center; }
         .btn-map-close { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.8); color: #fff; border: 1px solid #333; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10001; }
-        
-        /* Modals Generic */
         .modal { position: fixed; inset: 0; background: #000; z-index: 2000; transform: translateY(100%); transition: 0.3s ease; display: flex; flex-direction: column; }
         .modal.show { transform: translateY(0); }
         .modal-head { padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .close-btn { background: #222; border: 1px solid #333; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 700; }
         .modal-body { padding: 25px; overflow-y: auto; flex: 1; }
         .help-row { background: #111; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; margin-bottom: 10px; border: 1px solid #222; }
-
     </style>
 </head>
 <body>
-
     <audio id="alarm" loop preload="auto">
         <source src="data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" type="audio/mp3">
     </audio>
@@ -209,10 +166,10 @@
             <button class="btn-entry danger" onclick="enterApp('sos')">BANTUAN SOS 🚨</button>
         </div>
     </div>
-    <div class="header">
+    <div id="mainHeader" class="header">
         <div class="header-text">
-            <div id="labelPage" class="label-top">LOKASI</div>
-            <h1 id="titlePage">FAST<br>CHARGING</h1>
+            <div class="label-top">LOKASI</div>
+            <h1>FAST<br>CHARGING</h1>
             <div class="label-bottom">MAKA LINTAS UTARA</div>
         </div>
         <div class="top-controls">
@@ -221,7 +178,6 @@
                 <div id="btnMap" class="t-btn" onclick="switchView('map')">🗺️ PETA</div>
             </div>
             <div class="menu-row">
-                <button id="btnQueueNav" class="menu-btn" onclick="nav('queue')" title="Antrian"><span style="font-size:1.2rem;">⚡</span></button>
                 <button class="menu-btn" onclick="nav('news')" title="Info"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></button>
                 <button class="menu-btn sos" onclick="nav('sos')" title="SOS"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></button>
             </div>
@@ -234,7 +190,6 @@
                 <div id="scanState" class="hero-card" style="align-items:center; text-align:center;">
                     <div class="gps-dot" style="width:20px; height:20px; margin-bottom:15px;"></div>
                     <h2 style="opacity:0.5; font-size:1.2rem; margin-top:0;">Mencari Sinyal GPS...</h2>
-                    <p style="color:#666; font-size:0.8rem; margin:0;">Pastikan Lokasi/GPS HP Aktif</p>
                 </div>
                 <div id="foundState" class="hero-card" style="display:none;">
                     <div class="hero-header" style="display:flex; justify-content:space-between; align-items:center;">
@@ -255,23 +210,23 @@
     </div>
 
     <div id="view-queue">
+        <div class="queue-header-custom">
+            <button class="btn-q-back" onclick="nav('home')">⬅ KEMBALI</button>
+            <div class="q-page-title">ANTRIAN</div>
+        </div>
+
         <div class="q-container">
             <div class="q-card">
                 <label class="q-label">PLAT NOMOR</label>
                 <input id="uPlat" class="q-input" placeholder="B 1234 XYZ" style="text-transform:uppercase;">
-                
                 <label class="q-label">NOMOR WHATSAPP</label>
                 <input id="uWa" class="q-input" type="number" placeholder="08xxxxxxxxxx">
-                
                 <label class="q-label">BATERAI SAAT INI (%)</label>
                 <input id="uBat" class="q-input" type="number" placeholder="0 - 99">
-                
                 <button class="btn-q-daftar" id="btnDaftar">DAFTAR ANTRIAN</button>
                 <p id="locStatus" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-top:10px; display:none;">Cek Lokasi...</p>
             </div>
 
-            <div style="text-align:center; font-family:'Syne'; color:#666; font-size:0.7rem; margin-bottom:10px; letter-spacing:1px;">STATUS 3 SLOT</div>
-            
             <div class="q-grid" id="slots">
                 <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--accent); animation:pulse 1s infinite;">
                     MENGHUBUNGKAN...
@@ -281,7 +236,6 @@
             <div class="q-dashboard">
                 <div style="font-size:0.7rem; color:#888; font-weight:700; letter-spacing:1px;">STATUS LIVE</div>
                 <div class="qd-num" id="dash-q-count">0 ANTRIAN</div>
-                <div class="qd-info" id="dash-limit">MAX: 100%</div>
             </div>
 
             <div id="qListContainer"></div>
@@ -290,18 +244,30 @@
 
             <div id="admPan" class="admin-panel">
                 <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">MASTER CONTROL</h4>
+                
                 <select id="mSlot" style="width:100%; padding:10px; background:#222; color:#fff; border:1px solid #444; border-radius:8px; margin-bottom:5px;">
                     <option value="0">Slot 3 (Kiri)</option>
                     <option value="1">Slot 2 (Tengah)</option>
                     <option value="2">Slot 1 (Kanan)</option>
                 </select>
-                <button onclick="clrSlot()" class="adm-btn" style="background:#333; color:#fff;">HAPUS SLOT</button>
+                <button onclick="clrSlot()" class="adm-btn" style="background:#333; color:#fff;">HAPUS SLOT TERPILIH</button>
                 <button onclick="fillQ()" class="adm-btn" style="background:var(--accent); color:#000;">NAIKKAN (AUTO)</button>
-                <div style="display:flex; gap:5px; margin-top:5px;">
+                
+                <div style="height:1px; background:#333; margin:15px 0;"></div>
+
+                <input id="blockPlatInput" placeholder="PLAT YG MAU DIBLOKIR" style="width:100%; padding:10px; background:#111; border:1px solid #444; border-radius:6px; color:#fff; text-align:center;">
+                <button onclick="blockUser()" class="adm-btn danger">BLOKIR USER INI 🚫</button>
+
+                <div style="height:1px; background:#333; margin:15px 0;"></div>
+
+                <div style="display:flex; gap:5px;">
                     <button onclick="startAll()" class="adm-btn" style="background:#fff; color:#000;">START ALL</button>
                     <button onclick="stopAll()" class="adm-btn" style="background:var(--danger); color:#fff;">STOP ALL</button>
                 </div>
-                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn" style="border:1px solid #555; background:transparent; color:#888; margin-top:15px;">TUTUP</button>
+
+                <button onclick="resAll()" class="adm-btn danger" style="margin-top:15px; border:2px solid var(--danger);">⚠ RESET SEMUA DATA ⚠</button>
+
+                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn" style="border:1px solid #555; background:transparent; color:#888; margin-top:15px;">TUTUP PANEL</button>
             </div>
         </div>
     </div>
@@ -315,202 +281,82 @@
         </div>
     </div>
 
-    <div id="modal-news" class="modal">
-        <div class="modal-head"><h2>INFO & EVENT</h2><button class="close-btn" onclick="closeModal()">✕</button></div>
-        <div class="modal-body" id="newsContainer">Loading Info...</div>
-    </div>
-
-    <div id="modal-sos" class="modal">
-        <div class="modal-head"><h2 style="color:var(--danger);">DARURAT (SOS)</h2><button class="close-btn" onclick="closeModal()">✕</button></div>
-        <div class="modal-body">
-            <p style="text-align:center; color:#888;">Klik untuk Chat WhatsApp:</p>
-            <a href="https://wa.me/6287722285445" class="help-row"><div style="font-size:1.5rem;">🚑</div><div><div style="font-weight:700;">Towing / Unit Mogok</div></div></a>
-            <a href="https://wa.me/6283179721893" class="help-row"><div style="font-size:1.5rem;">🚨</div><div><div style="font-weight:700;">URC Kecelakaan</div></div></a>
-        </div>
-    </div>
+    <div id="modal-news" class="modal"><div class="modal-head"><h2>INFO & EVENT</h2><button class="close-btn" onclick="closeModal()">✕</button></div><div class="modal-body" id="newsContainer">Loading Info...</div></div>
+    <div id="modal-sos" class="modal"><div class="modal-head"><h2 style="color:var(--danger);">DARURAT (SOS)</h2><button class="close-btn" onclick="closeModal()">✕</button></div><div class="modal-body"><a href="https://wa.me/6287722285445" class="help-row"><div style="font-size:1.5rem;">🚑</div><div><div style="font-weight:700;">Towing / Unit Mogok</div></div></a><a href="https://wa.me/6283179721893" class="help-row"><div style="font-size:1.5rem;">🚨</div><div><div style="font-weight:700;">URC Kecelakaan</div></div></a></div></div>
+    
+    <div id="mod" class="q-modal"><div class="q-modal-box"><h3 id="mt" style="font-family:'Syne'; color:#fff; margin:0 0 10px;">JUDUL</h3><p id="mm" style="color:#888; font-size:0.9rem; margin-bottom:20px;">Pesan...</p><input type="password" id="adminPinInput" placeholder="PIN" style="display:none; width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:none;"><button id="modalActionBtn" class="btn-q-daftar">OK</button></div></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script>
-        // === KONFIGURASI UMUM ===
         const JAWG_API = "l1PdBwk1arfZcY7wECff2jE2Ts7qpJyMqGGqHK8cjCxcLb6m0FPHm1sExB5NvLyA";
         const URL_LOKASI = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const URL_BERITA = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv"; 
         
-        // KONFIGURASI ANTRIAN
-        const STATION_LAT = -6.171583; 
-        const STATION_LNG = 106.899844; 
-        const MAX_DISTANCE_METERS = 200;
+        const STATION_LAT = -6.171583; const STATION_LNG = 106.899844; const MAX_DISTANCE_METERS = 200;
         const FONNTE_TOKEN = "Fc8dWb7jiKr7CXuEZXBx";
         const firebaseConfig = { apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", authDomain: "sistem-antrian-b1c39.firebaseapp.com", projectId: "sistem-antrian-b1c39", storageBucket: "sistem-antrian-b1c39.firebasestorage.app", messagingSenderId: "454124587608", appId: "1:454124587608:web:34fbb0f5211067a67f982d" };
 
-        let chargers = [];
-        let userLat = null; let userLng = null;
-        let map = null; let mapFull = null; let currentMapTarget = null;
-        let isAdmin = false;
+        let chargers = []; let userLat = null; let userLng = null;
+        let map = null; let mapFull = null; let isAdmin = false;
 
-        // === FUNGSI NAVIGASI ===
-        function startApp() {
-            document.getElementById('loader').style.opacity = '0';
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500);
-            loadDataBackground();
-            initQueueSystem(); // JALANKAN ANTRIAN
-        }
-
-        function enterApp(mode) {
-            document.getElementById('loader').style.opacity = '0';
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600);
-            if(mode === 'sos') nav('sos');
-            if(mode === 'queue') nav('queue');
-        }
+        function startApp() { document.getElementById('loader').style.opacity = '0'; setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500); loadDataBackground(); initQueueSystem(); }
+        function enterApp(mode) { document.getElementById('loader').style.opacity = '0'; setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600); if(mode === 'sos') nav('sos'); if(mode === 'queue') nav('queue'); }
 
         function switchView(mode) {
             document.getElementById('view-list').classList.remove('active');
             document.getElementById('view-map').classList.remove('active');
-            document.getElementById('view-queue').classList.remove('active');
             document.getElementById('btnList').classList.remove('active');
             document.getElementById('btnMap').classList.remove('active');
-            document.getElementById('btnQueueNav').classList.remove('active');
-            
-            document.getElementById('labelPage').innerText = "LOKASI";
-            document.getElementById('titlePage').innerHTML = "FAST<br>CHARGING";
-
-            if(mode === 'list') {
-                document.getElementById('view-list').classList.add('active');
-                document.getElementById('btnList').classList.add('active');
-            } else {
-                document.getElementById('view-map').classList.add('active');
-                document.getElementById('btnMap').classList.add('active');
-                initFullMap();
-            }
+            if(mode === 'list') { document.getElementById('view-list').classList.add('active'); document.getElementById('btnList').classList.add('active'); } 
+            else { document.getElementById('view-map').classList.add('active'); document.getElementById('btnMap').classList.add('active'); initFullMap(); }
         }
 
         function nav(p) {
-            // Reset Modals
             document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
+            // Default: Tampilkan Header Utama, Sembunyikan Antrian
+            const mainHead = document.getElementById('mainHeader');
+            const qView = document.getElementById('view-queue');
+            const lView = document.getElementById('view-list');
+            const mView = document.getElementById('view-map');
             
-            // Logic Halaman
-            if(p === 'home') switchView('list');
-            if(p === 'news') document.getElementById('modal-news').classList.add('show');
-            if(p === 'sos') document.getElementById('modal-sos').classList.add('show');
-            
-            if(p === 'queue') {
-                document.getElementById('view-list').classList.remove('active');
-                document.getElementById('view-map').classList.remove('active');
-                document.getElementById('view-queue').classList.add('active');
-                
-                document.getElementById('btnList').classList.remove('active');
-                document.getElementById('btnMap').classList.remove('active');
-                document.getElementById('btnQueueNav').classList.add('active');
-
-                document.getElementById('labelPage').innerText = "SISTEM";
-                document.getElementById('titlePage').innerHTML = "ANTRIAN<br>CHARGING";
-            }
+            if(p === 'home') {
+                mainHead.classList.remove('hidden');
+                qView.classList.remove('active');
+                lView.classList.add('active'); // Balik ke list
+                mView.classList.remove('active');
+            } else if(p === 'queue') {
+                // Mode Antrian: Sembunyikan Header Utama, Munculkan View Antrian
+                mainHead.classList.add('hidden');
+                lView.classList.remove('active');
+                mView.classList.remove('active');
+                qView.classList.add('active');
+            } else if(p === 'news') { document.getElementById('modal-news').classList.add('show'); }
+            else if(p === 'sos') { document.getElementById('modal-sos').classList.add('show'); }
         }
 
         function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
-        function animateText(id, txt, delay) { const el=document.getElementById(id); el.innerHTML=txt; }
-        
-        async function runIntro() {
-            document.getElementById('animText3').style.opacity = '1'; 
-            setTimeout(() => { document.querySelector('.loader-actions').classList.add('show'); }, 500);
-            loadDataBackground();
-            initQueueSystem();
-        }
+        async function runIntro() { document.getElementById('animText3').style.opacity = '1'; setTimeout(() => { document.querySelector('.loader-actions').classList.add('show'); }, 500); loadDataBackground(); initQueueSystem(); }
 
-        // === LOGIC MAPS & LOKASI (INDEX) ===
         async function loadDataBackground() {
             try {
                 const [txtLoc, txtNews] = await Promise.all([ fetch(URL_LOKASI).then(r=>r.text()), fetch(URL_BERITA).then(r=>r.ok?r.text():"") ]);
-                chargers = txtLoc.split('\n').slice(1).map((r, i) => {
-                    const c = r.split(',');
-                    let latVal = parseFloat(c[4]?c[4].replace(',','.'):0);
-                    let lngVal = parseFloat(c[5]?c[5].replace(',','.'):0);
-                    if(c.length < 5 || isNaN(latVal)) return null;
-                    return { id: i, name:c[0], city:c[1], type:c[2], status:c[3], lat:latVal, lng:lngVal, link:c[6]||'', nozzle: c[7]||'-', cost: c[8]||'-' };
-                }).filter(i=>i);
-                renderList(); 
-                if(txtNews) renderNews(txtNews);
+                chargers = txtLoc.split('\n').slice(1).map((r, i) => { const c = r.split(','); let latVal = parseFloat(c[4]?c[4].replace(',','.'):0); let lngVal = parseFloat(c[5]?c[5].replace(',','.'):0); if(c.length < 5 || isNaN(latVal)) return null; return { id: i, name:c[0], city:c[1], type:c[2], status:c[3], lat:latVal, lng:lngVal, link:c[6]||'', nozzle: c[7]||'-', cost: c[8]||'-' }; }).filter(i=>i);
+                renderList(); if(txtNews) renderNews(txtNews);
             } catch(e) {}
         }
 
-        // GPS WATCHER (DIGUNAKAN BERSAMA OLEH MAP & ANTRIAN)
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition((p) => { 
-                userLat=p.coords.latitude; userLng=p.coords.longitude; 
-                processData(); // Update Jarak Map
-            }, (err)=>{}, { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 });
-        }
+        if (navigator.geolocation) { navigator.geolocation.watchPosition((p) => { userLat=p.coords.latitude; userLng=p.coords.longitude; processData(); }, (err)=>{}, { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }); }
 
-        function processData() {
-            if(userLat && chargers.length > 0) { 
-                chargers.forEach(c => c.dist=parseFloat(getDist(userLat,userLng,c.lat,c.lng))); 
-                chargers.sort((a,b)=> a.dist-b.dist);
-                // Update Hero Card
-                const n = chargers[0];
-                document.getElementById('scanState').style.display = 'none';
-                document.getElementById('foundState').style.display = 'block';
-                document.getElementById('heroName').innerText = n.name;
-                document.getElementById('heroDist').innerText = n.dist.toFixed(1) + ' KM';
-                document.getElementById('heroInfo').innerText = `${n.city} • ${n.type}\n${n.nozzle} Nozzle • ${n.cost}`;
-                document.getElementById('btnHeroNav').onclick = function() { openMapModal(n); };
-                renderList();
-            }
-        }
-        function getDist(lat1, lon1, lat2, lon2) {
-            const R=6371; const dLat=(lat2-lat1)*Math.PI/180; const dLon=(lon2-lon1)*Math.PI/180;
-            const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-            return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
-        }
-
-        function renderList() {
-            const listCont = document.getElementById('mainListContainer'); listCont.innerHTML = ''; 
-            let grouped = {};
-            chargers.forEach(item => { let city = item.city || 'Lainnya'; if(!grouped[city]) grouped[city] = []; grouped[city].push(item); });
-            let colorIdx = 0;
-            Object.keys(grouped).forEach(city => {
-                let groupHTML = `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`;
-                grouped[city].forEach(item => {
-                    let itemJson = JSON.stringify(item).replace(/'/g, "\\'");
-                    groupHTML += `<div onclick='openMapModal(${itemJson})' class="mini-card"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${item.name}</h3><div class="mini-info">${item.type}<br>${item.nozzle} • ${item.cost}</div></div><div class="mini-bot"><div class="mini-dist">${item.dist ? item.dist.toFixed(1)+' KM' : ''}</div></div></div>`;
-                });
-                listCont.innerHTML += groupHTML + `</div></div>`;
-            });
-        }
-
-        function openMapModal(item) {
-            currentMapTarget = item;
-            document.getElementById('mapOverlay').classList.add('active');
-            document.getElementById('mapTitle').innerText = item.name;
-            document.getElementById('mapSub').innerText = `Jarak: ${item.dist ? item.dist.toFixed(1) : '--'} KM`;
-            document.getElementById('btnGmaps').href = (item.link && item.link.length>10) ? item.link : `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`;
-            
-            setTimeout(() => {
-                if(map) { map.remove(); map = null; }
-                map = L.map('map', {zoomControl: false}).setView([item.lat, item.lng], 14);
-                L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
-                L.marker([item.lat, item.lng]).addTo(map).bindPopup(item.name).openPopup();
-                if(userLat) {
-                    L.Routing.control({
-                        waypoints: [L.latLng(userLat, userLng), L.latLng(item.lat, item.lng)],
-                        lineOptions: { styles: [{color: '#CCFF00', opacity: 0.8, weight: 5}] },
-                        createMarker: function() { return null; }, addWaypoints: false, show: false
-                    }).addTo(map);
-                }
-            }, 300);
-        }
+        function processData() { if(userLat && chargers.length > 0) { chargers.forEach(c => c.dist=parseFloat(getDist(userLat,userLng,c.lat,c.lng))); chargers.sort((a,b)=> a.dist-b.dist); const n = chargers[0]; document.getElementById('scanState').style.display = 'none'; document.getElementById('foundState').style.display = 'block'; document.getElementById('heroName').innerText = n.name; document.getElementById('heroDist').innerText = n.dist.toFixed(1) + ' KM'; document.getElementById('heroInfo').innerText = `${n.city} • ${n.type}\n${n.nozzle} Nozzle • ${n.cost}`; document.getElementById('btnHeroNav').onclick = function() { openMapModal(n); }; renderList(); } }
+        function getDist(lat1, lon1, lat2, lon2) { const R=6371; const dLat=(lat2-lat1)*Math.PI/180; const dLon=(lon2-lon1)*Math.PI/180; const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2; return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1); }
+        function renderList() { const listCont = document.getElementById('mainListContainer'); listCont.innerHTML = ''; let grouped = {}; chargers.forEach(item => { let city = item.city || 'Lainnya'; if(!grouped[city]) grouped[city] = []; grouped[city].push(item); }); Object.keys(grouped).forEach(city => { let groupHTML = `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`; grouped[city].forEach(item => { let itemJson = JSON.stringify(item).replace(/'/g, "\\'"); groupHTML += `<div onclick='openMapModal(${itemJson})' class="mini-card"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${item.name}</h3><div class="mini-info">${item.type}<br>${item.nozzle} • ${item.cost}</div></div><div class="mini-bot"><div class="mini-dist">${item.dist ? item.dist.toFixed(1)+' KM' : ''}</div></div></div>`; }); listCont.innerHTML += groupHTML + `</div></div>`; }); }
+        function openMapModal(item) { document.getElementById('mapOverlay').classList.add('active'); document.getElementById('mapTitle').innerText = item.name; document.getElementById('mapSub').innerText = `Jarak: ${item.dist ? item.dist.toFixed(1) : '--'} KM`; document.getElementById('btnGmaps').href = (item.link && item.link.length>10) ? item.link : `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`; setTimeout(() => { if(map) { map.remove(); map = null; } map = L.map('map', {zoomControl: false}).setView([item.lat, item.lng], 14); L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map); L.marker([item.lat, item.lng]).addTo(map).bindPopup(item.name).openPopup(); if(userLat) { L.Routing.control({ waypoints: [L.latLng(userLat, userLng), L.latLng(item.lat, item.lng)], lineOptions: { styles: [{color: '#CCFF00', opacity: 0.8, weight: 5}] }, createMarker: function() { return null; }, addWaypoints: false, show: false }).addTo(map); } }, 300); }
         function closeMapModal() { document.getElementById('mapOverlay').classList.remove('active'); }
-        function initFullMap() {
-            if(!mapFull) { mapFull = L.map('fullMap', {zoomControl:false}).setView([-6.2, 106.8], 11); L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(mapFull); }
-            setTimeout(() => { mapFull.invalidateSize(); }, 200);
-        }
+        function initFullMap() { if(!mapFull) { mapFull = L.map('fullMap', {zoomControl:false}).setView([-6.2, 106.8], 11); L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(mapFull); } setTimeout(() => { mapFull.invalidateSize(); }, 200); }
+        function renderNews(csvText) { document.getElementById('newsContainer').innerHTML = "<div style='color:#666;text-align:center;'>Berita dimuat...</div>"; }
 
-        function renderNews(csvText) {
-             /* (Logic News Slider Sederhana) */
-             document.getElementById('newsContainer').innerHTML = "<div style='color:#666;text-align:center;'>Berita dimuat...</div>";
-        }
-
-        // === LOGIC ANTRIAN (DIGABUNGKAN) ===
+        // === LOGIC ANTRIAN ===
         function initQueueSystem() {
             try {
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -530,9 +376,9 @@
                 }
                 window.showAdminLogin = () => { showQModal("ADMIN LOGIN", "PIN:", () => { if(document.getElementById('adminPinInput').value === '1131') { document.getElementById('mod').style.display='none'; document.getElementById('admPan').style.display='block'; isAdmin=true; } else alert("PIN SALAH"); }, true); };
 
-                // LOGIC DAFTAR
+                // LOGIC DAFTAR (DENGAN CEK BLOKIR)
                 document.getElementById('btnDaftar').onclick = function() {
-                    const p = document.getElementById('uPlat').value.toUpperCase(); 
+                    const p = document.getElementById('uPlat').value.toUpperCase().trim(); 
                     const w = document.getElementById('uWa').value; 
                     const b = parseInt(document.getElementById('uBat').value);
                     const btn = document.getElementById('btnDaftar');
@@ -547,8 +393,7 @@
                         btn.innerText = "DAFTAR ANTRIAN"; btn.disabled = false; locStat.style.display = 'none';
                         return showQModal('GPS ERROR', 'Tunggu sampai GPS terbaca di map');
                     }
-
-                    const dist = getDist(userLat, userLng, STATION_LAT, STATION_LNG) * 1000; // convert km to m
+                    const dist = getDist(userLat, userLng, STATION_LAT, STATION_LNG) * 1000;
                     if(dist > MAX_DISTANCE_METERS && !isAdmin) {
                         btn.innerText = "DAFTAR"; btn.disabled = false;
                         return showQModal("TERLALU JAUH", `Jarak Anda ${dist.toFixed(0)}m. Wajib < ${MAX_DISTANCE_METERS}m`);
@@ -556,6 +401,10 @@
 
                     db.runTransaction(async (t) => {
                         const d = (await t.get(ref)).data() || {};
+                        // CEK BLOKIR
+                        const blocked = d.blockedList || [];
+                        if(blocked.includes(p)) throw "PLAT ANDA DIBLOKIR ADMIN";
+
                         let s = d.chargingSlots || [null,null,null]; let q = d.waitingQueue || [];
                         if(s.some(x=>x?.name===p)||q.some(x=>x?.name===p)) throw "Sudah Ada";
                         
@@ -566,26 +415,22 @@
                         } else {
                             q.push({name:p, phone:w, startBattery:b, targetLimit:100, durationMinutes:0});
                         }
-                        t.set(ref, {chargingSlots:s, waitingQueue:q}, {merge:true});
+                        t.set(ref, {chargingSlots:s, waitingQueue:q, blockedList:blocked}, {merge:true});
                     }).then(() => { 
                         showQModal('SUKSES','Masuk Antrian'); document.getElementById('uPlat').value=''; 
                         btn.innerText = "DAFTAR"; btn.disabled = false; locStat.style.display = 'none';
-                    }).catch((e) => { showQModal('GAGAL', "Error / Sudah Ada"); btn.disabled = false; });
+                    }).catch((e) => { showQModal('GAGAL', e); btn.disabled = false; });
                 };
 
-                // REALTIME LISTENER
                 ref.onSnapshot((snap) => {
                     const d=snap.data()||{}; const s=d.chargingSlots||[null,null,null]; const q=d.waitingQueue||[];
-                    
                     document.getElementById('dash-q-count').innerText = `${q.length} ANTRIAN`;
                     document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#666;font-size:0.8rem;">- KOSONG -</div>' : q.map((x,i)=>`<div class="wait-item ${i===0?'first':''}"><div class="wait-name">${x.name}<br><span class="wait-wa">${x.startBattery}%</span></div><div class="btn-del" onclick="delQ(${i},'${x.name}')">✕</div></div>`).join('');
-
                     document.getElementById('slots').innerHTML = s.map((x,i)=>{
                         if(!x) return `<div class="q-slot"><div class="q-slot-head">${SLOT_LABELS[i]}</div><div style="flex:1;display:flex;align-items:center;justify-content:center;color:#444;font-size:2rem;">⚡</div><div style="font-size:0.7rem;color:#666;">READY</div></div>`;
                         const isRun=!!x.startTime;
                         let btn = isRun ? `<button class="btn-slot-act btn-stop" onclick="act(${i},'stop')">STOP</button>` : `<button class="btn-slot-act btn-start" onclick="act(${i},'start')">MULAI</button>`;
                         let txt = "TAP MULAI"; let h = x.startBattery;
-                        
                         if(isRun) {
                             let startMs = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
                             let endMs = startMs + (x.durationMinutes*60000);
@@ -597,7 +442,6 @@
                     }).join('');
                 });
 
-                // ACTION FUNCTIONS
                 window.act = (i, type) => {
                     db.runTransaction(async (t) => {
                         const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue;
@@ -610,28 +454,38 @@
                     }).catch(e => showQModal('GAGAL', e));
                 };
                 
+                // === ADMIN FUNCTIONS ===
                 window.clrSlot=()=>{const i=document.getElementById('mSlot').value; db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots;s[i]=null; t.update(ref,{chargingSlots:s})});};
                 window.delQ=(i,n)=>{ if(isAdmin||localStorage.getItem('myPlat')===n) db.runTransaction(async(t)=>{const q=(await t.get(ref)).data().waitingQueue;q.splice(i,1);t.update(ref,{waitingQueue:q})}); };
                 window.fillQ=()=>{db.runTransaction(async(t)=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0 && s.includes(null)){let idx=s.indexOf(null); let nx=q.shift(); nx.durationMinutes=(100-nx.startBattery)*1.5; s[idx]=nx; t.update(ref,{chargingSlots:s,waitingQueue:q}); }});};
                 window.startAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x&&!x.startTime) window.act(i,'start') }); });};
                 window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
 
-                setInterval(() => { if(document.querySelector('.q-timer')) { const t=document.querySelectorAll('.q-timer'); if(t.length>0) { /* trigger UI refresh if needed */ } } }, 1000);
+                // BARU: BLOKIR & RESET
+                window.blockUser = async () => {
+                    const p = document.getElementById('blockPlatInput').value.toUpperCase().trim();
+                    if(!p) return;
+                    await db.runTransaction(async(t) => {
+                        const d = (await t.get(ref)).data();
+                        const list = d.blockedList || [];
+                        if(!list.includes(p)) list.push(p);
+                        t.update(ref, {blockedList: list});
+                    });
+                    showQModal('BLOKIR', `Plat ${p} berhasil diblokir.`);
+                };
 
+                window.resAll = () => {
+                    if(confirm("YAKIN HAPUS SEMUA ANTRIAN & DATA?")) {
+                        ref.set({chargingSlots:[null,null,null], waitingQueue:[], blockedList:[]});
+                        showQModal('RESET', 'Semua data telah dihapus bersih.');
+                    }
+                };
+
+                setInterval(() => { if(document.querySelector('.q-timer')) { const t=document.querySelectorAll('.q-timer'); if(t.length>0) { /* refresh */ } } }, 1000);
             } catch(e) { console.log(e); }
         }
 
-        // START
         runIntro();
     </script>
 </body>
 </html>
-
-    <div id="mod" class="q-modal">
-        <div class="q-modal-box">
-            <h3 id="mt" style="font-family:'Syne'; color:#fff; margin:0 0 10px;">JUDUL</h3>
-            <p id="mm" style="color:#888; font-size:0.9rem; margin-bottom:20px;">Pesan...</p>
-            <input type="password" id="adminPinInput" placeholder="PIN" style="display:none; width:100%; margin-bottom:15px; padding:10px; border-radius:8px; border:none;">
-            <button id="modalActionBtn" class="btn-q-daftar">OK</button>
-        </div>
-    </div>
