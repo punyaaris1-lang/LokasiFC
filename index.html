@@ -482,4 +482,11 @@
                 n.target = limit;
                 s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
             window.startAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x&&!x.startTime) window.act(i,'start') }); });};
-            window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((
+            window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
+            window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
+            window.resAll=()=>{if(confirm('RESET TOTAL?')) ref.set({chargingSlots:[null,null,null],waitingQueue:[],blockedList:[]});};
+            if (Notification.permission !== "granted") Notification.requestPermission();
+        }
+    </script>
+</body>
+</html>
