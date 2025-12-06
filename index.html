@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" href="mlu-logo.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -28,13 +29,12 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; background-color: var(--bg-dark); background-image: linear-gradient(180deg, #020408 0%, #0a1525 100%); color: var(--text); font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* LOGO BG FULL */
         #bgLogoFull { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%; height: 100%; pointer-events: none; z-index: 0; background: url('mlu-logo.png') center center no-repeat; background-size: contain; opacity: 0.1; filter: grayscale(100%) drop-shadow(0 0 30px var(--deep-blue)); display: none; }
         #bgLogoFull.visible { display: block; animation: breathe 6s infinite ease-in-out; }
         @keyframes breathe { 0%, 100% { opacity: 0.1; transform: scale(0.9); } 50% { opacity: 0.15; transform: scale(0.95); } }
 
         /* HEADER */
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
+        .header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
         .header h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0; line-height: 0.9; color: #fff; }
         .label-top { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
         .top-controls { display: flex; align-items: center; gap: 8px; }
@@ -48,35 +48,44 @@
         #view-home.active, #view-fc.active, #view-queue.active { display: flex; flex-direction: column; }
 
         /* HOME */
-        .home-container { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 20px; }
-        .menu-grid { display: grid; gap: 15px; width: 100%; max-width: 380px; }
-        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 25px; }
+        .menu-grid { display: grid; gap: 18px; width: 100%; max-width: 380px; }
+        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .glass-btn:active { transform: scale(0.97); border-color: var(--neon-blue); }
-        .menu-icon-box { width: 45px; height: 45px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
-        .menu-text h3 { font-size: 1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
-        .menu-text span { font-size: 0.7rem; color: #aaa; font-weight: bold; }
-        .mitra-area { width: 100%; max-width: 380px; margin-top: 10px; }
-        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .mitra-btn { flex-direction: column; padding: 12px; text-align: center; gap: 5px; }
+        .menu-icon-box { width: 48px; height: 48px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
+        .menu-text h3 { font-size: 1.1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
+        .menu-text span { font-size: 0.75rem; color: #aaa; font-weight: bold; }
+        .mitra-area { width: 100%; max-width: 380px; margin-top: 15px; }
+        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .mitra-btn { flex-direction: column; padding: 15px; text-align: center; gap: 8px; }
 
         /* LIST FC */
         #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; display: block; }
         .hero-card { margin: 15px 20px; background: var(--glass-bg); border: 1px solid var(--neon-blue); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
         .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
         .gps-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
         .dist-badge { position: absolute; top: 20px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
+        
         .city-group { margin-bottom: 25px; }
         .city-header { padding: 0 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
         .city-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px var(--deep-blue); }
         .city-line { height: 1px; background: #333; flex-grow: 1; }
         .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .mini-card { min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s; cursor: pointer; }
+        
+        .mini-card { 
+            min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            scroll-snap-align: start; position: relative; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
         .style-1 { background: linear-gradient(135deg, #0b101a, #1a237e); border-color: #2979ff; }
         .style-2 { background: linear-gradient(135deg, #001514, #004d40); border-color: #00bfa5; }
         .style-3 { background: linear-gradient(135deg, #1a1a1a, #333); border-color: #555; }
         .bg-bolt { position: absolute; right: -10px; bottom: -20px; font-size: 5rem; opacity: 0.1; color: #fff; transform: rotate(-15deg); }
         .mini-top h3 { margin: 0 0 5px 0; font-size: 0.8rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; z-index: 2; position: relative; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .mini-info { font-size: 0.65rem; opacity: 0.8; z-index: 2; position: relative; color: #ddd; }
+        .mini-dist { font-size: 0.85rem; font-weight: 800; text-align: right; color: var(--neon-blue); z-index: 2; position: relative; margin-top: auto; }
         .btn-go-list { background: var(--neon-blue); color: #000; font-weight: 800; border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: auto; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.7rem; z-index: 5; }
 
         /* MAP */
@@ -180,7 +189,12 @@
         </div>
 
         <div id="fc-list-container">
-            <div id="heroContainer" style="padding:0 20px; margin-top: 15px;"></div>
+            <div id="heroContainer" style="padding:0 20px; margin-top: 15px;">
+                <div class="glass-card" style="text-align:center; padding:30px;">
+                    <div class="gps-dot" style="width:15px; height:15px; margin:0 auto 10px;"></div>
+                    <div style="color:#888; font-size:0.9rem;">Mencari lokasi terdekat...</div>
+                </div>
+            </div>
             <div id="otherListContainer" style="margin-top:20px;"></div>
         </div>
 
@@ -232,6 +246,7 @@
     <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger); margin-bottom:15px;">DARURAT (SOS)</h3><a href="https://wa.me/6287722285445" class="glass-btn" style="margin-bottom:10px;"><span style="font-size:1.5rem;">🚑</span> TOWING / MOGOK</a><a href="https://wa.me/6283179721893" class="glass-btn"><span style="font-size:1.5rem;">🚨</span> URC KECELAKAAN</a><button onclick="closeModal()" class="adm-btn" style="margin-top:20px;">TUTUP</button></div></div>
     <div id="modal-news" class="modal"><div class="modal-box" style="max-width:400px; height:80vh; display:flex; flex-direction:column;"><h3 style="margin-bottom:15px;">INFO & EVENT</h3><div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc;">Memuat Berita...</div><button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button></div></div>
     <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg" style="margin:15px 0; color:#ddd;">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none; margin-bottom:15px;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const FIREBASE_CFG = { apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", authDomain: "sistem-antrian-b1c39.firebaseapp.com", projectId: "sistem-antrian-b1c39", storageBucket: "sistem-antrian-b1c39.firebasestorage.app", messagingSenderId: "454124587608", appId: "1:454124587608:web:34fbb0f5211067a67f982d" };
@@ -252,15 +267,7 @@
             if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
-        // WAKE LOCK FUNCTION (ANTI SLEEP)
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Screen Wake Lock Active');
-                } catch (err) { console.log(err); }
-            }
-        }
+        async function requestWakeLock() { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} } }
 
         function nav(page) {
             document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
@@ -269,10 +276,7 @@
 
             if(page==='home') { document.getElementById('view-home').classList.add('active'); document.getElementById('bgLogoFull').classList.add('visible'); } 
             else if(page==='fc') { document.getElementById('view-fc').classList.add('active'); switchFcMode('list'); }
-            else if(page==='queue') { 
-                document.getElementById('view-queue').classList.add('active'); 
-                requestWakeLock(); // Aktifkan anti-sleep saat masuk antrian
-            }
+            else if(page==='queue') { document.getElementById('view-queue').classList.add('active'); requestWakeLock(); }
         }
         function openModal(id) { document.getElementById('modal-'+id).classList.add('show'); }
         function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
@@ -282,6 +286,7 @@
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
 
+        // === LOCATION LOGIC (CALIBRATED DURASI) ===
         function switchFcMode(mode) {
             const listC = document.getElementById('fc-list-container');
             const mapC = document.getElementById('fc-map-container');
@@ -330,7 +335,15 @@
                 listHTML += `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`;
                 grouped[city].forEach(c => {
                     let st = `style-${(colorIdx % 3) + 1}`; colorIdx++;
-                    listHTML += `<div class="mini-card ${st}" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div><div class="mini-dist">${c.dist} KM</div></div>`;
+                    listHTML += `
+                    <div class="mini-card ${st}">
+                        <div class="bg-bolt">⚡</div>
+                        <div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div>
+                        <div style="z-index:2; margin-top:auto;">
+                            <div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div>
+                            <button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button>
+                        </div>
+                    </div>`;
                 });
                 listHTML += `</div></div>`;
             });
@@ -364,16 +377,25 @@
 
         async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
 
+        // RUMUS KALIBRASI BARU (NON-LINEAR)
+        function getDuration(start) {
+            let total = 0;
+            for(let i=start; i<100; i++) {
+                if(i<80) total += 0.8;      // 0-80%: Cepat (0.8 menit/%)
+                else if(i<90) total += 1.1; // 80-90%: Sedang (1.1 menit/%)
+                else total += 1.8;          // 90-100%: Lambat (1.8 menit/%)
+            }
+            return Math.ceil(total);
+        }
+
         function initFirebase() {
             if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
             const aud = document.getElementById('alarm'); const SLOT_NAMES = ["SLOT 3", "SLOT 2", "SLOT 1"]; let triggered = new Set();
 
             document.getElementById('btnDaftar').onclick = () => {
-                // AUDIO UNLOCK TRICK (Play silent sound on click)
                 aud.play().then(() => aud.pause()).catch(e=>console.log("Audio unlock failed"));
-                requestWakeLock(); // Request Screen Lock
-
+                requestWakeLock();
                 const p = document.getElementById('uPlat').value.toUpperCase().trim(); const w = document.getElementById('uWa').value; const b = parseInt(document.getElementById('uBat').value); const btn = document.getElementById('btnDaftar'); const stat = document.getElementById('locStatus');
                 if(!p || !w || isNaN(b)) return showAlert('ERROR','Isi semua data!');
                 btn.disabled=true; btn.innerText="CEK LOKASI..."; stat.style.display='block';
@@ -385,7 +407,10 @@
                     const d = (await t.get(ref)).data() || {}; const block = d.blockedList || []; if(block.includes(p)) throw "PLAT ANDA DIBLOKIR!";
                     let s = d.chargingSlots || [null,null,null]; let q = d.waitingQueue || []; if(s.some(x=>x?.name===p) || q.some(x=>x?.name===p)) throw "Sudah terdaftar!";
                     let empty = s.findIndex(x=>!x);
-                    if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:(q.length>5?85:100), startTime:null, duration:(100-b)*1.5 }; else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 });
+                    // GUNAKAN RUMUS KALIBRASI DI SINI
+                    let dur = getDuration(b); 
+                    if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:(q.length>5?85:100), startTime:null, duration:dur }; 
+                    else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 });
                     t.set(ref, {chargingSlots:s, waitingQueue:q, blockedList:block}, {merge:true});
                 }).then(()=>{ showAlert('SUKSES','Berhasil masuk antrian!'); document.getElementById('uPlat').value=''; btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; stat.style.display='none'; localStorage.setItem('myPlat', p); }).catch(e=>{ showAlert('GAGAL', e); btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; });
             };
@@ -395,19 +420,13 @@
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
                 document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
 
-                // ALARM OTOMATIS (BUNYI SAAT MENGISI ATAU SELESAI)
+                // AUTO ALARM & DURASI RECALC
                 s.forEach(x => {
                     if(x && x.startTime) {
                         let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
                         let end = start + (x.duration*60000);
                         if(Date.now() > end && !triggered.has(x.name)) {
-                            // Cek apakah ini motor user saya?
-                            if(localStorage.getItem('myPlat') === x.name) {
-                                triggered.add(x.name);
-                                aud.play().catch(e => console.log("Audio block: " + e));
-                                navigator.vibrate([1000, 500, 1000]); // Getar
-                                showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
-                            }
+                            if(localStorage.getItem('myPlat') === x.name) { triggered.add(x.name); aud.play().catch(e => console.log(e)); navigator.vibrate([1000, 500, 1000]); showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`); }
                         }
                     }
                 });
@@ -425,11 +444,22 @@
                 }).join('');
             });
 
-            window.act = (i, type) => { db.runTransaction(async t => { const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue; if(type==='stop') { if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; s[i] = null; if(q.length>0) { let n=q.shift(); n.duration=(100-n.startBattery)*1.5; s[i]=n; } } else { s[i].startTime = new Date(); } t.update(ref, {chargingSlots:s, waitingQueue:q}); }).catch(e=>showAlert('GAGAL',e)); };
+            window.act = (i, type) => { 
+                db.runTransaction(async t => { 
+                    const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue; 
+                    if(type==='stop') { 
+                        if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; 
+                        s[i] = null; 
+                        if(q.length>0) { let n=q.shift(); n.duration=getDuration(n.startBattery); s[i]=n; } 
+                    } else { s[i].startTime = new Date(); } 
+                    t.update(ref, {chargingSlots:s, waitingQueue:q}); 
+                }).catch(e=>showAlert('GAGAL',e)); 
+            };
+            
             window.delQ=(i,n)=>{ if(isAdmin||localStorage.getItem('myPlat')===n) db.runTransaction(async t=>{const q=(await t.get(ref)).data().waitingQueue;q.splice(i,1);t.update(ref,{waitingQueue:q})}); };
             window.showAdminLogin=()=>{ showAlert('ADMIN','Masukkan PIN:', ()=>{if(document.getElementById('alertInput').value==='1131'){document.getElementById('admPan').style.display='block';isAdmin=true;document.getElementById('modal-alert').classList.remove('show');}else alert('Salah!')}, true); };
             window.clrSlot=()=>{const i=document.getElementById('mSlot').value; db.runTransaction(async t=>{const s=(await t.get(ref)).data().chargingSlots;s[i]=null;t.update(ref,{chargingSlots:s})});};
-            window.fillQ=()=>{db.runTransaction(async t=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0&&s.includes(null)){let idx=s.indexOf(null);let n=q.shift();n.duration=(100-n.startBattery)*1.5;s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
+            window.fillQ=()=>{db.runTransaction(async t=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0&&s.includes(null)){let idx=s.indexOf(null);let n=q.shift();n.duration=getDuration(n.startBattery);s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
             window.startAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x&&!x.startTime) window.act(i,'start') }); });};
             window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
             window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
