@@ -115,6 +115,11 @@
         .form-input:focus { border-bottom-color: var(--neon-blue); }
         .btn-daftar { width: 100%; padding: 12px; border-radius: 10px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; margin-top: 5px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
         
+        /* STATUS LIVE & DASHBOARD */
+        .q-dashboard { background: linear-gradient(135deg, #0b101a, #000); border: 1px solid var(--deep-blue); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
+        .qd-num { font-size: 1.8rem; font-weight: 800; color: #fff; font-family: 'Orbitron'; text-shadow: 0 0 10px var(--neon-blue); }
+        .qd-info { font-size: 0.7rem; background: var(--neon-blue); color: #000; padding: 2px 8px; border-radius: 4px; display: inline-block; font-weight: bold; margin-top: 5px; }
+
         .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
         .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 2px; text-align: center; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
         .slot-card.active { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.1); }
@@ -173,7 +178,7 @@
                     <a href="https://casan.id" target="_blank" class="glass-btn mitra-btn"><span style="font-size:1.5rem;">🔌</span> CASAN.ID</a>
                     <a href="https://play.google.com/store/apps/details?id=com.starvo" target="_blank" class="glass-btn mitra-btn"><span style="font-size:1.5rem;">📱</span> STARVO</a>
                 </div>
-                <div class="glass-btn" onclick="openModal('news')" style="margin-top:15px; justify-content:center; padding:12px; font-size:0.85rem;">📰 INFO & EVENT MLU</div>
+                <div class="glass-btn" onclick="openModal('news')" style="margin-top:10px; justify-content:center; padding:12px; font-size:0.85rem;">📰 INFO & EVENT MLU</div>
             </div>
             
             <div style="margin-top:auto; font-size:0.7rem; color:#666; font-family:'Orbitron'; padding-bottom:10px;">&copy; MLU 2025</div>
@@ -227,10 +232,13 @@
             
             <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
             
-            <div class="glass-card" style="padding:15px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);"><span style="font-family:'Orbitron'; font-size:0.8rem;">DAFTAR TUNGGU</span><span id="qCount" style="color:var(--neon-blue); font-weight:bold;">0 ANTRIAN</span></div>
-                <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
+            <div class="q-dashboard">
+                <div style="font-size:0.7rem; color:#aaa; letter-spacing:1px; margin-bottom:5px;">DAFTAR TUNGGU</div>
+                <div id="qCount" class="qd-num">0 ANTRIAN</div>
+                <div id="limitInfo" class="qd-info">MAX: 100%</div>
             </div>
+
+            <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
             
             <div style="text-align:center; margin-top:25px; cursor:pointer; opacity:0.6; font-size:0.8rem; letter-spacing:1px;" onclick="showAdminLogin()">🔒 ADMIN PANEL</div>
             
@@ -288,6 +296,7 @@
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
 
+        // === LOCATION LOGIC ===
         function switchFcMode(mode) {
             const listC = document.getElementById('fc-list-container');
             const mapC = document.getElementById('fc-map-container');
@@ -320,16 +329,16 @@
         }
         function renderLocList() {
             if(chargers.length === 0) return;
-            // 1. SAFEGUARD SCROLL POSITION (Fix Mental Balik)
+            // SAFEGUARD SCROLL
             const scrolls = {};
             document.querySelectorAll('.h-scroll').forEach((el, idx) => { scrolls[idx] = el.scrollLeft; });
 
-            // 2. RENDER HERO
+            // HERO
             const n = chargers[0];
             const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
             document.getElementById('heroContainer').innerHTML = heroHTML;
 
-            // 3. RENDER GRID LIST
+            // LIST GRID
             let listHTML = '';
             let grouped = {};
             chargers.slice(1).forEach(item => { let k = item.city || 'Lainnya'; if(!grouped[k]) grouped[k]=[]; grouped[k].push(item); });
@@ -345,7 +354,7 @@
             });
             document.getElementById('otherListContainer').innerHTML = listHTML;
 
-            // 4. RESTORE SCROLL POSITION
+            // RESTORE SCROLL
             document.querySelectorAll('.h-scroll').forEach((el, idx) => { if(scrolls[idx]) el.scrollLeft = scrolls[idx]; });
         }
 
@@ -353,11 +362,11 @@
             map = L.map('fullMap').setView([-6.2, 106.8], 11);
             L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
             if(userLat) {
-                // USER MARKER (PULSING BLUE DOT)
+                // USER MARKER
                 const pulseIcon = L.divIcon({ className: 'user-pulse', iconSize: [15,15] });
                 L.marker([userLat, userLng], {icon: pulseIcon}).addTo(map).bindPopup("<b>LOKASI ANDA</b>");
             }
-            // PLOT ALL MARKERS
+            // PLOT ALL CHARGERS
             chargers.forEach(c => { L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<b>${c.name}</b><br>${c.type}`); });
         }
         
@@ -367,19 +376,19 @@
                 if(!map) initMap();
                 map.setView([lat, lng], 15);
                 
-                // ROUTING FROM USER TO TARGET
+                // POPUP OTOMATIS
+                L.popup({className: 'glass-popup'})
+                    .setLatLng([lat, lng])
+                    .setContent(`<b>${name}</b>`)
+                    .openOn(map);
+
                 if(userLat) {
+                    // ROUTE
                     L.Routing.control({
                         waypoints: [L.latLng(userLat, userLng), L.latLng(lat, lng)],
                         lineOptions: { styles: [{color: '#00f3ff', opacity: 0.8, weight: 5}] },
-                        createMarker: function(i, wp, nWps) {
-                            if (i === 0) return null; // Hide Start Marker (User)
-                            return L.marker(wp.latLng).bindPopup(`<b>${name}</b>`); // Target Marker
-                        },
-                        addWaypoints: false, draggableWaypoints: false, fitSelectedRoutes: true, show: false
+                        createMarker: function() { return null; }, addWaypoints: false, show: false
                     }).addTo(map);
-                } else {
-                    L.marker([lat, lng]).addTo(map).bindPopup(`<b>${name}</b>`).openPopup();
                 }
             }, 300);
         }
@@ -410,7 +419,10 @@
 
             ref.onSnapshot(snap => {
                 const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
+                // UPDATE DASHBOARD STATUS LIVE
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
+                document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
+
                 document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;">- Kosong -</div>' : q.map((x,i)=>`<div class="wait-item ${i===0?'top':''}" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
                 document.getElementById('slots').innerHTML = s.map((x,i) => {
                     if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div class="status-dot"></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div>`;
