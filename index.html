@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -24,6 +23,7 @@
             --glass-bg: rgba(12, 20, 35, 0.95);
             --glass-border: rgba(0, 243, 255, 0.4);
             --danger: #ff2a6d;
+            --wa-color: #25D366;
             --text: #ffffff;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,7 +34,7 @@
         @keyframes breathe { 0%, 100% { opacity: 0.1; transform: scale(0.9); } 50% { opacity: 0.15; transform: scale(0.95); } }
 
         /* HEADER */
-        .header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
         .header h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0; line-height: 0.9; color: #fff; }
         .label-top { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
         .top-controls { display: flex; align-items: center; gap: 8px; }
@@ -48,23 +48,22 @@
         #view-home.active, #view-fc.active, #view-queue.active { display: flex; flex-direction: column; }
 
         /* HOME */
-        .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 25px; }
-        .menu-grid { display: grid; gap: 18px; width: 100%; max-width: 380px; }
-        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .home-container { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 20px; }
+        .menu-grid { display: grid; gap: 15px; width: 100%; max-width: 380px; }
+        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .glass-btn:active { transform: scale(0.97); border-color: var(--neon-blue); }
-        .menu-icon-box { width: 48px; height: 48px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
-        .menu-text h3 { font-size: 1.1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
-        .menu-text span { font-size: 0.75rem; color: #aaa; font-weight: bold; }
-        .mitra-area { width: 100%; max-width: 380px; margin-top: 15px; }
-        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .mitra-btn { flex-direction: column; padding: 15px; text-align: center; gap: 8px; }
+        .menu-icon-box { width: 45px; height: 45px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
+        .menu-text h3 { font-size: 1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
+        .menu-text span { font-size: 0.7rem; color: #aaa; font-weight: bold; }
+        .mitra-area { width: 100%; max-width: 380px; margin-top: 10px; }
+        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .mitra-btn { flex-direction: column; padding: 12px; text-align: center; gap: 5px; }
 
         /* LIST FC */
         #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; display: block; }
         .hero-card { margin: 15px 20px; background: var(--glass-bg); border: 1px solid var(--neon-blue); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
         .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
         .gps-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
         .dist-badge { position: absolute; top: 20px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
         
         .city-group { margin-bottom: 25px; }
@@ -72,13 +71,7 @@
         .city-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px var(--deep-blue); }
         .city-line { height: 1px; background: #333; flex-grow: 1; }
         .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        
-        .mini-card { 
-            min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; 
-            display: flex; flex-direction: column; justify-content: space-between; 
-            scroll-snap-align: start; position: relative; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); 
-        }
+        .mini-card { min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s; cursor: pointer; }
         .style-1 { background: linear-gradient(135deg, #0b101a, #1a237e); border-color: #2979ff; }
         .style-2 { background: linear-gradient(135deg, #001514, #004d40); border-color: #00bfa5; }
         .style-3 { background: linear-gradient(135deg, #1a1a1a, #333); border-color: #555; }
@@ -110,12 +103,22 @@
         .q-dashboard { background: linear-gradient(135deg, #0b101a, #000); border: 1px solid var(--deep-blue); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
         .qd-num { font-size: 1.8rem; font-weight: 800; color: #fff; font-family: 'Orbitron'; text-shadow: 0 0 10px var(--neon-blue); }
         
-        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
-        .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 2px; text-align: center; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+        .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 5px; text-align: center; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
         .slot-card.active { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.1); }
-        .bat-body { width: 28px; height: 55px; border: 2px solid #666; border-radius: 4px; position: relative; display: flex; align-items: flex-end; padding: 2px; margin: 5px auto; }
-        .bat-liquid { width: 100%; background: var(--neon-blue); border-radius: 2px; box-shadow: 0 0 8px var(--neon-blue); transition: height 0.5s; }
+        /* BATTERY BODY (Mirip Gambar) */
+        .bat-body { width: 35px; height: 60px; border: 2px solid #666; border-radius: 5px; position: relative; display: flex; align-items: flex-end; padding: 2px; margin: 5px auto; }
+        .slot-card.active .bat-body { border-color: #fff; }
+        /* Kepala Baterai (Lebar) */
+        .bat-body::before { content:''; position: absolute; top:-6px; left:5px; width:21px; height:4px; background:#666; border-radius:2px 2px 0 0; }
+        .bat-liquid { width: 100%; background: var(--neon-blue); border-radius: 2px; box-shadow: 0 0 8px var(--neon-blue); transition: height 0.5s; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        /* Animasi Petir */
+        .bolt-anim { font-size: 18px; color: #000; animation: blinkBolt 1s infinite; }
+        @keyframes blinkBolt { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .btn-wa-notif { padding: 5px 8px; font-size: 0.6rem; border: none; border-radius: 5px; cursor: pointer; background: var(--wa-color); color: #fff; font-weight: bold; margin-top: 5px; text-decoration: none; display: flex; align-items: center; gap: 5px; justify-content: center; width: 100%; }
         
+        /* ADMIN PANEL & LOGIN */
         .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--danger); }
         .adm-btn { width: 100%; padding: 8px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
@@ -215,7 +218,6 @@
                 <p id="locStatus" style="text-align:center; font-size:0.6rem; color:var(--neon-blue); margin-top:8px; display:none;">Cek Lokasi...</p>
             </div>
             
-            <div style="text-align:center; margin-top:20px; margin-bottom:5px; font-family:'Orbitron'; color:#fff; letter-spacing:2px;">STATUS SLOT (LIVE)</div>
             <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
             
             <div class="q-dashboard">
@@ -226,7 +228,9 @@
 
             <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
             
-            <div style="text-align:center; margin-top:25px; cursor:pointer; opacity:0.6; font-size:0.8rem; letter-spacing:1px;" onclick="showAdminLogin()">🔒 ADMIN PANEL</div>
+            <div style="text-align:center; margin-top:30px; margin-bottom:30px;">
+                <div style="cursor:pointer; opacity:0.7; font-size:0.8rem; color:var(--neon-blue); border:1px solid var(--neon-blue); padding:10px 20px; border-radius:10px; display:inline-block;" onclick="showAdminLogin()">🔐 ADMIN PANEL</div>
+            </div>
             
             <div id="admPan" class="admin-panel">
                 <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">MASTER CONTROL</h4>
@@ -286,7 +290,7 @@
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
 
-        // === LOCATION LOGIC (CALIBRATED DURASI) ===
+        // === LOCATION LOGIC ===
         function switchFcMode(mode) {
             const listC = document.getElementById('fc-list-container');
             const mapC = document.getElementById('fc-map-container');
@@ -336,14 +340,7 @@
                 grouped[city].forEach(c => {
                     let st = `style-${(colorIdx % 3) + 1}`; colorIdx++;
                     listHTML += `
-                    <div class="mini-card ${st}">
-                        <div class="bg-bolt">⚡</div>
-                        <div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div>
-                        <div style="z-index:2; margin-top:auto;">
-                            <div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div>
-                            <button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button>
-                        </div>
-                    </div>`;
+                    <div class="mini-card ${st}" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div><div style="z-index:2; margin-top:auto;"><div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div><button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button></div></div>`;
                 });
                 listHTML += `</div></div>`;
             });
@@ -377,17 +374,6 @@
 
         async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
 
-        // RUMUS KALIBRASI BARU (NON-LINEAR)
-        function getDuration(start) {
-            let total = 0;
-            for(let i=start; i<100; i++) {
-                if(i<80) total += 0.8;      // 0-80%: Cepat (0.8 menit/%)
-                else if(i<90) total += 1.1; // 80-90%: Sedang (1.1 menit/%)
-                else total += 1.8;          // 90-100%: Lambat (1.8 menit/%)
-            }
-            return Math.ceil(total);
-        }
-
         function initFirebase() {
             if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
@@ -407,8 +393,11 @@
                     const d = (await t.get(ref)).data() || {}; const block = d.blockedList || []; if(block.includes(p)) throw "PLAT ANDA DIBLOKIR!";
                     let s = d.chargingSlots || [null,null,null]; let q = d.waitingQueue || []; if(s.some(x=>x?.name===p) || q.some(x=>x?.name===p)) throw "Sudah terdaftar!";
                     let empty = s.findIndex(x=>!x);
-                    // GUNAKAN RUMUS KALIBRASI DI SINI
-                    let dur = getDuration(b); 
+                    // RUMUS KALIBRASI
+                    let dur = 0;
+                    for(let i=b; i<100; i++) { if(i<80)dur+=0.8; else if(i<90)dur+=1.1; else dur+=1.8; }
+                    dur = Math.ceil(dur);
+
                     if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:(q.length>5?85:100), startTime:null, duration:dur }; 
                     else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 });
                     t.set(ref, {chargingSlots:s, waitingQueue:q, blockedList:block}, {merge:true});
@@ -420,7 +409,6 @@
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
                 document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
 
-                // AUTO ALARM & DURASI RECALC
                 s.forEach(x => {
                     if(x && x.startTime) {
                         let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
@@ -433,29 +421,18 @@
 
                 document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;">- Kosong -</div>' : q.map((x,i)=>`<div class="wait-item ${i===0?'top':''}" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
                 document.getElementById('slots').innerHTML = s.map((x,i) => {
-                    if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div class="status-dot"></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div>`;
+                    if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div style="margin-top:auto;"><div class="status-dot"></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div></div>`;
                     const isRun = !!x.startTime; let txt = isRun ? "MENGISI..." : "MENUNGGU"; let h = x.startBattery;
                     if(isRun) {
                         let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime(); let end = start + (x.duration*60000); let left = end - Date.now();
                         if(left > 0) { let m = Math.floor(left/60000); let sc = Math.floor((left%60000)/1000); txt = `${m}:${sc<10?'0'+sc:sc}`; h = 100; } 
                         else { txt = "SELESAI"; }
                     }
-                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
+                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"><div class="bolt-anim">⚡</div></div></div><div style="margin-top:auto;"><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? (txt==='SELESAI'?`<a href="#" class="btn-wa-notif" style="justify-content:center;">SELESAI</a>`:`<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>`):`<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div></div>`;
                 }).join('');
             });
 
-            window.act = (i, type) => { 
-                db.runTransaction(async t => { 
-                    const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue; 
-                    if(type==='stop') { 
-                        if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; 
-                        s[i] = null; 
-                        if(q.length>0) { let n=q.shift(); n.duration=getDuration(n.startBattery); s[i]=n; } 
-                    } else { s[i].startTime = new Date(); } 
-                    t.update(ref, {chargingSlots:s, waitingQueue:q}); 
-                }).catch(e=>showAlert('GAGAL',e)); 
-            };
-            
+            window.act = (i, type) => { db.runTransaction(async t => { const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue; if(type==='stop') { if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; s[i] = null; if(q.length>0) { let n=q.shift(); n.duration=getDuration(n.startBattery); s[i]=n; } } else { s[i].startTime = new Date(); } t.update(ref, {chargingSlots:s, waitingQueue:q}); }).catch(e=>showAlert('GAGAL',e)); };
             window.delQ=(i,n)=>{ if(isAdmin||localStorage.getItem('myPlat')===n) db.runTransaction(async t=>{const q=(await t.get(ref)).data().waitingQueue;q.splice(i,1);t.update(ref,{waitingQueue:q})}); };
             window.showAdminLogin=()=>{ showAlert('ADMIN','Masukkan PIN:', ()=>{if(document.getElementById('alertInput').value==='1131'){document.getElementById('admPan').style.display='block';isAdmin=true;document.getElementById('modal-alert').classList.remove('show');}else alert('Salah!')}, true); };
             window.clrSlot=()=>{const i=document.getElementById('mSlot').value; db.runTransaction(async t=>{const s=(await t.get(ref)).data().chargingSlots;s[i]=null;t.update(ref,{chargingSlots:s})});};
@@ -465,6 +442,7 @@
             window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
             window.resAll=()=>{if(confirm('RESET TOTAL?')) ref.set({chargingSlots:[null,null,null],waitingQueue:[],blockedList:[]});};
         }
+        function getDuration(start) { let total = 0; for(let i=start; i<100; i++) { if(i<80) total += 0.8; else if(i<90) total += 1.1; else total += 1.8; } return Math.ceil(total); }
     </script>
 </body>
 </html>
