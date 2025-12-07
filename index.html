@@ -10,7 +10,6 @@
     <link rel="apple-touch-icon" href="mlu-logo.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -30,34 +29,30 @@
 
         #bgLogoFull { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%; height: 100%; pointer-events: none; z-index: 0; background: url('mlu-logo.png') center center no-repeat; background-size: contain; opacity: 0.15; filter: grayscale(100%) drop-shadow(0 0 30px var(--deep-blue)); display: none; }
         #bgLogoFull.visible { display: block; animation: breathe 6s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.15; } 50% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.25; } }
+        @keyframes breathe { 0%, 100% { opacity: 0.15; transform: scale(0.9); } 50% { opacity: 0.25; transform: scale(0.95); } }
 
         /* VIEWS */
         #view-home, #view-fc, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; display: none; position: relative; z-index: 10; }
         #view-home.active, #view-fc.active, #view-queue.active { display: flex; flex-direction: column; }
 
-        /* === HOME DESIGN (FIXED) === */
+        /* HOME */
         .home-container { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 25px; }
-        .main-title { text-align: center; width: 100%; }
-        .app-title-text { font-family: 'Orbitron'; font-size: 2.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 20px var(--deep-blue); margin-bottom: 5px; }
+        .app-title-text { font-family: 'Orbitron'; font-size: 2.5rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 20px var(--deep-blue); margin-bottom: 5px; text-align: center; }
         .squad-badge { font-family: 'Orbitron'; font-size: 0.75rem; background: var(--deep-blue); padding: 4px 15px; border-radius: 20px; font-weight: bold; letter-spacing: 2px; box-shadow: 0 0 15px rgba(41, 121, 255, 0.5); display: inline-block; color: #fff; }
-
         .menu-grid { display: grid; gap: 15px; width: 100%; max-width: 380px; }
         .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .glass-btn:active { transform: scale(0.97); border-color: var(--neon-blue); }
         .menu-icon-box { width: 50px; height: 50px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); flex-shrink: 0; }
         .menu-text h3 { font-size: 1.1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
         .menu-text span { font-size: 0.75rem; color: #aaa; font-weight: bold; }
-
         .mitra-area { width: 100%; max-width: 380px; margin-top: 15px; }
         .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .mitra-btn { flex-direction: column; padding: 15px; text-align: center; gap: 8px; }
 
-        /* === LIST FC (FIXED BOX SIZE) === */
+        /* LIST FC */
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; z-index: 50; }
         .header-text h1 { font-family: 'Orbitron'; font-size: 1.5rem; margin: 0; line-height: 1; color: #fff; }
         .label-top { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: 700; }
-        
         .top-controls { display: flex; align-items: center; gap: 10px; }
         .toggle-mode { background: #111; border: 1px solid #333; border-radius: 20px; display: flex; padding: 2px; }
         .t-btn { padding: 6px 12px; font-size: 0.65rem; font-weight: 800; color: #888; cursor: pointer; border-radius: 18px; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
@@ -65,7 +60,6 @@
         .btn-home-mini { width: 35px; height: 35px; border-radius: 50%; background: rgba(0,243,255,0.1); display: flex; align-items: center; justify-content: center; border: 1px solid var(--neon-blue); color: #fff; cursor: pointer; font-size: 1.2rem; }
 
         #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; display: block; }
-        
         .hero-card { margin: 15px 0; width: 100%; background: var(--glass-bg); border-top: 1px solid var(--neon-blue); border-bottom: 1px solid var(--neon-blue); padding: 25px 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
         .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
         .blink-me { animation: blinker 1.5s linear infinite; }
@@ -79,24 +73,17 @@
         .city-line { height: 1px; background: #333; flex-grow: 1; }
         .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
         
-        /* BOX LIST: KUNCI MATI UKURANNYA */
-        .mini-card { 
-            min-width: 160px; width: 160px; height: 200px; /* FIXED HEIGHT */
-            border-radius: 16px; padding: 15px; 
-            display: flex; flex-direction: column; 
-            scroll-snap-align: start; position: relative; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); 
-        }
-        .mini-top { flex: 1; overflow: hidden; } /* Isi konten atas */
-        .mini-bottom { margin-top: auto; width: 100%; } /* Tombol GO selalu di bawah */
+        .mini-card { min-width: 160px; width: 160px; height: 210px; border-radius: 16px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; scroll-snap-align: start; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .mini-top { flex: 1; overflow: hidden; }
+        .mini-bottom { margin-top: auto; width: 100%; }
         
         .style-1 { background: linear-gradient(135deg, #0b101a, #1a237e); border-color: #2979ff; }
         .style-2 { background: linear-gradient(135deg, #001514, #004d40); border-color: #00bfa5; }
         .style-3 { background: linear-gradient(135deg, #1a1a1a, #333); border-color: #555; }
         .bg-bolt { position: absolute; right: -10px; bottom: -20px; font-size: 5rem; opacity: 0.1; color: #fff; transform: rotate(-15deg); pointer-events: none; }
         
-        .mini-top h3 { margin: 0 0 5px 0; font-size: 0.85rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6em; }
-        .mini-info { font-size: 0.65rem; opacity: 0.8; color: #ddd; }
+        .mini-top h3 { margin: 0 0 5px 0; font-size: 0.85rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; z-index: 2; position: relative; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.6em; }
+        .mini-info { font-size: 0.65rem; opacity: 0.8; z-index: 2; position: relative; color: #ddd; }
         .mini-dist { font-size: 0.85rem; font-weight: 800; text-align: right; color: var(--neon-blue); margin-bottom: 8px; }
         .btn-go-list { background: var(--neon-blue); color: #000; font-weight: 800; border: none; padding: 8px; border-radius: 8px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.7rem; }
 
@@ -107,15 +94,20 @@
         .leaflet-popup-content-wrapper { background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--neon-blue); color: #fff; border-radius: 12px; }
         .leaflet-popup-tip { background: var(--neon-blue); }
         .popup-content { padding: 10px; text-align: center; }
-        .popup-btn { display: block; width: 100%; padding: 8px; background: var(--neon-blue); color: #000; font-weight: bold; text-decoration: none; text-align: center; margin-top: 10px; border-radius: 5px; font-family: 'Orbitron'; }
-        
+        .popup-btn { display: block; width: 100%; padding: 10px; background: var(--neon-blue); color: #000; font-weight: bold; text-decoration: none; text-align: center; margin-top: 10px; border-radius: 5px; font-family: 'Orbitron'; }
+        .user-pulse { width: 15px; height: 15px; background: var(--neon-blue); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 15px var(--neon-blue); animation: userPulse 2s infinite; }
+        @keyframes userPulse { 0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(0, 243, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); } }
+
         /* ANTRIAN */
         .q-header { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); flex-shrink: 0; }
-        .btn-back { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 6px 15px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; }
+        .btn-back { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 12px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .q-container { padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; overflow-y: auto; }
         .glass-card { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin-bottom: 20px; }
         .form-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-bottom: 2px solid var(--deep-blue); border-radius: 8px; color: #fff; font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; text-align: center; outline: none; margin-bottom: 12px; }
         .btn-daftar { width: 100%; padding: 12px; border-radius: 10px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; margin-top: 5px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
+        
+        .q-dashboard { background: linear-gradient(135deg, #0b101a, #000); border: 1px solid var(--deep-blue); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
+        .qd-num { font-size: 1.8rem; font-weight: 800; color: #fff; font-family: 'Orbitron'; text-shadow: 0 0 10px var(--neon-blue); }
         
         .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
         .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 2px; text-align: center; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
@@ -139,11 +131,13 @@
         .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(0, 243, 255, 0.2); border-top: 4px solid var(--neon-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 100% {transform: rotate(360deg);} }
 
-        /* INFO LIST */
-        .news-item { display: flex; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; align-items: center; text-align: left; }
-        .news-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 1px solid var(--neon-blue); flex-shrink: 0; }
-        .news-txt h4 { color: var(--neon-blue); margin: 0 0 5px 0; font-size: 0.9rem; }
-        .news-txt p { font-size: 0.7rem; color: #ccc; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        /* INFO LIST NEWS - NO CLICK, DIRECT VIEW */
+        .news-container { max-height: 70vh; overflow-y: auto; text-align: left; }
+        .news-card { background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .news-title { font-family: 'Orbitron'; color: var(--neon-blue); font-size: 1rem; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        .news-img-box { width: 100%; aspect-ratio: 16/9; overflow: hidden; border-radius: 8px; margin-bottom: 10px; border: 1px solid #444; position: relative; }
+        .news-img { width: 100%; height: 100%; object-fit: cover; }
+        .news-content { font-size: 0.85rem; color: #ccc; line-height: 1.5; white-space: pre-line; }
     </style>
 </head>
 <body>
@@ -229,10 +223,10 @@
             
             <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
             
-            <div class="glass-card" style="text-align:center; padding:15px; margin-bottom:15px;">
-                <div style="font-size:0.7rem; color:#aaa; letter-spacing:1px;">DAFTAR TUNGGU</div>
-                <div id="qCount" style="font-size:2rem; font-family:'Orbitron'; font-weight:900; color:#fff; text-shadow:0 0 10px var(--neon-blue); margin:5px 0;">0 ANTRIAN</div>
-                <div id="limitInfo" style="font-size:0.7rem; background:var(--neon-blue); color:#000; padding:2px 8px; border-radius:4px; display:inline-block; font-weight:bold;">MAX: 100%</div>
+            <div class="q-dashboard">
+                <div style="font-size:0.7rem; color:#aaa; letter-spacing:1px; margin-bottom:5px;">DAFTAR TUNGGU</div>
+                <div id="qCount" class="qd-num">0 ANTRIAN</div>
+                <div id="limitInfo" style="font-size:0.7rem; background:var(--neon-blue); color:#000; padding:2px 8px; border-radius:4px; display:inline-block; font-weight:bold; margin-top:5px;">MAX: 100%</div>
             </div>
 
             <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
@@ -257,9 +251,9 @@
     <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger); margin-bottom:15px;">DARURAT (SOS)</h3><a href="https://wa.me/6287722285445" class="glass-btn" style="margin-bottom:10px;"><span style="font-size:1.5rem;">🚑</span> TOWING / MOGOK</a><a href="https://wa.me/6283179721893" class="glass-btn"><span style="font-size:1.5rem;">🚨</span> URC KECELAKAAN</a><button onclick="closeModal()" class="adm-btn" style="margin-top:20px;">TUTUP</button></div></div>
     
     <div id="modal-news" class="modal">
-        <div class="modal-box" style="max-width:400px; height:80vh; display:flex; flex-direction:column;">
+        <div class="modal-box" style="max-width:400px; max-height:85vh; display:flex; flex-direction:column; padding:20px;">
             <h3 style="margin-bottom:15px;">INFO & EVENT</h3>
-            <div id="newsContent" style="flex:1; overflow-y:auto; padding-right:5px;">Memuat Info...</div>
+            <div id="newsContent" class="news-container">Memuat Info...</div>
             <button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button>
         </div>
     </div>
@@ -382,7 +376,8 @@
         }
         
         function getPopupContent(c) {
-            return `<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`;
+            // FIXED: Link Google Maps Direct Navigation
+            return `<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lng}&travelmode=two_wheeler" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`;
         }
         
         function showOnMap(lat, lng, name) {
@@ -395,6 +390,7 @@
             }, 300);
         }
 
+        // === NEWS LIST LOGIC ===
         async function loadNews() {
             try { 
                 const t = await fetch(NEWS_API).then(r=>r.text()); 
@@ -403,11 +399,13 @@
                 r.forEach(c => { 
                     if(c.length>2) {
                         let imgUrl = c[3] || (c[2].match(/http\S+\.(jpg|png|jpeg)/gi) || [])[0];
-                        let imgTag = imgUrl ? `<img src="${imgUrl}" class="news-img">` : '';
+                        let imgTag = imgUrl ? `<div class="news-img-box"><img src="${imgUrl}" class="news-img"></div>` : '';
+                        // AUTO SWIPE LOGIC SIMPLIFIED TO LIST VIEW AS REQUESTED
                         newsHTML+=`
-                        <div class="news-item">
+                        <div class="news-card">
+                            <div class="news-title">${c[0]}</div>
                             ${imgTag}
-                            <div class="news-txt"><h4>${c[0]}</h4><p>${c[2].replace(imgUrl, '')}</p></div>
+                            <div class="news-content">${c[2].replace(imgUrl, '')}</div>
                         </div>`; 
                     }
                 }); 
@@ -470,7 +468,6 @@
                         if(left > 0) { let m = Math.floor(left/60000); let sc = Math.floor((left%60000)/1000); txt = `${m}:${sc<10?'0'+sc:sc}`; h = 100; } 
                         else { txt = "SELESAI"; }
                     }
-                    // TOMBOL STOP/SELESAI (FIXED)
                     return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"><div class="bolt-anim">⚡</div></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? (txt==='SELESAI'?`<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; background:var(--neon-blue); color:#000;" onclick="act(${i},'stop')">SELESAI</button>`:`<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>`):`<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
                 }).join('');
             });
@@ -479,7 +476,7 @@
                 if(type==='stop') { 
                     if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; 
                     s[i] = null; 
-                    // AUTO NAIK DARI ANTRIAN (FIXED)
+                    // AUTO NAIK DARI ANTRIAN
                     if(q.length > 0) {
                         let next = q.shift();
                         let limit = getDynamicLimit(q.length);
