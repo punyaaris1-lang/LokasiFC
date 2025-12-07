@@ -28,6 +28,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; background-color: var(--bg-dark); background-image: linear-gradient(180deg, #020408 0%, #0a1525 100%); color: var(--text); font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
+        /* LOGO BG FULL */
         #bgLogoFull { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%; height: 100%; pointer-events: none; z-index: 0; background: url('mlu-logo.png') center center no-repeat; background-size: contain; opacity: 0.1; filter: grayscale(100%) drop-shadow(0 0 30px var(--deep-blue)); display: none; }
         #bgLogoFull.visible { display: block; animation: breathe 6s infinite ease-in-out; }
         @keyframes breathe { 0%, 100% { opacity: 0.1; transform: scale(0.9); } 50% { opacity: 0.15; transform: scale(0.95); } }
@@ -48,9 +49,8 @@
 
         /* HOME */
         .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 25px; }
-        .main-title { text-align: center; }
         .menu-grid { display: grid; gap: 18px; width: 100%; max-width: 380px; }
-        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .glass-btn:active { transform: scale(0.97); border-color: var(--neon-blue); }
         .menu-icon-box { width: 48px; height: 48px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
         .menu-text h3 { font-size: 1.1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
@@ -61,16 +61,11 @@
 
         /* LIST FC */
         #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; display: block; }
-        
-        /* HERO FULL WIDTH */
-        .hero-card { margin: 15px 0; width: 100%; background: var(--glass-bg); border-top: 1px solid var(--neon-blue); border-bottom: 1px solid var(--neon-blue); padding: 25px 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); border-radius: 0; }
-        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
-        /* BLINK ANIMATION */
-        .blink-me { animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0.3; } }
-        
+        .hero-card { margin: 15px 20px; background: var(--glass-bg); border: 1px solid var(--neon-blue); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
+        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
         .gps-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: pulse 1s infinite; }
-        .dist-badge { position: absolute; top: 25px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
+        @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
+        .dist-badge { position: absolute; top: 20px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
         
         .city-group { margin-bottom: 25px; }
         .city-header { padding: 0 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
@@ -79,7 +74,7 @@
         .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
         
         .mini-card { 
-            min-width: 160px; width: 160px; height: 190px; border-radius: 16px; padding: 15px; 
+            min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; 
             display: flex; flex-direction: column; justify-content: space-between; 
             scroll-snap-align: start; position: relative; overflow: hidden; 
             border: 1px solid rgba(255,255,255,0.1); 
@@ -88,7 +83,7 @@
         .style-2 { background: linear-gradient(135deg, #001514, #004d40); border-color: #00bfa5; }
         .style-3 { background: linear-gradient(135deg, #1a1a1a, #333); border-color: #555; }
         .bg-bolt { position: absolute; right: -10px; bottom: -20px; font-size: 5rem; opacity: 0.1; color: #fff; transform: rotate(-15deg); }
-        .mini-top h3 { margin: 0 0 5px 0; font-size: 0.8rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; z-index: 2; position: relative; }
+        .mini-top h3 { margin: 0 0 5px 0; font-size: 0.8rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; z-index: 2; position: relative; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .mini-info { font-size: 0.65rem; opacity: 0.8; z-index: 2; position: relative; color: #ddd; }
         .mini-dist { font-size: 0.85rem; font-weight: 800; text-align: right; color: var(--neon-blue); z-index: 2; position: relative; margin-top: auto; }
         .btn-go-list { background: var(--neon-blue); color: #000; font-weight: 800; border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: auto; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.7rem; z-index: 5; }
@@ -118,27 +113,13 @@
         .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
         .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 2px; text-align: center; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
         .slot-card.active { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.1); }
-        .bat-body { width: 35px; height: 60px; border: 2px solid #666; border-radius: 5px; position: relative; display: flex; align-items: flex-end; padding: 2px; margin: 5px auto; }
-        .slot-card.active .bat-body { border-color: #fff; }
-        .bat-body::before { content:''; position: absolute; top:-6px; left:5px; width:21px; height:4px; background:#666; border-radius:2px 2px 0 0; }
-        .bat-liquid { width: 100%; background: var(--neon-blue); border-radius: 2px; box-shadow: 0 0 8px var(--neon-blue); transition: height 0.5s; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .bolt-anim { font-size: 18px; color: #000; animation: blinkBolt 1s infinite; }
-        @keyframes blinkBolt { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        .btn-wa-notif { padding: 5px 8px; font-size: 0.6rem; border: none; border-radius: 5px; cursor: pointer; background: var(--wa-color); color: #fff; font-weight: bold; margin-top: 5px; text-decoration: none; display: flex; align-items: center; gap: 5px; justify-content: center; width: 100%; }
+        .bat-body { width: 28px; height: 55px; border: 2px solid #666; border-radius: 4px; position: relative; display: flex; align-items: flex-end; padding: 2px; margin: 5px auto; }
+        .bat-liquid { width: 100%; background: var(--neon-blue); border-radius: 2px; box-shadow: 0 0 8px var(--neon-blue); transition: height 0.5s; }
         
-        /* ADMIN PANEL */
-        .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--danger); position: relative; }
+        .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--danger); }
         .adm-btn { width: 100%; padding: 8px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
-        .btn-close-adm { position: absolute; top: 10px; right: 10px; color: #888; background: none; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; color: var(--danger); }
         
-        /* SLIDESHOW */
-        .slide-container { width: 100%; overflow: hidden; border-radius: 15px; margin-bottom: 20px; aspect-ratio: 16/9; position: relative; }
-        .slide-wrapper { display: flex; transition: transform 0.5s ease-in-out; height: 100%; }
-        .slide-item { min-width: 100%; height: 100%; }
-        .slide-item img { width: 100%; height: 100%; object-fit: cover; }
-
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-box { background: #0b101a; border: 1px solid var(--neon-blue); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
@@ -208,8 +189,13 @@
         </div>
 
         <div id="fc-list-container">
-            <div id="heroContainer"></div>
-            <div id="otherListContainer" style="margin-top:10px;"></div>
+            <div id="heroContainer" style="padding:0 20px; margin-top: 15px;">
+                <div class="glass-card" style="text-align:center; padding:30px;">
+                    <div class="gps-dot" style="width:15px; height:15px; margin:0 auto 10px;"></div>
+                    <div style="color:#888; font-size:0.9rem;">Mencari lokasi terdekat...</div>
+                </div>
+            </div>
+            <div id="otherListContainer" style="margin-top:20px;"></div>
         </div>
 
         <div id="fc-map-container">
@@ -222,13 +208,14 @@
         <div class="q-header"><button class="btn-back" onclick="nav('home')">⬅ HOME</button><div style="font-family:'Orbitron'; font-size:1.2rem;">ANTRIAN</div><div style="width:50px;"></div></div>
         <div class="q-container">
             <div class="glass-card">
-                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" oninput="this.value = this.value.toUpperCase()"></div>
+                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase;"></div>
                 <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">WHATSAPP</label><input id="uWa" type="number" class="form-input" placeholder="08xxxxxxxxxx"></div>
-                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0 - 99" min="0" max="99" oninput="if(this.value>99)this.value=99"></div>
+                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0 - 99"></div>
                 <button id="btnDaftar" class="btn-daftar">DAFTAR ANTRIAN</button>
                 <p id="locStatus" style="text-align:center; font-size:0.6rem; color:var(--neon-blue); margin-top:8px; display:none;">Cek Lokasi...</p>
             </div>
             
+            <div style="text-align:center; margin-top:20px; margin-bottom:5px; font-family:'Orbitron'; color:#fff; letter-spacing:2px;">STATUS SLOT (LIVE)</div>
             <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
             
             <div class="q-dashboard">
@@ -242,7 +229,6 @@
             <div style="text-align:center; margin-top:25px; cursor:pointer; opacity:0.6; font-size:0.8rem; letter-spacing:1px;" onclick="showAdminLogin()">🔒 ADMIN PANEL</div>
             
             <div id="admPan" class="admin-panel">
-                <button class="btn-close-adm" onclick="document.getElementById('admPan').style.display='none'">✕</button>
                 <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">MASTER CONTROL</h4>
                 <select id="mSlot" class="form-input" style="text-align:left; margin-bottom:5px;"><option value="0">Slot 3 (Kiri)</option><option value="1">Slot 2 (Tengah)</option><option value="2">Slot 1 (Kanan)</option></select>
                 <button onclick="clrSlot()" class="adm-btn">HAPUS SLOT</button>
@@ -252,23 +238,13 @@
                 <button onclick="blockUser()" class="adm-btn danger">BLOKIR USER</button>
                 <div style="height:1px; background:#333; margin:10px 0;"></div>
                 <button onclick="resAll()" class="adm-btn danger" style="border:2px solid var(--danger);">⚠ RESET DATA ⚠</button>
+                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn" style="border:none; margin-top:10px;">TUTUP</button>
             </div>
         </div>
     </div>
 
     <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger); margin-bottom:15px;">DARURAT (SOS)</h3><a href="https://wa.me/6287722285445" class="glass-btn" style="margin-bottom:10px;"><span style="font-size:1.5rem;">🚑</span> TOWING / MOGOK</a><a href="https://wa.me/6283179721893" class="glass-btn"><span style="font-size:1.5rem;">🚨</span> URC KECELAKAAN</a><button onclick="closeModal()" class="adm-btn" style="margin-top:20px;">TUTUP</button></div></div>
-    
-    <div id="modal-news" class="modal">
-        <div class="modal-box" style="max-width:400px; height:auto; display:flex; flex-direction:column;">
-            <h3 style="margin-bottom:15px;">INFO & EVENT</h3>
-            <div id="slideFrame" class="slide-container">
-                <div id="slideWrapper" class="slide-wrapper"></div>
-            </div>
-            <div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc; max-height: 200px;">Memuat Info...</div>
-            <button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button>
-        </div>
-    </div>
-    
+    <div id="modal-news" class="modal"><div class="modal-box" style="max-width:400px; height:80vh; display:flex; flex-direction:column;"><h3 style="margin-bottom:15px;">INFO & EVENT</h3><div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc;">Memuat Berita...</div><button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button></div></div>
     <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg" style="margin:15px 0; color:#ddd;">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none; margin-bottom:15px;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -291,6 +267,7 @@
             if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
+        // WAKE LOCK
         async function requestWakeLock() { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {} } }
 
         function nav(page) {
@@ -347,8 +324,7 @@
             document.querySelectorAll('.h-scroll').forEach((el, idx) => { scrolls[idx] = el.scrollLeft; });
 
             const n = chargers[0];
-            // HERO CARD FULL WIDTH & BLINK
-            const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status blink-me"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
+            const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
             document.getElementById('heroContainer').innerHTML = heroHTML;
 
             let listHTML = '';
@@ -361,7 +337,14 @@
                 grouped[city].forEach(c => {
                     let st = `style-${(colorIdx % 3) + 1}`; colorIdx++;
                     listHTML += `
-                    <div class="mini-card ${st}" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div><div style="z-index:2; margin-top:auto;"><div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div><button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button></div></div>`;
+                    <div class="mini-card ${st}">
+                        <div class="bg-bolt">⚡</div>
+                        <div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div>
+                        <div style="z-index:2; margin-top:auto;">
+                            <div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div>
+                            <button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button>
+                        </div>
+                    </div>`;
                 });
                 listHTML += `</div></div>`;
             });
@@ -393,37 +376,7 @@
             }, 300);
         }
 
-        // === SLIDESHOW & NEWS ===
-        async function loadNews() {
-            try { 
-                const t = await fetch(NEWS_API).then(r=>r.text()); 
-                const r = t.split('\n').slice(1).map(x=>x.split(',')); 
-                let imgHTML = ''; let txtHTML = '';
-                r.forEach(c => { 
-                    if(c.length>2) {
-                        // Cek Image URL di kolom ke-4 (index 3) jika ada, atau parsing dari content
-                        let imgUrl = c[3] || (c[2].match(/http\S+\.(jpg|png|jpeg)/gi) || [])[0];
-                        if(imgUrl) imgHTML += `<div class="slide-item"><img src="${imgUrl}"></div>`;
-                        txtHTML+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; 
-                    }
-                }); 
-                document.getElementById('newsContent').innerHTML = txtHTML || 'Tidak ada berita.';
-                
-                // SLIDESHOW LOGIC
-                const wrap = document.getElementById('slideWrapper');
-                if(imgHTML) {
-                    wrap.innerHTML = imgHTML;
-                    let idx = 0; const items = wrap.children;
-                    if(items.length > 1) {
-                        setInterval(() => {
-                            idx = (idx + 1) % items.length;
-                            wrap.style.transform = `translateX(-${idx * 100}%)`;
-                        }, 3000);
-                    }
-                } else { document.getElementById('slideFrame').style.display='none'; }
-
-            } catch(e){} 
-        }
+        async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
 
         function initFirebase() {
             if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
@@ -444,17 +397,7 @@
                     const d = (await t.get(ref)).data() || {}; const block = d.blockedList || []; if(block.includes(p)) throw "PLAT ANDA DIBLOKIR!";
                     let s = d.chargingSlots || [null,null,null]; let q = d.waitingQueue || []; if(s.some(x=>x?.name===p) || q.some(x=>x?.name===p)) throw "Sudah terdaftar!";
                     let empty = s.findIndex(x=>!x);
-                    
-                    // LOGIC LIMIT BARU
-                    let limit = 100;
-                    if(q.length >= 4) limit = 85;
-                    else if(q.length >= 2) limit = 90;
-
-                    let dur = 0; for(let i=b; i<limit; i++) { if(i<80)dur+=0.8; else if(i<90)dur+=1.1; else dur+=1.8; }
-                    dur = Math.ceil(dur);
-
-                    if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:limit, startTime:null, duration:dur }; 
-                    else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 }); // Target di queue 100 dulu, nti pas masuk slot baru di-set realnya
+                    if(empty !== -1) s[empty] = { name:p, phone:w, startBattery:b, target:(q.length>5?85:100), startTime:null, duration:(100-b)*1.5 }; else q.push({ name:p, phone:w, startBattery:b, target:100, duration:0 });
                     t.set(ref, {chargingSlots:s, waitingQueue:q, blockedList:block}, {merge:true});
                 }).then(()=>{ showAlert('SUKSES','Berhasil masuk antrian!'); document.getElementById('uPlat').value=''; btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; stat.style.display='none'; localStorage.setItem('myPlat', p); }).catch(e=>{ showAlert('GAGAL', e); btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; });
             };
@@ -462,15 +405,20 @@
             ref.onSnapshot(snap => {
                 const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
-                let lim = 100; if(q.length>=4) lim=85; else if(q.length>=2) lim=90;
-                document.getElementById('limitInfo').innerText = `MAX: ${lim}%`;
+                document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
 
+                // AUTO ALARM
                 s.forEach(x => {
                     if(x && x.startTime) {
                         let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
                         let end = start + (x.duration*60000);
                         if(Date.now() > end && !triggered.has(x.name)) {
-                            if(localStorage.getItem('myPlat') === x.name) { triggered.add(x.name); aud.play().catch(e => console.log(e)); navigator.vibrate([1000, 500, 1000]); showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`); }
+                            if(localStorage.getItem('myPlat') === x.name) {
+                                triggered.add(x.name);
+                                aud.play().catch(e => console.log("Audio block: " + e));
+                                navigator.vibrate([1000, 500, 1000]);
+                                showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
+                            }
                         }
                     }
                 });
@@ -484,36 +432,20 @@
                         if(left > 0) { let m = Math.floor(left/60000); let sc = Math.floor((left%60000)/1000); txt = `${m}:${sc<10?'0'+sc:sc}`; h = 100; } 
                         else { txt = "SELESAI"; }
                     }
-                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"><div class="bolt-anim">⚡</div></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? (txt==='SELESAI'&&x.phone?`<a href="https://wa.me/${x.phone.startsWith('0')?'62'+x.phone.slice(1):x.phone}?text=Selesai" target="_blank" class="btn-wa-notif">🔔 WA</a>`:`<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>`):`<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
+                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
                 }).join('');
             });
 
-            window.act = (i, type) => { db.runTransaction(async t => { const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue; 
-                if(type==='stop') { 
-                    if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; 
-                    s[i] = null; 
-                    // AUTO NAIK DARI ANTRIAN
-                    if(q.length > 0) {
-                        let next = q.shift();
-                        // HITUNG ULANG DURASI SAAT MASUK SLOT
-                        let lim = 100; if(q.length>=4) lim=85; else if(q.length>=2) lim=90;
-                        let dur = 0; for(let b=next.startBattery; b<lim; b++) { if(b<80)dur+=0.8; else if(b<90)dur+=1.1; else dur+=1.8; }
-                        next.duration = Math.ceil(dur);
-                        next.target = lim;
-                        s[i] = next;
-                    }
-                } else { s[i].startTime = new Date(); } 
-                t.update(ref, {chargingSlots:s, waitingQueue:q}); 
-            }).catch(e=>showAlert('GAGAL',e)); };
-            
+            window.act = (i, type) => { db.runTransaction(async t => { const d = (await t.get(ref)).data(); let s = d.chargingSlots; let q = d.waitingQueue; if(type==='stop') { if(!isAdmin && s[i].name !== localStorage.getItem('myPlat')) throw "Akses Ditolak!"; s[i] = null; if(q.length>0) { let n=q.shift(); n.duration=(100-n.startBattery)*1.5; s[i]=n; } } else { s[i].startTime = new Date(); } t.update(ref, {chargingSlots:s, waitingQueue:q}); }).catch(e=>showAlert('GAGAL',e)); };
             window.delQ=(i,n)=>{ if(isAdmin||localStorage.getItem('myPlat')===n) db.runTransaction(async t=>{const q=(await t.get(ref)).data().waitingQueue;q.splice(i,1);t.update(ref,{waitingQueue:q})}); };
             window.showAdminLogin=()=>{ showAlert('ADMIN','Masukkan PIN:', ()=>{if(document.getElementById('alertInput').value==='1131'){document.getElementById('admPan').style.display='block';isAdmin=true;document.getElementById('modal-alert').classList.remove('show');}else alert('Salah!')}, true); };
             window.clrSlot=()=>{const i=document.getElementById('mSlot').value; db.runTransaction(async t=>{const s=(await t.get(ref)).data().chargingSlots;s[i]=null;t.update(ref,{chargingSlots:s})});};
-            window.fillQ=()=>{db.runTransaction(async t=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0&&s.includes(null)){let idx=s.indexOf(null);let n=q.shift();n.duration=60;s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
+            window.fillQ=()=>{db.runTransaction(async t=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0&&s.includes(null)){let idx=s.indexOf(null);let n=q.shift();n.duration=(100-n.startBattery)*1.5;s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
             window.startAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x&&!x.startTime) window.act(i,'start') }); });};
             window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
             window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
             window.resAll=()=>{if(confirm('RESET TOTAL?')) ref.set({chargingSlots:[null,null,null],waitingQueue:[],blockedList:[]});};
+            if (Notification.permission !== "granted") Notification.requestPermission();
         }
     </script>
 </body>
