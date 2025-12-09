@@ -10,258 +10,136 @@
     <link rel="apple-touch-icon" href="mlu-logo.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
-        :root {
-            --bg-dark: #050a14;
-            --neon-blue: #00f3ff;
-            --deep-blue: #2979ff;
-            --glass-bg: rgba(12, 20, 35, 0.95);
-            --glass-border: rgba(0, 243, 255, 0.4);
-            --danger: #ff2a6d;
-            --text: #ffffff;
-        }
+        :root { --bg-dark: #050a14; --neon-blue: #00f3ff; --deep-blue: #2979ff; --glass-bg: rgba(12, 20, 35, 0.95); --danger: #ff2a6d; --text: #ffffff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; background-color: var(--bg-dark); background-image: linear-gradient(180deg, #020408 0%, #0a1525 100%); color: var(--text); font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-
-        /* LOGO BG FULL */
-        #bgLogoFull { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%; height: 100%; pointer-events: none; z-index: 0; background: url('mlu-logo.png') center center no-repeat; background-size: contain; opacity: 0.1; filter: grayscale(100%) drop-shadow(0 0 30px var(--deep-blue)); display: none; }
-        #bgLogoFull.visible { display: block; animation: breathe 6s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { opacity: 0.1; transform: scale(0.9); } 50% { opacity: 0.15; transform: scale(0.95); } }
-
-        /* HEADER */
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
+        body { margin: 0; padding: 0; background: linear-gradient(180deg, #020408 0%, #0a1525 100%); color: var(--text); font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* HEADER & UTILS */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
         .header h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0; line-height: 0.9; color: #fff; }
-        .label-top { font-size: 0.7rem; color: #888; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
-        .top-controls { display: flex; align-items: center; gap: 8px; }
-        .toggle-mode { background: #111; border: 1px solid #333; border-radius: 20px; display: flex; padding: 2px; }
-        .t-btn { padding: 5px 12px; font-size: 0.65rem; font-weight: 800; color: #888; cursor: pointer; border-radius: 18px; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .t-btn { padding: 5px 12px; font-size: 0.65rem; font-weight: 800; color: #888; border-radius: 18px; cursor: pointer; }
         .t-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
-        .btn-home-mini { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border: 1px solid #333; color: #fff; cursor: pointer; }
-
+        .btn-home-mini { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border: 1px solid #333; cursor: pointer; }
+        
         /* VIEWS */
-        #view-home, #view-fc, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; display: none; position: relative; z-index: 10; }
+        #view-home, #view-fc, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; display: none; }
         #view-home.active, #view-fc.active, #view-queue.active { display: flex; flex-direction: column; }
 
-        /* HOME */
-        .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 25px; }
-        .menu-grid { display: grid; gap: 18px; width: 100%; max-width: 380px; }
-        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; backdrop-filter: blur(5px); border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .glass-btn:active { transform: scale(0.97); border-color: var(--neon-blue); }
-        .menu-icon-box { width: 48px; height: 48px; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
-        .menu-text h3 { font-size: 1.1rem; margin: 0; font-family: 'Orbitron'; letter-spacing: 1px; }
-        .menu-text span { font-size: 0.75rem; color: #aaa; font-weight: bold; }
-        .mitra-area { width: 100%; max-width: 380px; margin-top: 15px; }
-        .mitra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .mitra-btn { flex-direction: column; padding: 15px; text-align: center; gap: 8px; }
-
-        /* LIST FC */
-        #fc-list-container { flex: 1; overflow-y: auto; padding: 0 0 50px 0; display: block; }
-        .hero-card { margin: 15px 20px; background: var(--glass-bg); border: 1px solid var(--neon-blue); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
-        .radar-status { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 800; color: var(--neon-blue); background: rgba(0, 243, 255, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(0, 243, 255, 0.3); width: fit-content; margin-bottom: 10px; }
-        .gps-dot { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
-        .dist-badge { position: absolute; top: 20px; right: 20px; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 10px; border-radius: 8px; font-family: 'Orbitron'; font-weight: bold; font-size: 0.9rem; background: rgba(0,0,0,0.5); }
+        /* HOME MENU */
+        .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 20px; }
+        .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; width: 100%; max-width: 380px; margin-bottom: 10px; }
+        .menu-icon-box { width: 48px; height: 48px; border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
         
-        .city-group { margin-bottom: 25px; }
-        .city-header { padding: 0 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .city-title { font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px var(--deep-blue); }
-        .city-line { height: 1px; background: #333; flex-grow: 1; }
-        .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        /* QUEUE & ADMIN */
+        .q-header { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); }
+        .admin-trigger { font-size: 0.8rem; cursor: pointer; color: #555; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid #333; }
+        .glass-card { background: var(--glass-bg); border: 1px solid rgba(0, 243, 255, 0.4); border-radius: 20px; padding: 15px; margin-bottom: 10px; }
+        .form-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; text-align: center; margin-bottom: 8px; }
+        .btn-daftar { width: 100%; padding: 12px; border-radius: 10px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-weight: 900; }
         
-        .mini-card { 
-            min-width: 150px; width: 150px; height: 190px; border-radius: 16px; padding: 15px; 
-            display: flex; flex-direction: column; justify-content: space-between; 
-            scroll-snap-align: start; position: relative; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1); 
-        }
-        .style-1 { background: linear-gradient(135deg, #0b101a, #1a237e); border-color: #2979ff; }
-        .style-2 { background: linear-gradient(135deg, #001514, #004d40); border-color: #00bfa5; }
-        .style-3 { background: linear-gradient(135deg, #1a1a1a, #333); border-color: #555; }
-        .bg-bolt { position: absolute; right: -10px; bottom: -20px; font-size: 5rem; opacity: 0.1; color: #fff; transform: rotate(-15deg); }
-        .mini-top h3 { margin: 0 0 5px 0; font-size: 0.8rem; font-weight: 700; line-height: 1.3; font-family: 'Orbitron'; color: #fff; z-index: 2; position: relative; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .mini-info { font-size: 0.65rem; opacity: 0.8; z-index: 2; position: relative; color: #ddd; }
-        .mini-dist { font-size: 0.85rem; font-weight: 800; text-align: right; color: var(--neon-blue); z-index: 2; position: relative; margin-top: auto; }
-        .btn-go-list { background: var(--neon-blue); color: #000; font-weight: 800; border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: auto; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Orbitron'; font-size: 0.7rem; z-index: 5; }
-
-        /* MAP */
-        #fc-map-container { flex: 1; width: 100%; height: 100%; display: none; position: relative; }
-        #fullMap { width: 100%; height: 100%; }
-        .btn-map-back { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; padding: 10px 25px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon-blue); border-radius: 20px; color: #fff; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; box-shadow: 0 0 15px rgba(0,243,255,0.3); backdrop-filter: blur(5px); }
-        .leaflet-popup-content-wrapper { background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--neon-blue); color: #fff; border-radius: 12px; padding: 0; overflow: hidden; }
-        .leaflet-popup-tip { background: var(--neon-blue); }
-        .popup-content { padding: 15px; text-align: center; }
-        .popup-btn { display: block; width: 100%; padding: 10px; background: var(--neon-blue); color: #000; font-weight: bold; text-decoration: none; text-align: center; margin-top: 10px; border-radius: 5px; font-family: 'Orbitron'; }
-        .user-pulse { width: 15px; height: 15px; background: var(--neon-blue); border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 15px var(--neon-blue); animation: userPulse 2s infinite; }
-        @keyframes userPulse { 0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(0, 243, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); } }
-
-        /* ANTRIAN */
-        .q-header { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.5); flex-shrink: 0; }
-        .btn-back { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 5px 12px; border-radius: 20px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .q-container { padding: 15px; width: 100%; max-width: 450px; margin: 0 auto; overflow-y: auto; }
-        .glass-card { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-        .form-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-bottom: 2px solid var(--deep-blue); border-radius: 8px; color: #fff; font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; text-align: center; outline: none; margin-bottom: 12px; }
-        .btn-daftar { width: 100%; padding: 12px; border-radius: 10px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; margin-top: 5px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
-        
-        .q-dashboard { background: linear-gradient(135deg, #0b101a, #000); border: 1px solid var(--deep-blue); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
-        .qd-num { font-size: 1.8rem; font-weight: 800; color: #fff; font-family: 'Orbitron'; text-shadow: 0 0 10px var(--neon-blue); }
-        
-        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
-        .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 2px; text-align: center; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .slot-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 2px; text-align: center; height: 160px; display: flex; flex-direction: column; justify-content: space-between; }
         .slot-card.active { border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.1); }
-        .bat-body { width: 28px; height: 55px; border: 2px solid #666; border-radius: 4px; position: relative; display: flex; align-items: flex-end; padding: 2px; margin: 5px auto; }
-        .bat-liquid { width: 100%; background: var(--neon-blue); border-radius: 2px; box-shadow: 0 0 8px var(--neon-blue); transition: height 0.5s; }
+        .bat-body { width: 28px; height: 50px; border: 2px solid #666; border-radius: 4px; margin: 0 auto; display: flex; align-items: flex-end; padding: 2px; }
+        .bat-liquid { width: 100%; background: var(--neon-blue); transition: height 0.5s; }
         
-        .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--danger); }
-        .adm-btn { width: 100%; padding: 8px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
+        .admin-panel { display: none; background: #000; border: 2px solid var(--danger); padding: 15px; border-radius: 15px; margin-top: 10px; }
+        .adm-btn { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
 
-        /* TOMBOL ADMIN DI ATAS */
-        .admin-trigger { font-size: 0.8rem; cursor: pointer; color: #555; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid #333; }
+        /* OVERLAY AKTIFKAN SUARA */
+        #audio-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .btn-active-sound { padding: 15px 30px; background: var(--neon-blue); color: #000; font-weight: bold; border: none; border-radius: 50px; font-size: 1.2rem; box-shadow: 0 0 20px var(--neon-blue); cursor: pointer; animation: pulse 2s infinite; }
         
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-box { background: #0b101a; border: 1px solid var(--neon-blue); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
-        .loader { position: fixed; inset:0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
-        .loader-spinner { width: 50px; height: 50px; border: 4px solid rgba(0, 243, 255, 0.2); border-top: 4px solid var(--neon-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 100% {transform: rotate(360deg);} }
+        
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
 
-    <audio id="alarm" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
-    
-    <div id="loader" class="loader"><div class="loader-spinner"></div><div style="font-family:'Orbitron'; color:var(--neon-blue);">MLU SYSTEM</div></div>
-    <div id="bgLogoFull"></div>
+    <div id="audio-overlay">
+        <h2 style="color:white; margin-bottom:10px;">AKTIFKAN SISTEM</h2>
+        <p style="color:#aaa; margin-bottom:30px;">Wajib klik tombol di bawah agar Alarm & Notifikasi bisa bunyi.</p>
+        <button class="btn-active-sound" onclick="unlockAudio()">🔊 AKTIFKAN SUARA</button>
+    </div>
+
+    <audio id="alarm" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
     <div id="view-home">
         <div class="home-container">
-            <div class="main-title">
-                <h1 style="color:var(--neon-blue); font-size:2.5rem; text-shadow:0 0 20px var(--deep-blue); margin-bottom: 5px;">MLU APPS</h1>
-                <div style="font-size:0.8rem; background:var(--deep-blue); padding:3px 12px; border-radius:4px; display:inline-block; font-weight:bold; letter-spacing:1px;">MAKA LINTAS UTARA SQUAD</div>
-            </div>
-
-            <button onclick="testSystem()" style="background:var(--danger); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:bold; margin-bottom:10px; box-shadow:0 0 10px var(--danger);">🔊 TES ALARM & NOTIFIKASI</button>
-            <div style="font-size:0.7rem; color:#aaa; margin-bottom:20px;">*Klik ini dulu biar alarm bisa bunyi</div>
-
-            <div class="menu-grid">
-                <div class="glass-btn" onclick="nav('fc')">
-                    <div class="menu-icon-box">📍</div>
-                    <div class="menu-text"><h3>LOKASI FC</h3><span>Cari charging station</span></div>
-                </div>
-                <div class="glass-btn" onclick="openModal('sos')">
-                    <div class="menu-icon-box" style="border-color:var(--danger); color:var(--danger);">🆘</div>
-                    <div class="menu-text"><h3 style="color:var(--danger);">MAKA SOS</h3><span>Layanan Darurat</span></div>
-                </div>
-                <div class="glass-btn" onclick="nav('queue')">
-                    <div class="menu-icon-box">⚡</div>
-                    <div class="menu-text"><h3>ANTRIAN</h3><span>Daftar & Pantau</span></div>
-                </div>
-            </div>
-
-            <div class="mitra-area">
-                <div style="border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:15px; display:flex; align-items:center; gap:10px;">
-                    <span style="font-family:'Orbitron'; font-size:0.7rem; color:var(--neon-blue);">MITRA CHARGING</span>
-                    <div style="height:1px; background:var(--neon-blue); flex:1; opacity:0.5;"></div>
-                </div>
-                <div class="mitra-grid">
-                    <a href="https://casan.id" target="_blank" class="glass-btn mitra-btn"><span style="font-size:1.5rem;">🔌</span> CASAN.ID</a>
-                    <a href="https://play.google.com/store/apps/details?id=com.starvo" target="_blank" class="glass-btn mitra-btn"><span style="font-size:1.5rem;">📱</span> STARVO</a>
-                </div>
-                <div class="glass-btn" onclick="openModal('news')" style="margin-top:10px; justify-content:center; padding:12px; font-size:0.85rem;">📰 INFO & EVENT MLU</div>
-            </div>
-            
-            <div style="margin-top:auto; font-size:0.7rem; color:#666; font-family:'Orbitron'; padding-bottom:10px;">&copy; MLU 2025</div>
+            <h1 style="color:var(--neon-blue); font-size:2.5rem; text-shadow:0 0 20px var(--deep-blue);">MLU APPS</h1>
+            <div class="glass-btn" onclick="nav('fc')"><div class="menu-icon-box">📍</div><div><h3>LOKASI FC</h3><span>Cari Station</span></div></div>
+            <div class="glass-btn" onclick="openModal('sos')"><div class="menu-icon-box" style="border-color:var(--danger); color:var(--danger);">🆘</div><div><h3 style="color:var(--danger);">DARURAT</h3><span>Bantuan SOS</span></div></div>
+            <div class="glass-btn" onclick="nav('queue')"><div class="menu-icon-box">⚡</div><div><h3>ANTRIAN</h3><span>Daftar & Pantau</span></div></div>
+            <div style="margin-top:auto; color:#666; font-size:0.7rem;">&copy; MLU 2025</div>
         </div>
     </div>
 
     <div id="view-fc">
         <div class="header">
-            <div class="header-text">
-                <div class="label-top">LOKASI</div>
-                <h1>FAST<br>CHARGING</h1>
-                <div class="label-bottom">MAKA LINTAS UTARA</div>
-            </div>
-            <div class="top-controls">
-                <div class="toggle-mode">
-                    <div id="btnList" class="t-btn active" onclick="switchFcMode('list')">☰ LIST</div>
-                    <div id="btnMap" class="t-btn" onclick="switchFcMode('map')">🗺️ PETA</div>
+            <div><div style="font-size:0.7rem; color:#888;">LOKASI</div><h1 style="font-size:1.5rem;">CHARGING</h1></div>
+            <div style="display:flex; gap:10px;">
+                <div style="background:#111; padding:2px; border-radius:20px; border:1px solid #333; display:flex;">
+                    <div id="btnList" class="t-btn active" onclick="switchFcMode('list')">LIST</div>
+                    <div id="btnMap" class="t-btn" onclick="switchFcMode('map')">PETA</div>
                 </div>
                 <div class="btn-home-mini" onclick="nav('home')">🏠</div>
             </div>
         </div>
-
-        <div id="fc-list-container">
-            <div id="heroContainer" style="padding:0 20px; margin-top: 15px;">
-                <div class="glass-card" style="text-align:center; padding:30px;">
-                    <div class="gps-dot" style="width:15px; height:15px; margin:0 auto 10px;"></div>
-                    <div style="color:#888; font-size:0.9rem;">Mencari lokasi terdekat...</div>
-                </div>
-            </div>
-            <div id="otherListContainer" style="margin-top:20px;"></div>
-        </div>
-
-        <div id="fc-map-container">
-            <div id="fullMap"></div>
-            <button onclick="switchFcMode('list')" class="btn-map-back">⬅ KEMBALI KE LIST</button>
-        </div>
+        <div id="fc-list-container" style="padding:20px; overflow-y:auto;"><div id="heroContainer">Loading...</div><div id="otherListContainer"></div></div>
+        <div id="fc-map-container" style="display:none; height:100%;"><div id="fullMap" style="width:100%; height:100%;"></div></div>
     </div>
 
     <div id="view-queue">
         <div class="q-header">
-            <button class="btn-back" onclick="nav('home')">⬅ HOME</button>
+            <button class="btn-home-mini" onclick="nav('home')">⬅</button>
             <div style="font-family:'Orbitron'; font-size:1.2rem;">ANTRIAN</div>
             <button class="admin-trigger" onclick="showAdminLogin()">🔒 ADMIN</button>
         </div>
-        
-        <div class="q-container">
-            <div class="glass-card" style="padding: 15px; margin-bottom: 10px;">
-                <div style="margin-bottom:8px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase; padding: 8px;"></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:8px;">
-                    <div><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">WHATSAPP</label><input id="uWa" type="number" class="form-input" placeholder="08xxx" style="padding: 8px;"></div>
-                    <div><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0-99" style="padding: 8px;"></div>
+        <div style="padding:15px; overflow-y:auto;">
+            <div class="glass-card">
+                <input id="uPlat" class="form-input" placeholder="PLAT NOMOR (B 1234 XYZ)" style="text-transform:uppercase;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <input id="uWa" type="number" class="form-input" placeholder="WHATSAPP">
+                    <input id="uBat" type="number" class="form-input" placeholder="BATERAI %">
                 </div>
-                <button id="btnDaftar" class="btn-daftar" style="padding: 10px;">DAFTAR ANTRIAN</button>
+                <button id="btnDaftar" class="btn-daftar">DAFTAR ANTRIAN</button>
                 <p id="locStatus" style="text-align:center; font-size:0.6rem; color:var(--neon-blue); margin-top:5px; display:none;">Cek Lokasi...</p>
             </div>
-            
-            <div class="slot-grid" id="slots" style="margin-top: 0; margin-bottom: 10px;">
-                <div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div>
-            </div>
-            
-            <div class="q-dashboard" style="padding: 10px; margin-bottom: 10px;">
-                <div style="font-size:0.6rem; color:#aaa; letter-spacing:1px;">DAFTAR TUNGGU</div>
-                <div id="qCount" class="qd-num" style="font-size: 1.5rem;">0 ANTRIAN</div>
-                <div id="limitInfo" style="font-size:0.6rem; background:var(--neon-blue); color:#000; padding:1px 6px; border-radius:4px; display:inline-block; font-weight:bold;">MAX: 100%</div>
-            </div>
 
+            <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
+
+            <div style="background:linear-gradient(135deg,#0b101a,#000); border:1px solid var(--deep-blue); padding:10px; border-radius:15px; text-align:center; margin-bottom:10px;">
+                <div style="font-size:0.6rem; color:#aaa;">DAFTAR TUNGGU</div>
+                <div id="qCount" style="font-size:1.5rem; font-weight:800; color:#fff; font-family:'Orbitron';">0 ANTRIAN</div>
+            </div>
             <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
-            
+
             <div id="admPan" class="admin-panel">
-                <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">MASTER CONTROL</h4>
-                <select id="mSlot" class="form-input" style="text-align:left; margin-bottom:5px;"><option value="0">Slot 3 (Kiri)</option><option value="1">Slot 2 (Tengah)</option><option value="2">Slot 1 (Kanan)</option></select>
+                <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">ADMIN PANEL</h4>
+                <select id="mSlot" class="form-input" style="text-align:left;"><option value="0">Slot 3 (Kiri)</option><option value="1">Slot 2 (Tengah)</option><option value="2">Slot 1 (Kanan)</option></select>
                 <button onclick="clrSlot()" class="adm-btn">HAPUS SLOT</button>
-                <button onclick="fillQ()" class="adm-btn" style="border-color:var(--neon-blue); color:var(--neon-blue);">NAIKKAN (AUTO)</button>
-                <div style="height:1px; background:#333; margin:10px 0;"></div>
-                <input id="blockPlatInput" class="form-input" placeholder="PLAT BLOKIR">
-                <button onclick="blockUser()" class="adm-btn danger">BLOKIR USER</button>
-                <div style="height:1px; background:#333; margin:10px 0;"></div>
-                <button onclick="resAll()" class="adm-btn danger" style="border:2px solid var(--danger);">⚠ RESET DATA ⚠</button>
-                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn" style="border:none; margin-top:10px;">TUTUP</button>
+                <button onclick="fillQ()" class="adm-btn" style="border-color:var(--neon-blue); color:var(--neon-blue);">AUTO FILL</button>
+                <button onclick="document.getElementById('admPan').style.display='none'" class="adm-btn">TUTUP</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger); margin-bottom:15px;">DARURAT (SOS)</h3><a href="https://wa.me/6287722285445" class="glass-btn" style="margin-bottom:10px;"><span style="font-size:1.5rem;">🚑</span> TOWING / MOGOK</a><a href="https://wa.me/6283179721893" class="glass-btn"><span style="font-size:1.5rem;">🚨</span> URC KECELAKAAN</a><button onclick="closeModal()" class="adm-btn" style="margin-top:20px;">TUTUP</button></div></div>
-    <div id="modal-news" class="modal"><div class="modal-box" style="max-width:400px; height:80vh; display:flex; flex-direction:column;"><h3 style="margin-bottom:15px;">INFO & EVENT</h3><div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc;">Memuat Berita...</div><button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button></div></div>
-    <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg" style="margin:15px 0; color:#ddd;">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none; margin-bottom:15px;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
+    <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger);">DARURAT</h3><a href="https://wa.me/6287722285445" class="glass-btn">🚑 TOWING</a><a href="https://wa.me/6283179721893" class="glass-btn">🚨 URC</a><button onclick="closeModal()" class="adm-btn">TUTUP</button></div></div>
+    <div id="modal-news" class="modal"><div class="modal-box" style="height:80vh;"><h3 style="margin-bottom:10px;">INFO</h3><div id="newsContent" style="height:90%; overflow-y:auto; text-align:left;">Loading...</div><button onclick="closeModal()" class="adm-btn">TUTUP</button></div></div>
+    <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- KONFIGURASI ---
         const FIREBASE_CFG = { apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", authDomain: "sistem-antrian-b1c39.firebaseapp.com", projectId: "sistem-antrian-b1c39", storageBucket: "sistem-antrian-b1c39.firebasestorage.app", messagingSenderId: "454124587608", appId: "1:454124587608:web:34fbb0f5211067a67f982d" };
         const LOC_DATA_URL = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const NEWS_API = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv";
@@ -269,71 +147,43 @@
         const STATION_LOC = { lat: -6.171583, lng: 106.899844 }; 
         const MAX_DIST = 200; 
 
-        let userLat=null, userLng=null, isAdmin=false, chargers=[], map=null;
-        
-        // Variabel Global untuk Timer
-        let globalSlots = [null, null, null]; 
-        let triggered = new Set(); 
+        let userLat=null, userLng=null, isAdmin=false, chargers=[], map=null, globalSlots=[null,null,null], triggered=new Set(), wakeLock=null;
 
-        // --- 1. SCRIPT ANTI TIDUR (WAKE LOCK) ---
-        let wakeLock = null;
-        async function requestWakeLock() { 
-            if ('wakeLock' in navigator) { 
-                try { 
-                    wakeLock = await navigator.wakeLock.request('screen'); 
-                    console.log("Layar Kunci Aktif");
-                } catch (err) { console.log("Gagal Wake Lock"); } 
-            } 
-        }
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock();
-        });
-
-        // --- 2. FUNGSI TES SISTEM (WAJIB UTK BUKA KUNCI SUARA) ---
-        async function testSystem() {
-            // A. Minta Izin Notif
-            if ("Notification" in window) {
-                const permission = await Notification.requestPermission();
-                if(permission === 'granted') {
-                    new Notification("TES BERHASIL", { body: "Notifikasi aktif!", icon: 'mlu-logo.png' });
-                } else {
-                    alert("Wajib pilih IZINKAN/ALLOW agar alarm bunyi!");
-                }
-            }
-            
-            // B. Tes Suara (Pancing Audio)
+        // FUNGSI BUKA KUNCI AUDIO & WAKE LOCK
+        async function unlockAudio() {
             const aud = document.getElementById('alarm');
-            aud.volume = 1.0;
-            aud.play().then(() => {
-                setTimeout(() => { aud.pause(); aud.currentTime=0; }, 2000); // Bunyi 2 detik lalu mati
-                showAlert('SUKSES', 'Sistem suara & notifikasi aktif!');
-            }).catch(e => {
-                alert("Gagal memutar suara. Pastikan volume HP nyala & interaksi aktif.");
-            });
-
-            // C. Kunci Layar
-            requestWakeLock();
+            try {
+                // 1. Minta Izin Notifikasi
+                if("Notification" in window) await Notification.requestPermission();
+                
+                // 2. Play Audio Kosong (Pancingan)
+                await aud.play(); 
+                aud.pause(); 
+                aud.currentTime = 0;
+                
+                // 3. Request Wake Lock
+                if('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+                
+                document.getElementById('audio-overlay').style.display = 'none';
+                nav('home');
+            } catch(e) {
+                alert("Gagal mengaktifkan sistem suara. Pastikan volume HP nyala.");
+                document.getElementById('audio-overlay').style.display = 'none';
+            }
         }
 
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw-baru.js').catch(err => console.log(err)); }); }
-        
+        // Re-lock screen if visibility changes
+        document.addEventListener('visibilitychange', async () => { if(wakeLock !== null && document.visibilityState === 'visible') { try{wakeLock = await navigator.wakeLock.request('screen');}catch(e){} } });
+
         window.addEventListener('load', () => {
-            document.getElementById('loader').style.opacity='0'; setTimeout(()=>{document.getElementById('loader').style.display='none'},500);
-            nav('home'); initFirebase(); loadNews(); loadLocData();
+            initFirebase(); loadNews(); loadLocData();
             if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
         function nav(page) {
-            document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show'));
-            ['view-home','view-fc','view-queue'].forEach(id => document.getElementById(id).classList.remove('active'));
-            document.getElementById('bgLogoFull').classList.remove('visible');
-
-            if(page==='home') { document.getElementById('view-home').classList.add('active'); document.getElementById('bgLogoFull').classList.add('visible'); } 
-            else if(page==='fc') { document.getElementById('view-fc').classList.add('active'); switchFcMode('list'); }
-            else if(page==='queue') { 
-                document.getElementById('view-queue').classList.add('active'); 
-                requestWakeLock(); 
-            }
+            ['view-home','view-fc','view-queue'].forEach(id => document.getElementById(id).style.display = 'none');
+            document.getElementById('view-'+page).style.display = 'flex';
+            if(page==='fc') switchFcMode('list');
         }
         function openModal(id) { document.getElementById('modal-'+id).classList.add('show'); }
         function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
@@ -343,81 +193,16 @@
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
 
-        function switchFcMode(mode) {
-            const listC = document.getElementById('fc-list-container');
-            const mapC = document.getElementById('fc-map-container');
-            const btnList = document.getElementById('btnList');
-            const btnMap = document.getElementById('btnMap');
-            if(mode==='list') { listC.style.display='block'; mapC.style.display='none'; btnList.classList.add('active'); btnMap.classList.remove('active'); } 
-            else { listC.style.display='none'; mapC.style.display='block'; btnMap.classList.add('active'); btnList.classList.remove('active'); if(!map) initMap(); else setTimeout(()=>map.invalidateSize(),300); }
-        }
-
-        async function loadLocData() {
-            try {
-                const t = await fetch(LOC_DATA_URL).then(r=>r.text());
-                chargers = t.split('\n').slice(1).map((r,i) => {
-                    const c = r.split(','); let lat=parseFloat(c[4]), lng=parseFloat(c[5]);
-                    if(isNaN(lat)) return null;
-                    return { id:i, name:c[0], city:c[1], type:c[2], lat:lat, lng:lng, dist:999, nozzle: c[7]||'-', cost: c[8]||'Gratis' };
-                }).filter(i=>i);
-                renderLocList();
-            } catch(e){}
-        }
-        function calcDist() {
-            if(!userLat) return;
-            chargers.forEach(c => {
-                const R=6371; const dLat=(c.lat-userLat)*Math.PI/180; const dLon=(c.lng-userLng)*Math.PI/180;
-                const a=Math.sin(dLat/2)**2+Math.cos(userLat*Math.PI/180)*Math.cos(c.lat*Math.PI/180)*Math.sin(dLon/2)**2;
-                c.dist = (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
-            });
-            chargers.sort((a,b)=>a.dist-b.dist);
-            renderLocList();
-        }
-        function renderLocList() {
-            if(chargers.length === 0) return;
-            const scrolls = {};
-            document.querySelectorAll('.h-scroll').forEach((el, idx) => { scrolls[idx] = el.scrollLeft; });
-            const n = chargers[0];
-            const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
-            document.getElementById('heroContainer').innerHTML = heroHTML;
-            let listHTML = ''; let grouped = {};
-            chargers.slice(1).forEach(item => { let k = item.city || 'Lainnya'; if(!grouped[k]) grouped[k]=[]; grouped[k].push(item); });
-            let colorIdx = 0;
-            Object.keys(grouped).forEach(city => {
-                listHTML += `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`;
-                grouped[city].forEach(c => {
-                    let st = `style-${(colorIdx % 3) + 1}`; colorIdx++;
-                    listHTML += `<div class="mini-card ${st}"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div><div style="z-index:2; margin-top:auto;"><div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div><button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button></div></div>`;
-                });
-                listHTML += `</div></div>`;
-            });
-            document.getElementById('otherListContainer').innerHTML = listHTML;
-            document.querySelectorAll('.h-scroll').forEach((el, idx) => { if(scrolls[idx]) el.scrollLeft = scrolls[idx]; });
-        }
-        function initMap() {
-            map = L.map('fullMap').setView([-6.2, 106.8], 11);
-            L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
-            if(userLat) { const pulseIcon = L.divIcon({ className: 'user-pulse', iconSize: [15,15] }); L.marker([userLat, userLng], {icon: pulseIcon}).addTo(map).bindPopup("<b>LOKASI ANDA</b>"); }
-            chargers.forEach(c => { L.marker([c.lat, c.lng]).addTo(map).bindPopup(getPopupContent(c)); });
-        }
-        function getPopupContent(c) { return `<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`; }
-        function showOnMap(lat, lng, name) {
-            switchFcMode('map');
-            setTimeout(() => { if(!map) initMap(); map.setView([lat, lng], 15); L.popup({className: 'glass-popup', minWidth:200}).setLatLng([lat, lng]).setContent(getPopupContent({name:name, lat:lat, lng:lng, type:'Charging Station'})).openOn(map); if(userLat) { L.Routing.control({ waypoints: [L.latLng(userLat, userLng), L.latLng(lat, lng)], lineOptions: { styles: [{color: '#00f3ff', opacity: 0.8, weight: 5}] }, createMarker: function() { return null; }, addWaypoints: false, show: false }).addTo(map); } }, 300);
-        }
-        async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
-
-        // === FIREBASE & TIMER LOGIC ===
         function initFirebase() {
             if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
             const aud = document.getElementById('alarm'); const SLOT_NAMES = ["SLOT 3", "SLOT 2", "SLOT 1"];
 
-            // --- TIMER LOOPING (Supaya Jam Jalan Terus Tanpa Refresh) ---
+            // TIMER LOKAL (Jalan tiap detik)
             setInterval(() => {
                 const now = Date.now();
                 globalSlots.forEach((x, i) => {
-                    const timerEl = document.getElementById(`timer-display-${i}`);
+                    const timerEl = document.getElementById(`t-${i}`);
                     if(x && x.startTime && timerEl) {
                         let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
                         let end = start + (x.duration*60000);
@@ -428,35 +213,22 @@
                             timerEl.innerText = `${m}:${sc<10?'0'+sc:sc}`;
                         } else {
                             timerEl.innerText = "SELESAI";
-                            
-                            // ALARM & NOTIFIKASI
                             if(!triggered.has(x.name)) {
                                 if(localStorage.getItem('myPlat') === x.name) {
                                     triggered.add(x.name);
-                                    
-                                    // 1. Notif WA Style
-                                    if (Notification.permission === "granted") {
-                                        new Notification("PENGISIAN SELESAI!", { body: `Motor ${x.name} Penuh. Cabut Kabel!`, icon: 'mlu-logo.png', requireInteraction: true });
-                                    }
-                                    
-                                    // 2. Suara Keras
-                                    aud.play().catch(e => console.log("Audio block: " + e));
+                                    // TRIGGER ALARM & NOTIF
+                                    aud.currentTime = 0; aud.play().catch(e=>{});
                                     if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
-                                    
+                                    if(Notification.permission === "granted") new Notification("PENGISIAN SELESAI!", { body: `Motor ${x.name} Penuh!`, icon: 'mlu-logo.png', requireInteraction: true });
                                     showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
                                 }
                             }
                         }
                     }
                 });
-            }, 1000); // Update tiap 1 detik
+            }, 1000);
 
             document.getElementById('btnDaftar').onclick = async () => {
-                // Minta izin saat daftar juga
-                if ("Notification" in window && Notification.permission !== "granted") await Notification.requestPermission();
-                aud.play().then(() => { aud.pause(); aud.currentTime = 0; }).catch(e => {});
-                requestWakeLock();
-
                 const p = document.getElementById('uPlat').value.toUpperCase().trim(); const w = document.getElementById('uWa').value; const b = parseInt(document.getElementById('uBat').value); const btn = document.getElementById('btnDaftar'); const stat = document.getElementById('locStatus');
                 if(!p || !w || isNaN(b)) return showAlert('ERROR','Isi semua data!');
                 btn.disabled=true; btn.innerText="CEK LOKASI..."; stat.style.display='block';
@@ -479,16 +251,14 @@
 
             ref.onSnapshot(snap => {
                 const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
-                globalSlots = s; // Simpan data untuk Timer
-                
+                globalSlots = s; 
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
-                document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
-                document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;">- Kosong -</div>' : q.map((x,i)=>`<div class="wait-item ${i===0?'top':''}" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
+                document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;">- Kosong -</div>' : q.map((x,i)=>`<div class="wait-item" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
                 document.getElementById('slots').innerHTML = s.map((x,i) => {
-                    if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div class="status-dot"></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div>`;
+                    if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div>`;
                     const isRun = !!x.startTime; let h = x.startBattery;
-                    let txt = isRun ? `<div id="timer-display-${i}" style="font-weight:bold; font-size:1.2rem; color:var(--neon-blue);">...</div>` : "MENUNGGU";
-                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
+                    let txt = isRun ? `<div id="t-${i}" style="font-weight:bold; font-size:1.2rem; color:var(--neon-blue);">...</div>` : "MENUNGGU";
+                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
                 }).join('');
             });
 
@@ -497,11 +267,21 @@
             window.showAdminLogin=()=>{ showAlert('ADMIN','Masukkan PIN:', ()=>{if(document.getElementById('alertInput').value==='1131'){document.getElementById('admPan').style.display='block';isAdmin=true;document.getElementById('modal-alert').classList.remove('show');}else alert('Salah!')}, true); };
             window.clrSlot=()=>{const i=document.getElementById('mSlot').value; db.runTransaction(async t=>{const s=(await t.get(ref)).data().chargingSlots;s[i]=null;t.update(ref,{chargingSlots:s})});};
             window.fillQ=()=>{db.runTransaction(async t=>{const d=(await t.get(ref)).data();let s=d.chargingSlots;let q=d.waitingQueue;if(q.length>0&&s.includes(null)){let idx=s.indexOf(null);let n=q.shift();n.duration=(100-n.startBattery)*1.5;s[idx]=n;t.update(ref,{chargingSlots:s,waitingQueue:q})}});};
-            window.startAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x&&!x.startTime) window.act(i,'start') }); });};
-            window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
             window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
             window.resAll=()=>{if(confirm('RESET TOTAL?')) ref.set({chargingSlots:[null,null,null],waitingQueue:[],blockedList:[]});};
         }
+
+        // --- LOCATION LOGIC ---
+        function switchFcMode(mode) {
+            if(mode==='list') { document.getElementById('fc-list-container').style.display='block'; document.getElementById('fc-map-container').style.display='none'; document.getElementById('btnList').classList.add('active'); document.getElementById('btnMap').classList.remove('active'); } 
+            else { document.getElementById('fc-list-container').style.display='none'; document.getElementById('fc-map-container').style.display='block'; document.getElementById('btnMap').classList.add('active'); document.getElementById('btnList').classList.remove('active'); if(!map) initMap(); else setTimeout(()=>map.invalidateSize(),300); }
+        }
+        async function loadLocData() { try { const t = await fetch(LOC_DATA_URL).then(r=>r.text()); chargers = t.split('\n').slice(1).map((r,i) => { const c = r.split(','); let lat=parseFloat(c[4]), lng=parseFloat(c[5]); if(isNaN(lat)) return null; return { id:i, name:c[0], city:c[1], type:c[2], lat:lat, lng:lng, dist:999, nozzle: c[7]||'-', cost: c[8]||'Gratis' }; }).filter(i=>i); renderLocList(); } catch(e){} }
+        function calcDist() { if(!userLat) return; chargers.forEach(c => { const R=6371; const dLat=(c.lat-userLat)*Math.PI/180; const dLon=(c.lng-userLng)*Math.PI/180; const a=Math.sin(dLat/2)**2+Math.cos(userLat*Math.PI/180)*Math.cos(c.lat*Math.PI/180)*Math.sin(dLon/2)**2; c.dist = (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1); }); chargers.sort((a,b)=>a.dist-b.dist); renderLocList(); }
+        function renderLocList() { if(chargers.length === 0) return; const n = chargers[0]; document.getElementById('heroContainer').innerHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`; let listHTML = ''; let grouped = {}; chargers.slice(1).forEach(item => { let k = item.city || 'Lainnya'; if(!grouped[k]) grouped[k]=[]; grouped[k].push(item); }); let colorIdx = 0; Object.keys(grouped).forEach(city => { listHTML += `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`; grouped[city].forEach(c => { let st = `style-${(colorIdx % 3) + 1}`; colorIdx++; listHTML += `<div class="mini-card ${st}"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div><div style="z-index:2; margin-top:auto;"><div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div><button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button></div></div>`; }); listHTML += `</div></div>`; }); document.getElementById('otherListContainer').innerHTML = listHTML; }
+        function initMap() { map = L.map('fullMap').setView([-6.2, 106.8], 11); L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map); if(userLat) { L.marker([userLat, userLng]).addTo(map).bindPopup("<b>LOKASI ANDA</b>"); } chargers.forEach(c => { L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`); }); }
+        function showOnMap(lat, lng, name) { switchFcMode('map'); setTimeout(() => { if(!map) initMap(); map.setView([lat, lng], 15); L.popup().setLatLng([lat, lng]).setContent(`<b>${name}</b>`).openOn(map); if(userLat) { L.Routing.control({ waypoints: [L.latLng(userLat, userLng), L.latLng(lat, lng)], lineOptions: { styles: [{color: '#00f3ff', opacity: 0.8, weight: 5}] }, createMarker: function() { return null; }, addWaypoints: false, show: false }).addTo(map); } }, 300); }
+        async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
     </script>
 </body>
 </html>
