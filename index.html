@@ -119,6 +119,9 @@
         .admin-panel { display: none; background: #000; border: 1px solid var(--deep-blue); padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid var(--danger); }
         .adm-btn { width: 100%; padding: 8px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
+
+        /* MODIF ADMIN BTN */
+        .admin-trigger { font-size: 0.8rem; cursor: pointer; color: #555; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid #333; }
         
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
@@ -128,7 +131,6 @@
         @keyframes spin { 100% {transform: rotate(360deg);} }
     </style>
 </head>
-
 <body>
 
     <audio id="alarm" loop preload="auto"><source src="data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" type="audio/mp3"></audio>
@@ -208,7 +210,12 @@
     </div>
 
     <div id="view-queue">
-        <div class="q-header"><button class="btn-back" onclick="nav('home')">⬅ HOME</button><div style="font-family:'Orbitron'; font-size:1.2rem;">ANTRIAN</div><div style="width:50px;"></div></div>
+        <div class="q-header">
+            <button class="btn-back" onclick="nav('home')">⬅ HOME</button>
+            <div style="font-family:'Orbitron'; font-size:1.2rem;">ANTRIAN</div>
+            <button class="admin-trigger" onclick="showAdminLogin()">🔒 ADMIN</button>
+        </div>
+        
         <div class="q-container">
             <div class="glass-card">
                 <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase;"></div>
@@ -229,8 +236,6 @@
 
             <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
             
-            <div style="text-align:center; margin-top:25px; cursor:pointer; opacity:0.6; font-size:0.8rem; letter-spacing:1px;" onclick="showAdminLogin()">🔒 ADMIN PANEL</div>
-            
             <div id="admPan" class="admin-panel">
                 <h4 style="color:var(--danger); text-align:center; margin:0 0 10px;">MASTER CONTROL</h4>
                 <select id="mSlot" class="form-input" style="text-align:left; margin-bottom:5px;"><option value="0">Slot 3 (Kiri)</option><option value="1">Slot 2 (Tengah)</option><option value="2">Slot 1 (Kanan)</option></select>
@@ -249,9 +254,9 @@
     <div id="modal-sos" class="modal"><div class="modal-box"><h3 style="color:var(--danger); margin-bottom:15px;">DARURAT (SOS)</h3><a href="https://wa.me/6287722285445" class="glass-btn" style="margin-bottom:10px;"><span style="font-size:1.5rem;">🚑</span> TOWING / MOGOK</a><a href="https://wa.me/6283179721893" class="glass-btn"><span style="font-size:1.5rem;">🚨</span> URC KECELAKAAN</a><button onclick="closeModal()" class="adm-btn" style="margin-top:20px;">TUTUP</button></div></div>
     <div id="modal-news" class="modal"><div class="modal-box" style="max-width:400px; height:80vh; display:flex; flex-direction:column;"><h3 style="margin-bottom:15px;">INFO & EVENT</h3><div id="newsContent" style="flex:1; overflow-y:auto; text-align:left; font-size:0.9rem; color:#ccc;">Memuat Berita...</div><button onclick="closeModal()" class="adm-btn" style="margin-top:10px;">TUTUP</button></div></div>
     <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg" style="margin:15px 0; color:#ddd;">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none; margin-bottom:15px;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
-
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // --- KONFIGURASI ---
         const FIREBASE_CFG = { apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", authDomain: "sistem-antrian-b1c39.firebaseapp.com", projectId: "sistem-antrian-b1c39", storageBucket: "sistem-antrian-b1c39.firebasestorage.app", messagingSenderId: "454124587608", appId: "1:454124587608:web:34fbb0f5211067a67f982d" };
         const LOC_DATA_URL = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
         const NEWS_API = "https://docs.google.com/spreadsheets/d/1qh_aKEQQvN0B1E6ONO0LGIpuQ6phzc-ALc4SduClMyY/export?format=csv";
@@ -261,7 +266,11 @@
 
         let userLat=null, userLng=null, isAdmin=false, chargers=[], map=null;
         
-        // --- FITUR BARU 1: ANTI TIDUR (Supaya Notif Jalan Terus) ---
+        // Variabel Global untuk Timer
+        let globalSlots = [null, null, null]; 
+        let triggered = new Set(); // Supaya alarm tidak bunyi berulang-ulang untuk org yg sama
+
+        // --- 1. SCRIPT ANTI TIDUR (WAKE LOCK) ---
         let wakeLock = null;
         async function requestWakeLock() { 
             if ('wakeLock' in navigator) { 
@@ -271,18 +280,21 @@
                 } catch (err) { console.log("Gagal Wake Lock"); } 
             } 
         }
-        // Kunci ulang kalau user balik ke aplikasi
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock();
         });
 
+        // --- INIT SERVICE WORKER (Untuk PWA) ---
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw-baru.js').catch(err => console.log(err)); }); }
         
+        // --- STARTUP ---
         window.addEventListener('load', () => {
             document.getElementById('loader').style.opacity='0'; setTimeout(()=>{document.getElementById('loader').style.display='none'},500);
             nav('home'); initFirebase(); loadNews(); loadLocData();
-            // Minta Izin Notifikasi Di Awal
+            
+            // Minta Izin Notifikasi (Wajib untuk fitur ala WA)
             if ("Notification" in window) Notification.requestPermission();
+            
             if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
@@ -295,7 +307,7 @@
             else if(page==='fc') { document.getElementById('view-fc').classList.add('active'); switchFcMode('list'); }
             else if(page==='queue') { 
                 document.getElementById('view-queue').classList.add('active'); 
-                requestWakeLock(); // Aktifkan Anti Tidur di menu antrian
+                requestWakeLock(); // Aktifkan Anti Tidur saat buka antrian
             }
         }
         function openModal(id) { document.getElementById('modal-'+id).classList.add('show'); }
@@ -306,7 +318,7 @@
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
 
-        // === LOCATION LOGIC ===
+        // --- LOCATION & MAP LOGIC ---
         function switchFcMode(mode) {
             const listC = document.getElementById('fc-list-container');
             const mapC = document.getElementById('fc-map-container');
@@ -349,21 +361,12 @@
             let listHTML = '';
             let grouped = {};
             chargers.slice(1).forEach(item => { let k = item.city || 'Lainnya'; if(!grouped[k]) grouped[k]=[]; grouped[k].push(item); });
-            
             let colorIdx = 0;
             Object.keys(grouped).forEach(city => {
                 listHTML += `<div class="city-group"><div class="city-header"><div class="city-title">${city}</div><div class="city-line"></div></div><div class="h-scroll">`;
                 grouped[city].forEach(c => {
                     let st = `style-${(colorIdx % 3) + 1}`; colorIdx++;
-                    listHTML += `
-                    <div class="mini-card ${st}">
-                        <div class="bg-bolt">⚡</div>
-                        <div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div>
-                        <div style="z-index:2; margin-top:auto;">
-                            <div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div>
-                            <button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button>
-                        </div>
-                    </div>`;
+                    listHTML += `<div class="mini-card ${st}"><div class="bg-bolt">⚡</div><div class="mini-top"><h3>${c.name}</h3><div class="mini-info">${c.type}</div></div><div style="z-index:2; margin-top:auto;"><div class="mini-dist" style="text-align:right; margin-bottom:5px;">${c.dist} KM</div><button class="btn-go-list" onclick="showOnMap(${c.lat},${c.lng},'${c.name}')">GO ↗</button></div></div>`;
                 });
                 listHTML += `</div></div>`;
             });
@@ -374,38 +377,73 @@
         function initMap() {
             map = L.map('fullMap').setView([-6.2, 106.8], 11);
             L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
-            if(userLat) {
-                const pulseIcon = L.divIcon({ className: 'user-pulse', iconSize: [15,15] });
-                L.marker([userLat, userLng], {icon: pulseIcon}).addTo(map).bindPopup("<b>LOKASI ANDA</b>");
-            }
+            if(userLat) { const pulseIcon = L.divIcon({ className: 'user-pulse', iconSize: [15,15] }); L.marker([userLat, userLng], {icon: pulseIcon}).addTo(map).bindPopup("<b>LOKASI ANDA</b>"); }
             chargers.forEach(c => { L.marker([c.lat, c.lng]).addTo(map).bindPopup(getPopupContent(c)); });
         }
-        
-        function getPopupContent(c) {
-            return `<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`;
-        }
-        
+        function getPopupContent(c) { return `<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`; }
         function showOnMap(lat, lng, name) {
             switchFcMode('map');
             setTimeout(() => {
-                if(!map) initMap();
-                map.setView([lat, lng], 15);
-                L.popup({className: 'glass-popup', minWidth:200}).setLatLng([lat, lng]).setContent(getPopupContent({name:name, lat:lat, lng:lng, type:'Charging Station'})).openOn(map);
+                if(!map) initMap(); map.setView([lat, lng], 15); L.popup({className: 'glass-popup', minWidth:200}).setLatLng([lat, lng]).setContent(getPopupContent({name:name, lat:lat, lng:lng, type:'Charging Station'})).openOn(map);
                 if(userLat) { L.Routing.control({ waypoints: [L.latLng(userLat, userLng), L.latLng(lat, lng)], lineOptions: { styles: [{color: '#00f3ff', opacity: 0.8, weight: 5}] }, createMarker: function() { return null; }, addWaypoints: false, show: false }).addTo(map); }
             }, 300);
         }
-
         async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
 
+        // === FIREBASE & TIMER LOGIC ===
         function initFirebase() {
             if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CFG);
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
-            const aud = document.getElementById('alarm'); const SLOT_NAMES = ["SLOT 3", "SLOT 2", "SLOT 1"]; let triggered = new Set();
+            const aud = document.getElementById('alarm'); const SLOT_NAMES = ["SLOT 3", "SLOT 2", "SLOT 1"];
+
+            // --- 2. TIMER LOOPING (Supaya Jam Jalan Terus Tanpa Refresh) ---
+            setInterval(() => {
+                const now = Date.now();
+                globalSlots.forEach((x, i) => {
+                    const timerEl = document.getElementById(`timer-display-${i}`); // Target Elemen Timer
+                    if(x && x.startTime && timerEl) {
+                        let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
+                        let end = start + (x.duration*60000);
+                        let left = end - now;
+
+                        if (left > 0) {
+                            // Update Text Timer di Layar
+                            let m = Math.floor(left/60000);
+                            let sc = Math.floor((left%60000)/1000);
+                            timerEl.innerText = `${m}:${sc<10?'0'+sc:sc}`;
+                        } else {
+                            // Waktu Habis
+                            timerEl.innerText = "SELESAI";
+                            
+                            // Trigger Alarm & Notifikasi WA (Hanya Sekali)
+                            if(!triggered.has(x.name)) {
+                                if(localStorage.getItem('myPlat') === x.name) {
+                                    triggered.add(x.name);
+                                    
+                                    // A. Bunyikan Suara
+                                    aud.play().catch(e => console.log("Audio block: " + e));
+                                    if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
+                                    
+                                    // B. Munculkan Notifikasi Sistem (WA Style)
+                                    if (Notification.permission === "granted") {
+                                        new Notification("PENGISIAN SELESAI", {
+                                            body: `Motor ${x.name} sudah penuh. Harap cabut kabel.`,
+                                            icon: 'mlu-logo.png',
+                                            requireInteraction: true
+                                        });
+                                    }
+                                    
+                                    showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 1000); // Jalan tiap 1 detik
 
             document.getElementById('btnDaftar').onclick = () => {
-                aud.play().then(() => aud.pause()).catch(e=>console.log("Audio unlock failed"));
+                aud.play().then(() => aud.pause()).catch(e=>{}); // Pancing audio biar bisa bunyi nanti
                 requestWakeLock(); // Paksa Layar Nyala
-                
                 const p = document.getElementById('uPlat').value.toUpperCase().trim(); const w = document.getElementById('uWa').value; const b = parseInt(document.getElementById('uBat').value); const btn = document.getElementById('btnDaftar'); const stat = document.getElementById('locStatus');
                 if(!p || !w || isNaN(b)) return showAlert('ERROR','Isi semua data!');
                 btn.disabled=true; btn.innerText="CEK LOKASI..."; stat.style.display='block';
@@ -427,46 +465,26 @@
             };
 
             ref.onSnapshot(snap => {
-                const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
+                const d = snap.data() || {}; 
+                const s = d.chargingSlots || [null,null,null]; 
+                const q = d.waitingQueue || [];
+                
+                globalSlots = s; // Simpan data terbaru ke variabel Global biar dibaca Timer
+                
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
                 document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
-
-                // --- FITUR BARU 2: NOTIFIKASI SYSTEM ---
-                s.forEach(x => {
-                    if(x && x.startTime) {
-                        let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
-                        let end = start + (x.duration*60000);
-                        if(Date.now() > end && !triggered.has(x.name)) {
-                            if(localStorage.getItem('myPlat') === x.name) {
-                                triggered.add(x.name);
-                                aud.play().catch(e => console.log("Audio block: " + e));
-                                navigator.vibrate([1000, 500, 1000]);
-                                
-                                // MUNCULKAN NOTIFIKASI DI BAR ATAS (Seperti WA)
-                                if (Notification.permission === "granted") {
-                                    new Notification("CHARGING SELESAI!", {
-                                        body: `Motor ${x.name} sudah selesai. Harap cabut kabel.`,
-                                        icon: 'mlu-logo.png', // Ikon aplikasi
-                                        requireInteraction: true // Notif tidak hilang sendiri
-                                    });
-                                }
-
-                                showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
-                            }
-                        }
-                    }
-                });
-
                 document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;">- Kosong -</div>' : q.map((x,i)=>`<div class="wait-item ${i===0?'top':''}" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
+                
+                // Render Slot Card (Disini kita kasih ID unik ke timer biar bisa di-update setInterval)
                 document.getElementById('slots').innerHTML = s.map((x,i) => {
                     if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div class="status-dot"></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div>`;
-                    const isRun = !!x.startTime; let txt = isRun ? "MENGISI..." : "MENUNGGU"; let h = x.startBattery;
-                    if(isRun) {
-                        let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime(); let end = start + (x.duration*60000); let left = end - Date.now();
-                        if(left > 0) { let m = Math.floor(left/60000); let sc = Math.floor((left%60000)/1000); txt = `${m}:${sc<10?'0'+sc:sc}`; h = 100; } 
-                        else { txt = "SELESAI"; }
-                    }
-                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
+                    
+                    const isRun = !!x.startTime; 
+                    let h = x.startBattery;
+                    // ID unik untuk timer: "timer-display-0", "timer-display-1", dst
+                    let txtDisplay = isRun ? `<div id="timer-display-${i}" style="font-weight:bold; font-size:1.2rem; color:var(--neon-blue);">...</div>` : "MENUNGGU";
+                    
+                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txtDisplay}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
                 }).join('');
             });
 
@@ -479,9 +497,6 @@
             window.stopAll=()=>{db.runTransaction(async(t)=>{const s=(await t.get(ref)).data().chargingSlots; s.forEach((x,i)=>{if(x) window.act(i,'stop') }); });};
             window.blockUser=async()=>{const p=document.getElementById('blockPlatInput').value.toUpperCase().trim(); if(p)await db.runTransaction(async t=>{const d=(await t.get(ref)).data();let b=d.blockedList||[];if(!b.includes(p))b.push(p);t.update(ref,{blockedList:b})}); showAlert('INFO','User diblokir');};
             window.resAll=()=>{if(confirm('RESET TOTAL?')) ref.set({chargingSlots:[null,null,null],waitingQueue:[],blockedList:[]});};
-            
-            // Minta Izin Notifikasi Lagi (Backup)
-            if (Notification.permission !== "granted") Notification.requestPermission();
         }
     </script>
 </body>
