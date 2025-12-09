@@ -120,7 +120,7 @@
         .adm-btn { width: 100%; padding: 8px; margin-top: 5px; font-weight: bold; border-radius: 6px; border: 1px solid #444; background: #111; color: #fff; cursor: pointer; font-family: 'Rajdhani'; }
         .adm-btn.danger { border-color: var(--danger); color: var(--danger); }
 
-        /* MODIF ADMIN BTN */
+        /* TOMBOL ADMIN DI ATAS */
         .admin-trigger { font-size: 0.8rem; cursor: pointer; color: #555; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid #333; }
         
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
@@ -133,10 +133,9 @@
 </head>
 <body>
 
-    <audio id="alarm" loop preload="auto"><source src="data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq" type="audio/mp3"></audio>
+    <audio id="alarm" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
     
     <div id="loader" class="loader"><div class="loader-spinner"></div><div style="font-family:'Orbitron'; color:var(--neon-blue);">MLU SYSTEM</div></div>
-    
     <div id="bgLogoFull"></div>
 
     <div id="view-home">
@@ -145,6 +144,9 @@
                 <h1 style="color:var(--neon-blue); font-size:2.5rem; text-shadow:0 0 20px var(--deep-blue); margin-bottom: 5px;">MLU APPS</h1>
                 <div style="font-size:0.8rem; background:var(--deep-blue); padding:3px 12px; border-radius:4px; display:inline-block; font-weight:bold; letter-spacing:1px;">MAKA LINTAS UTARA SQUAD</div>
             </div>
+
+            <button onclick="testSystem()" style="background:var(--danger); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:bold; margin-bottom:10px; box-shadow:0 0 10px var(--danger);">🔊 TES ALARM & NOTIFIKASI</button>
+            <div style="font-size:0.7rem; color:#aaa; margin-bottom:20px;">*Klik ini dulu biar alarm bisa bunyi</div>
 
             <div class="menu-grid">
                 <div class="glass-btn" onclick="nav('fc')">
@@ -217,21 +219,24 @@
         </div>
         
         <div class="q-container">
-            <div class="glass-card">
-                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase;"></div>
-                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">WHATSAPP</label><input id="uWa" type="number" class="form-input" placeholder="08xxxxxxxxxx"></div>
-                <div style="margin-bottom:10px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0 - 99"></div>
-                <button id="btnDaftar" class="btn-daftar">DAFTAR ANTRIAN</button>
-                <p id="locStatus" style="text-align:center; font-size:0.6rem; color:var(--neon-blue); margin-top:8px; display:none;">Cek Lokasi...</p>
+            <div class="glass-card" style="padding: 15px; margin-bottom: 10px;">
+                <div style="margin-bottom:8px;"><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">PLAT NOMOR</label><input id="uPlat" class="form-input" placeholder="B 1234 XYZ" style="text-transform:uppercase; padding: 8px;"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:8px;">
+                    <div><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">WHATSAPP</label><input id="uWa" type="number" class="form-input" placeholder="08xxx" style="padding: 8px;"></div>
+                    <div><label style="font-family:'Orbitron'; font-size:0.6rem; color:var(--neon-blue);">BATERAI (%)</label><input id="uBat" type="number" class="form-input" placeholder="0-99" style="padding: 8px;"></div>
+                </div>
+                <button id="btnDaftar" class="btn-daftar" style="padding: 10px;">DAFTAR ANTRIAN</button>
+                <p id="locStatus" style="text-align:center; font-size:0.6rem; color:var(--neon-blue); margin-top:5px; display:none;">Cek Lokasi...</p>
             </div>
             
-            <div style="text-align:center; margin-top:20px; margin-bottom:5px; font-family:'Orbitron'; color:#fff; letter-spacing:2px;">STATUS SLOT (LIVE)</div>
-            <div class="slot-grid" id="slots"><div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div></div>
+            <div class="slot-grid" id="slots" style="margin-top: 0; margin-bottom: 10px;">
+                <div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--neon-blue);">CONNECTING...</div>
+            </div>
             
-            <div class="q-dashboard">
-                <div style="font-size:0.7rem; color:#aaa; letter-spacing:1px; margin-bottom:5px;">DAFTAR TUNGGU</div>
-                <div id="qCount" class="qd-num">0 ANTRIAN</div>
-                <div id="limitInfo" style="font-size:0.7rem; background:var(--neon-blue); color:#000; padding:2px 8px; border-radius:4px; display:inline-block; font-weight:bold; margin-top:5px;">MAX: 100%</div>
+            <div class="q-dashboard" style="padding: 10px; margin-bottom: 10px;">
+                <div style="font-size:0.6rem; color:#aaa; letter-spacing:1px;">DAFTAR TUNGGU</div>
+                <div id="qCount" class="qd-num" style="font-size: 1.5rem;">0 ANTRIAN</div>
+                <div id="limitInfo" style="font-size:0.6rem; background:var(--neon-blue); color:#000; padding:1px 6px; border-radius:4px; display:inline-block; font-weight:bold;">MAX: 100%</div>
             </div>
 
             <div id="qListContainer"><div style="text-align:center; color:#555; font-size:0.7rem;">- Kosong -</div></div>
@@ -268,7 +273,7 @@
         
         // Variabel Global untuk Timer
         let globalSlots = [null, null, null]; 
-        let triggered = new Set(); // Supaya alarm tidak bunyi berulang-ulang untuk org yg sama
+        let triggered = new Set(); 
 
         // --- 1. SCRIPT ANTI TIDUR (WAKE LOCK) ---
         let wakeLock = null;
@@ -284,17 +289,37 @@
             if (wakeLock !== null && document.visibilityState === 'visible') await requestWakeLock();
         });
 
-        // --- INIT SERVICE WORKER (Untuk PWA) ---
+        // --- 2. FUNGSI TES SISTEM (WAJIB UTK BUKA KUNCI SUARA) ---
+        async function testSystem() {
+            // A. Minta Izin Notif
+            if ("Notification" in window) {
+                const permission = await Notification.requestPermission();
+                if(permission === 'granted') {
+                    new Notification("TES BERHASIL", { body: "Notifikasi aktif!", icon: 'mlu-logo.png' });
+                } else {
+                    alert("Wajib pilih IZINKAN/ALLOW agar alarm bunyi!");
+                }
+            }
+            
+            // B. Tes Suara (Pancing Audio)
+            const aud = document.getElementById('alarm');
+            aud.volume = 1.0;
+            aud.play().then(() => {
+                setTimeout(() => { aud.pause(); aud.currentTime=0; }, 2000); // Bunyi 2 detik lalu mati
+                showAlert('SUKSES', 'Sistem suara & notifikasi aktif!');
+            }).catch(e => {
+                alert("Gagal memutar suara. Pastikan volume HP nyala & interaksi aktif.");
+            });
+
+            // C. Kunci Layar
+            requestWakeLock();
+        }
+
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw-baru.js').catch(err => console.log(err)); }); }
         
-        // --- STARTUP ---
         window.addEventListener('load', () => {
             document.getElementById('loader').style.opacity='0'; setTimeout(()=>{document.getElementById('loader').style.display='none'},500);
             nav('home'); initFirebase(); loadNews(); loadLocData();
-            
-            // Minta Izin Notifikasi (Wajib untuk fitur ala WA)
-            if ("Notification" in window) Notification.requestPermission();
-            
             if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
@@ -307,7 +332,7 @@
             else if(page==='fc') { document.getElementById('view-fc').classList.add('active'); switchFcMode('list'); }
             else if(page==='queue') { 
                 document.getElementById('view-queue').classList.add('active'); 
-                requestWakeLock(); // Aktifkan Anti Tidur saat buka antrian
+                requestWakeLock(); 
             }
         }
         function openModal(id) { document.getElementById('modal-'+id).classList.add('show'); }
@@ -318,7 +343,6 @@
             const b=document.getElementById('alertBtn'); b.onclick=()=>{ if(act)act(); else mod.classList.remove('show'); }; mod.classList.add('show');
         }
 
-        // --- LOCATION & MAP LOGIC ---
         function switchFcMode(mode) {
             const listC = document.getElementById('fc-list-container');
             const mapC = document.getElementById('fc-map-container');
@@ -353,13 +377,10 @@
             if(chargers.length === 0) return;
             const scrolls = {};
             document.querySelectorAll('.h-scroll').forEach((el, idx) => { scrolls[idx] = el.scrollLeft; });
-
             const n = chargers[0];
             const heroHTML = `<div class="hero-card"><div class="dist-badge">${n.dist} KM</div><div class="radar-status"><div class="gps-dot"></div> FC TERDEKAT</div><h2 style="font-size:1.5rem; margin:10px 0;">${n.name}</h2><div style="font-size:0.8rem; color:#aaa; margin-bottom:15px; border-left:3px solid var(--deep-blue); padding-left:10px;">${n.city} • ${n.type}<br>${n.nozzle} Nozzle • ${n.cost}</div><button style="width:100%; padding:12px; background:var(--neon-blue); border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="showOnMap(${n.lat},${n.lng},'${n.name}')">LIHAT DI PETA 📍</button></div>`;
             document.getElementById('heroContainer').innerHTML = heroHTML;
-
-            let listHTML = '';
-            let grouped = {};
+            let listHTML = ''; let grouped = {};
             chargers.slice(1).forEach(item => { let k = item.city || 'Lainnya'; if(!grouped[k]) grouped[k]=[]; grouped[k].push(item); });
             let colorIdx = 0;
             Object.keys(grouped).forEach(city => {
@@ -373,7 +394,6 @@
             document.getElementById('otherListContainer').innerHTML = listHTML;
             document.querySelectorAll('.h-scroll').forEach((el, idx) => { if(scrolls[idx]) el.scrollLeft = scrolls[idx]; });
         }
-
         function initMap() {
             map = L.map('fullMap').setView([-6.2, 106.8], 11);
             L.tileLayer(`https://tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=${JAWG_API}`, {}).addTo(map);
@@ -383,10 +403,7 @@
         function getPopupContent(c) { return `<div class="popup-content"><b style="font-size:1rem; color:#00f3ff;">${c.name}</b><br><span style="font-size:0.8rem; color:#ccc;">${c.type}</span><a href="http://googleusercontent.com/maps.google.com/maps?daddr=${c.lat},${c.lng}" target="_blank" class="popup-btn">NAVIGASI ↗</a></div>`; }
         function showOnMap(lat, lng, name) {
             switchFcMode('map');
-            setTimeout(() => {
-                if(!map) initMap(); map.setView([lat, lng], 15); L.popup({className: 'glass-popup', minWidth:200}).setLatLng([lat, lng]).setContent(getPopupContent({name:name, lat:lat, lng:lng, type:'Charging Station'})).openOn(map);
-                if(userLat) { L.Routing.control({ waypoints: [L.latLng(userLat, userLng), L.latLng(lat, lng)], lineOptions: { styles: [{color: '#00f3ff', opacity: 0.8, weight: 5}] }, createMarker: function() { return null; }, addWaypoints: false, show: false }).addTo(map); }
-            }, 300);
+            setTimeout(() => { if(!map) initMap(); map.setView([lat, lng], 15); L.popup({className: 'glass-popup', minWidth:200}).setLatLng([lat, lng]).setContent(getPopupContent({name:name, lat:lat, lng:lng, type:'Charging Station'})).openOn(map); if(userLat) { L.Routing.control({ waypoints: [L.latLng(userLat, userLng), L.latLng(lat, lng)], lineOptions: { styles: [{color: '#00f3ff', opacity: 0.8, weight: 5}] }, createMarker: function() { return null; }, addWaypoints: false, show: false }).addTo(map); } }, 300);
         }
         async function loadNews() { try { const t = await fetch(NEWS_API).then(r=>r.text()); const r = t.split('\n').slice(1).map(x=>x.split(',')); let h = ''; r.forEach(c => { if(c.length>2) h+=`<div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"><h4 style="color:var(--neon-blue); margin-bottom:5px;">${c[0]}</h4><p>${c[2]}</p></div>`; }); document.getElementById('newsContent').innerHTML = h || 'Tidak ada berita.'; } catch(e){} }
 
@@ -396,42 +413,35 @@
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
             const aud = document.getElementById('alarm'); const SLOT_NAMES = ["SLOT 3", "SLOT 2", "SLOT 1"];
 
-            // --- 2. TIMER LOOPING (Supaya Jam Jalan Terus Tanpa Refresh) ---
+            // --- TIMER LOOPING (Supaya Jam Jalan Terus Tanpa Refresh) ---
             setInterval(() => {
                 const now = Date.now();
                 globalSlots.forEach((x, i) => {
-                    const timerEl = document.getElementById(`timer-display-${i}`); // Target Elemen Timer
+                    const timerEl = document.getElementById(`timer-display-${i}`);
                     if(x && x.startTime && timerEl) {
                         let start = x.startTime.toMillis ? x.startTime.toMillis() : new Date(x.startTime).getTime();
                         let end = start + (x.duration*60000);
                         let left = end - now;
 
                         if (left > 0) {
-                            // Update Text Timer di Layar
-                            let m = Math.floor(left/60000);
-                            let sc = Math.floor((left%60000)/1000);
+                            let m = Math.floor(left/60000); let sc = Math.floor((left%60000)/1000);
                             timerEl.innerText = `${m}:${sc<10?'0'+sc:sc}`;
                         } else {
-                            // Waktu Habis
                             timerEl.innerText = "SELESAI";
                             
-                            // Trigger Alarm & Notifikasi WA (Hanya Sekali)
+                            // ALARM & NOTIFIKASI
                             if(!triggered.has(x.name)) {
                                 if(localStorage.getItem('myPlat') === x.name) {
                                     triggered.add(x.name);
                                     
-                                    // A. Bunyikan Suara
+                                    // 1. Notif WA Style
+                                    if (Notification.permission === "granted") {
+                                        new Notification("PENGISIAN SELESAI!", { body: `Motor ${x.name} Penuh. Cabut Kabel!`, icon: 'mlu-logo.png', requireInteraction: true });
+                                    }
+                                    
+                                    // 2. Suara Keras
                                     aud.play().catch(e => console.log("Audio block: " + e));
                                     if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
-                                    
-                                    // B. Munculkan Notifikasi Sistem (WA Style)
-                                    if (Notification.permission === "granted") {
-                                        new Notification("PENGISIAN SELESAI", {
-                                            body: `Motor ${x.name} sudah penuh. Harap cabut kabel.`,
-                                            icon: 'mlu-logo.png',
-                                            requireInteraction: true
-                                        });
-                                    }
                                     
                                     showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
                                 }
@@ -439,11 +449,14 @@
                         }
                     }
                 });
-            }, 1000); // Jalan tiap 1 detik
+            }, 1000); // Update tiap 1 detik
 
-            document.getElementById('btnDaftar').onclick = () => {
-                aud.play().then(() => aud.pause()).catch(e=>{}); // Pancing audio biar bisa bunyi nanti
-                requestWakeLock(); // Paksa Layar Nyala
+            document.getElementById('btnDaftar').onclick = async () => {
+                // Minta izin saat daftar juga
+                if ("Notification" in window && Notification.permission !== "granted") await Notification.requestPermission();
+                aud.play().then(() => { aud.pause(); aud.currentTime = 0; }).catch(e => {});
+                requestWakeLock();
+
                 const p = document.getElementById('uPlat').value.toUpperCase().trim(); const w = document.getElementById('uWa').value; const b = parseInt(document.getElementById('uBat').value); const btn = document.getElementById('btnDaftar'); const stat = document.getElementById('locStatus');
                 if(!p || !w || isNaN(b)) return showAlert('ERROR','Isi semua data!');
                 btn.disabled=true; btn.innerText="CEK LOKASI..."; stat.style.display='block';
@@ -465,26 +478,17 @@
             };
 
             ref.onSnapshot(snap => {
-                const d = snap.data() || {}; 
-                const s = d.chargingSlots || [null,null,null]; 
-                const q = d.waitingQueue || [];
-                
-                globalSlots = s; // Simpan data terbaru ke variabel Global biar dibaca Timer
+                const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
+                globalSlots = s; // Simpan data untuk Timer
                 
                 document.getElementById('qCount').innerText = `${q.length} ANTRIAN`;
                 document.getElementById('limitInfo').innerText = `MAX: ${q.length>5?85:100}%`;
                 document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;">- Kosong -</div>' : q.map((x,i)=>`<div class="wait-item ${i===0?'top':''}" style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
-                
-                // Render Slot Card (Disini kita kasih ID unik ke timer biar bisa di-update setInterval)
                 document.getElementById('slots').innerHTML = s.map((x,i) => {
                     if(!x) return `<div class="slot-card"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:0%"></div></div><div class="status-dot"></div><div style="font-size:0.6rem; color:var(--neon-blue); margin-top:5px;">READY</div></div>`;
-                    
-                    const isRun = !!x.startTime; 
-                    let h = x.startBattery;
-                    // ID unik untuk timer: "timer-display-0", "timer-display-1", dst
-                    let txtDisplay = isRun ? `<div id="timer-display-${i}" style="font-weight:bold; font-size:1.2rem; color:var(--neon-blue);">...</div>` : "MENUNGGU";
-                    
-                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txtDisplay}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
+                    const isRun = !!x.startTime; let h = x.startBattery;
+                    let txt = isRun ? `<div id="timer-display-${i}" style="font-weight:bold; font-size:1.2rem; color:var(--neon-blue);">...</div>` : "MENUNGGU";
+                    return `<div class="slot-card ${isRun?'active':''}"><div style="font-size:0.5rem; color:#666;">${SLOT_NAMES[i]}</div><div class="bat-body"><div class="bat-liquid" style="height:${h}%"></div></div><div class="status-dot ${isRun?'on':'busy'}"></div><div style="font-weight:bold; color:#fff; font-size:0.7rem;">${x.name}</div><div style="font-size:0.6rem; color:var(--neon-blue); margin-bottom:5px;">${txt}</div>${isRun ? `<button class="adm-btn danger" style="padding:2px 5px; font-size:0.6rem;" onclick="act(${i},'stop')">STOP</button>` : `<button class="adm-btn" style="padding:2px 5px; font-size:0.6rem; border-color:var(--neon-blue); color:var(--neon-blue);" onclick="act(${i},'start')">START</button>`}</div>`;
                 }).join('');
             });
 
