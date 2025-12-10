@@ -15,8 +15,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+    <script>window.onerror = function(msg, url, line) { alert("SYSTEM ERROR:\n" + msg + "\nLine: " + line); return false; };</script>
+
     <style>
-        /* --- CSS UPDATE: TAMPILAN LEBIH COMPACT --- */
+        /* CSS UTAMA */
         :root { --bg-dark: #050a14; --neon-blue: #00f3ff; --deep-blue: #2979ff; --glass-bg: rgba(12, 20, 35, 0.95); --danger: #ff2a6d; --text: #ffffff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; background: linear-gradient(180deg, #020408 0%, #0a1525 100%); color: var(--text); font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
@@ -25,16 +27,17 @@
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: flex-start; background: linear-gradient(180deg, #050a14 90%, transparent); flex-shrink: 0; }
         .header h1 { font-family: 'Orbitron'; font-size: 1.8rem; margin: 0; line-height: 0.9; color: #fff; }
         
+        /* NAVIGATION & VIEWS */
+        #view-home, #view-fc, #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; display: none; }
+        /* KELAS ACTIVE UTK MENAMPILKAN HALAMAN */
+        #view-home.active, #view-fc.active, #view-queue.active { display: flex; flex-direction: column; }
+
         /* HOME MENU */
-        #view-home { flex: 1; width: 100%; height: 100%; overflow-y: auto; display: none; }
-        #view-home.active { display: flex; flex-direction: column; }
         .home-container { padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 15px; }
         .glass-btn { background: linear-gradient(135deg, rgba(12, 20, 35, 0.8), rgba(0, 0, 0, 0.6)); border: 1px solid var(--deep-blue); color: #fff; border-radius: 18px; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 20px; width: 100%; max-width: 380px; }
         .menu-icon-box { width: 48px; height: 48px; border: 1px solid var(--neon-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
         
         /* MAP & LIST */
-        #view-fc { flex: 1; width: 100%; height: 100%; overflow-y: hidden; display: none; }
-        #view-fc.active { display: flex; flex-direction: column; }
         #fc-list-container { flex: 1; overflow-y: auto; padding: 20px; }
         #fc-map-container { flex: 1; display: none; }
         .hero-card { background: var(--glass-bg); border: 1px solid var(--neon-blue); border-radius: 20px; padding: 20px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); }
@@ -42,34 +45,30 @@
         .t-btn.active { background: var(--neon-blue); color: #000; }
 
         /* ANTRIAN - TAMPILAN COMPACT */
-        #view-queue { flex: 1; width: 100%; height: 100%; overflow-y: auto; display: none; background: #000; }
-        #view-queue.active { display: block; }
-        
         .q-header { position: sticky; top: 0; z-index: 50; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
         .admin-trigger { font-size: 0.7rem; cursor: pointer; color: var(--danger); background: rgba(255, 42, 109, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--danger); font-weight: bold; }
         
         .q-content { padding: 15px; }
-        
         .form-area { background: #0b101a; border: 1px solid #333; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
         .form-input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: #fff; text-align: center; margin-bottom: 10px; font-weight: bold; font-size: 1rem; outline: none; }
-        .form-input:focus { border-color: var(--neon-blue); }
         
-        .btn-daftar { width: 100%; padding: 15px; border-radius: 12px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-weight: 900; font-size: 1.1rem; box-shadow: 0 0 20px rgba(0,243,255,0.3); transition: transform 0.1s; }
-        .btn-daftar:active { transform: scale(0.98); }
-
+        /* TOMBOL DAFTAR (PENTING) */
+        .btn-daftar { width: 100%; padding: 15px; border-radius: 12px; border: none; cursor: pointer; background: linear-gradient(90deg, var(--deep-blue), var(--neon-blue)); color: #000; font-weight: 900; font-size: 1.1rem; box-shadow: 0 0 20px rgba(0,243,255,0.3); }
+        
+        /* SLOT GRID (Tanpa Judul Besar) */
         .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
         .slot-card { background: #111; border: 1px solid #333; border-radius: 10px; padding: 10px 5px; text-align: center; height: 140px; display: flex; flex-direction: column; justify-content: space-between; }
         .slot-card.active { border-color: var(--neon-blue); background: rgba(0, 243, 255, 0.05); }
         .bat-body { width: 20px; height: 40px; border: 2px solid #666; border-radius: 4px; margin: 0 auto; display: flex; align-items: flex-end; padding: 1px; }
         .bat-liquid { width: 100%; background: var(--neon-blue); transition: height 0.5s; }
         
+        /* LIST ANTRIAN */
         .queue-list-area { background: #0b101a; border-radius: 15px; padding: 15px; min-height: 200px; border: 1px solid #333; }
         .q-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; }
         
         .admin-panel { display: none; background: #1a0005; border: 2px solid var(--danger); padding: 15px; border-radius: 15px; margin-top: 30px; margin-bottom: 50px; }
         .adm-btn { width: 100%; padding: 10px; margin-top: 8px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; cursor: pointer; font-weight: bold; }
         
-        /* MODALS */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-box { background: #0b101a; border: 1px solid var(--neon-blue); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
@@ -79,9 +78,9 @@
 </head>
 <body>
 
-    <audio id="alarm" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <audio id="alarm" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"></audio>
 
-    <div id="loader" class="loader"><div style="color:var(--neon-blue); font-family:'Orbitron';">LOADING SYSTEM...</div></div>
+    <div id="loader" class="loader"><div style="color:var(--neon-blue); font-family:'Orbitron';">MLU SYSTEM</div></div>
 
     <div id="view-home">
         <div class="home-container">
@@ -111,7 +110,7 @@
     <div id="view-queue">
         <div class="q-header">
             <button onclick="nav('home')" style="background:none; border:none; color:var(--neon-blue); font-size:1.2rem;">⬅</button>
-            <div style="font-family:'Orbitron'; font-size:1.2rem; color:white;">ANTRIAN LIVE</div>
+            <div style="font-family:'Orbitron'; font-size:1.2rem; color:white;">ANTRIAN</div>
             <button class="admin-trigger" onclick="showAdminLogin()">🔒 ADMIN</button>
         </div>
         
@@ -127,7 +126,7 @@
             </div>
 
             <div class="slot-grid" id="slots">
-                <div style="grid-column:1/-1; text-align:center; color:#555;">Memuat Slot...</div>
+                <div style="grid-column:1/-1; text-align:center; color:#555;">Memuat Data...</div>
             </div>
 
             <div class="queue-list-area">
@@ -156,6 +155,7 @@
     <div id="modal-news" class="modal"><div class="modal-box" style="height:80vh;"><h3 style="margin-bottom:10px;">INFO</h3><div id="newsContent" style="height:90%; overflow-y:auto; text-align:left;">Loading...</div><button onclick="closeModal()" class="adm-btn">TUTUP</button></div></div>
     <div id="modal-alert" class="modal"><div class="modal-box"><h3 id="alertTitle" style="color:var(--neon-blue);">INFO</h3><p id="alertMsg">Pesan...</p><input id="alertInput" type="password" class="form-input" style="display:none;" placeholder="PIN"><button id="alertBtn" class="btn-daftar" style="padding:10px;">OK</button></div></div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         const FIREBASE_CFG = { apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", authDomain: "sistem-antrian-b1c39.firebaseapp.com", projectId: "sistem-antrian-b1c39", storageBucket: "sistem-antrian-b1c39.firebasestorage.app", messagingSenderId: "454124587608", appId: "1:454124587608:web:34fbb0f5211067a67f982d" };
         const LOC_DATA_URL = "https://docs.google.com/spreadsheets/d/1EJOTMMfGpBMFPqR0LzbMbh7tZUcTCZld4x387OO9aJM/export?format=csv"; 
@@ -166,21 +166,25 @@
 
         let userLat=null, userLng=null, isAdmin=false, chargers=[], map=null, globalSlots=[null,null,null], triggered=new Set(), wakeLock=null;
 
-        // --- SISTEM ANTI TIDUR & NOTIFIKASI ---
+        // --- 1. WAKE LOCK & NOTIFIKASI ---
         async function requestWakeLock() { if('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} } }
         document.addEventListener('visibilitychange', async () => { if(wakeLock !== null && document.visibilityState === 'visible') requestWakeLock(); });
 
         window.addEventListener('load', () => {
-            document.getElementById('loader').style.opacity='0'; setTimeout(()=>{document.getElementById('loader').style.display='none'},500);
-            initFirebase(); loadNews(); loadLocData();
+            // SAFE LOADER: Hilang setelah 1 detik apapun yang terjadi
+            setTimeout(()=>{document.getElementById('loader').style.opacity='0'; setTimeout(()=>{document.getElementById('loader').style.display='none'},500);}, 1000);
+            
+            nav('home'); // Masuk Home
+            try { initFirebase(); loadNews(); loadLocData(); } catch(e){ console.log("Init Error: "+e); }
             if(navigator.geolocation) navigator.geolocation.watchPosition(p=>{userLat=p.coords.latitude; userLng=p.coords.longitude; calcDist();}, e=>{}, {enableHighAccuracy:true});
         });
 
+        // --- 2. NAVIGASI CLASS-BASED (LEBIH AMAN) ---
         function nav(page) {
-            ['view-home','view-fc','view-queue'].forEach(id => document.getElementById(id).style.display = 'none');
-            document.getElementById('view-'+page).style.display = page === 'home' ? 'flex' : 'block';
+            ['view-home','view-fc','view-queue'].forEach(id => document.getElementById(id).classList.remove('active'));
+            document.getElementById('view-'+page).classList.add('active');
             if(page==='fc') switchFcMode('list');
-            if(page==='queue') requestWakeLock(); // Aktifkan anti-tidur saat masuk antrian
+            if(page==='queue') requestWakeLock();
         }
         function openModal(id) { document.getElementById('modal-'+id).classList.add('show'); }
         function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
@@ -195,7 +199,7 @@
             const db = firebase.firestore(); const ref = db.collection("antrian").doc("utama");
             const aud = document.getElementById('alarm'); const SLOT_NAMES = ["SLOT 3", "SLOT 2", "SLOT 1"];
 
-            // --- TIMER JANTUNG APLIKASI (Jalan Tiap Detik) ---
+            // --- 3. TIMER REAL-TIME (Jalan Tiap Detik) ---
             setInterval(() => {
                 const now = Date.now();
                 globalSlots.forEach((x, i) => {
@@ -210,15 +214,20 @@
                             tEl.innerText = `${m}:${sc<10?'0'+sc:sc}`;
                         } else {
                             tEl.innerText = "SELESAI";
-                            // ALARM TRIGGER
+                            // TRIGGER ALARM
                             if(!triggered.has(x.name)) {
                                 if(localStorage.getItem('myPlat') === x.name) {
                                     triggered.add(x.name);
-                                    // 1. Notif WA Style
-                                    if(Notification.permission === "granted") new Notification("PENGISIAN SELESAI!", { body: `Motor ${x.name} Penuh!`, icon: 'mlu-logo.png', requireInteraction: true });
-                                    // 2. Suara Keras
-                                    aud.currentTime = 0; aud.play().catch(e=>{});
+                                    
+                                    // A. NOTIFIKASI WA STYLE (Push Notification)
+                                    if(Notification.permission === "granted") {
+                                        new Notification("PENGISIAN SELESAI!", { body: `Motor ${x.name} Penuh. Cabut Kabel!`, icon: 'mlu-logo.png', requireInteraction: true });
+                                    }
+                                    
+                                    // B. SUARA KERAS
+                                    aud.currentTime = 0; aud.play().catch(e=>{console.log("Audio block:"+e)});
                                     if(navigator.vibrate) navigator.vibrate([1000, 500, 1000]);
+                                    
                                     showAlert('SELESAI', `MOTOR ${x.name} SELESAI!`);
                                 }
                             }
@@ -227,23 +236,23 @@
                 });
             }, 1000);
 
-            // --- TOMBOL DAFTAR (MERANGKAP BUKA KUNCI SUARA) ---
+            // --- 4. TOMBOL DAFTAR (MERANGKAP BUKA KUNCI SUARA) ---
             document.getElementById('btnDaftar').onclick = async () => {
-                // 1. Minta Izin Notif
+                // A. Minta Izin Notif
                 if("Notification" in window && Notification.permission !== "granted") await Notification.requestPermission();
                 
-                // 2. Pancing Audio (Play 0 detik biar browser ijinkan bunyi nanti)
+                // B. Pancing Audio (Play sebentar)
                 aud.play().then(()=>{ aud.pause(); aud.currentTime=0; }).catch(e=>{});
                 
-                // 3. Kunci Layar
+                // C. Kunci Layar
                 requestWakeLock();
 
                 const p = document.getElementById('uPlat').value.toUpperCase().trim(); const w = document.getElementById('uWa').value; const b = parseInt(document.getElementById('uBat').value); const btn = document.getElementById('btnDaftar');
                 if(!p || !w || isNaN(b)) return showAlert('ERROR','Isi semua data!');
+                
                 btn.disabled=true; btn.innerText="CEK LOKASI..."; 
                 
-                // Cek GPS (Dinonaktifkan utk admin/test)
-                if(!isAdmin && !userLat) { btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; return showAlert('GPS','Tunggu sinyal GPS...'); }
+                if(!userLat && !isAdmin) { btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; return showAlert('GPS','Tunggu sinyal GPS...'); }
                 const R=6371; const dLat=(STATION_LOC.lat-userLat)*Math.PI/180; const dLon=(STATION_LOC.lng-userLng)*Math.PI/180; const a=Math.sin(dLat/2)**2+Math.cos(userLat*Math.PI/180)*Math.cos(STATION_LOC.lat*Math.PI/180)*Math.sin(dLon/2)**2; const dist = (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))) * 1000;
                 // if(dist > MAX_DIST && !isAdmin) { btn.disabled=false; btn.innerText="DAFTAR ANTRIAN"; return showAlert('DITOLAK', `Jarak Anda ${dist.toFixed(0)}m. Harus < ${MAX_DIST}m.`); }
 
@@ -262,7 +271,7 @@
 
             ref.onSnapshot(snap => {
                 const d = snap.data() || {}; const s = d.chargingSlots || [null,null,null]; const q = d.waitingQueue || [];
-                globalSlots = s; // Update data global utk timer
+                globalSlots = s; // Update data global untuk timer
                 document.getElementById('qCount').innerText = `${q.length} User`;
                 document.getElementById('qListContainer').innerHTML = q.length===0 ? '<div style="text-align:center;color:#555;font-size:0.7rem;margin-top:20px;">- Kosong -</div>' : q.map((x,i)=>`<div class="q-item"><div><div style="font-weight:bold;color:#fff;font-size:0.8rem;">${x.name}</div><div style="font-size:0.6rem;color:#888;">${x.startBattery}%</div></div><div style="cursor:pointer; color:#666;" onclick="delQ(${i},'${x.name}')">🗑</div></div>`).join('');
                 document.getElementById('slots').innerHTML = s.map((x,i) => {
